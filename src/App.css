@@ -145,20 +145,21 @@ body {
 /* ======================================================== */
 .landing-hero {
   text-align: center;
-  padding: 60px 20px 40px 20px;
-  max-width: 800px;
+  padding: 80px 20px 40px 20px;
+  max-width: 900px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
 }
 
 .landing-title {
   font-family: var(--font-heading);
-  font-size: 2.8rem;
+  font-size: 3.2rem;
   font-weight: 800;
-  line-height: 1.15;
+  line-height: 1.1;
   color: var(--color-text-primary);
+  letter-spacing: -1px;
 }
 
 .landing-title span {
@@ -166,20 +167,55 @@ body {
 }
 
 .landing-tagline {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   color: var(--color-text-secondary);
-  line-height: 1.5;
-  max-width: 600px;
+  line-height: 1.6;
+  max-width: 700px;
   margin: 0 auto;
 }
 
+/* Dynamic Live Ticker Stats */
+.landing-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  max-width: 1000px;
+  width: 100%;
+  margin: 10px auto 40px auto;
+  padding: 0 20px;
+}
+
+.landing-stat-card {
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.landing-stat-num {
+  font-family: var(--font-heading);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+.landing-stat-label {
+  font-size: 0.72rem;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* User portals gateways selectors */
 .landing-grid-choices {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
-  max-width: 900px;
+  max-width: 1000px;
   width: 100%;
-  margin: 20px auto 40px auto;
+  margin: 0 auto 50px auto;
   padding: 0 20px;
 }
 
@@ -187,11 +223,11 @@ body {
   background-color: var(--color-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: 32px;
+  padding: 36px;
   box-shadow: var(--shadow-md);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -201,8 +237,8 @@ body {
 }
 
 .choice-icon-box {
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
@@ -211,52 +247,247 @@ body {
 
 .choice-title {
   font-family: var(--font-heading);
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   font-weight: 700;
   color: var(--color-text-primary);
 }
 
 .choice-desc {
+  font-size: 0.88rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+/* How it works workflow block */
+.landing-section-title {
+  font-family: var(--font-heading);
+  font-size: 1.6rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.landing-section-subtitle {
   font-size: 0.85rem;
   color: var(--color-text-secondary);
-  line-height: 1.45;
+  text-align: center;
+  margin-bottom: 32px;
 }
 
-.landing-features-section {
-  background-color: var(--color-card);
-  border-top: 1px solid var(--color-border);
-  border-bottom: 1px solid var(--color-border);
-  padding: 50px 20px;
-}
-
-.features-grid {
+.landing-workflow-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
   max-width: 1000px;
-  margin: 0 auto;
+  margin: 0 auto 60px auto;
+  padding: 0 20px;
+  position: relative;
 }
 
-.feature-item {
+.workflow-step-card {
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  position: relative;
+  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
-.feature-title {
+.workflow-number-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+
+.workflow-title {
   font-family: var(--font-heading);
   font-size: 0.95rem;
   font-weight: 700;
 }
 
-.feature-desc {
-  font-size: 0.8rem;
+.workflow-desc {
+  font-size: 0.78rem;
   color: var(--color-text-secondary);
   line-height: 1.45;
 }
 
+/* Interactive Trade verification Showcase */
+.landing-trades-section {
+  background-color: var(--color-card);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  padding: 60px 20px;
+}
+
+.trades-interactive-hub {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 30px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.trade-hub-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.trade-hub-btn {
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  text-align: left;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.trade-hub-btn.active {
+  background-color: var(--color-primary-light);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.trade-hub-details-box {
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.trade-details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 12px;
+}
+
+.trade-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.trade-details-column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.trade-details-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.5px;
+}
+
+/* Tamperproof Security Trust Infrastructure Info */
+.landing-security-registry {
+  padding: 60px 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.security-infra-card {
+  background: linear-gradient(135deg, #1E40AF 0%, #0F172A 100%);
+  color: #fff;
+  border-radius: var(--radius-lg);
+  padding: 40px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 40px;
+  align-items: center;
+  box-shadow: var(--shadow-lg);
+}
+
+.security-infra-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.security-infra-visuals {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  font-family: monospace;
+  font-size: 0.72rem;
+  color: #38BDF8;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* FAQ Accordion Section */
+.landing-faq-section {
+  padding: 60px 20px 80px 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.faq-accordion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faq-item {
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.faq-header {
+  padding: 18px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 700;
+  user-select: none;
+}
+
+.faq-answer {
+  padding: 0 24px 18px 24px;
+  font-size: 0.82rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  display: none;
+}
+
+.faq-item.open .faq-answer {
+  display: block;
+}
+
 /* ======================================================== */
-/* LOGIN CARD STYLES                                        */
+/* LOGIN CARD STYLES & OTHERS                               */
 /* ======================================================== */
 .login-screen-wrapper {
   flex: 1;
@@ -705,12 +936,6 @@ body {
   animation: scanLoop 2.5s linear infinite;
 }
 
-@keyframes scanLoop {
-  0% { top: 0; }
-  50% { top: 100%; }
-  100% { top: 0; }
-}
-
 .camera-record-btn {
   width: 56px;
   height: 56px;
@@ -882,7 +1107,16 @@ body {
   .landing-grid-choices {
     grid-template-columns: 1fr;
   }
-  .features-grid {
+  .landing-stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .landing-workflow-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .trades-interactive-hub {
+    grid-template-columns: 1fr;
+  }
+  .security-infra-card {
     grid-template-columns: 1fr;
   }
 }
