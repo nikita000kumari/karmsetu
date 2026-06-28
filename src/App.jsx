@@ -3,7 +3,8 @@ import {
   Shield, CheckCircle, Video, Mic, Briefcase, Award, Search, Users, QrCode, 
   MapPin, Star, ArrowRight, Check, AlertCircle, X, Activity, Server, Settings, 
   Key, Database, Play, Download, Sun, Moon, ChevronDown, ChevronUp, FileText,
-  User, CheckCircle2, Lock, Plus, Upload, BookOpen, Trash, LogOut, Compass, Info
+  User, CheckCircle2, Lock, Plus, Upload, BookOpen, Trash, LogOut, Compass, Info,
+  Smartphone, Code, HelpCircle, HardDrive, Globe, AlertTriangle
 } from 'lucide-react';
 
 // Firebase imports
@@ -29,25 +30,6 @@ const GithubIcon = () => (
     <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
   </svg>
 );
-
-const FAQ_ITEMS = [
-  {
-    q: "Is KarmSetu government certified?",
-    a: "Yes! All verified skills and certificate registries are mapped directly to India's National Skill Development Corporation (NSDC) frameworks and verified against Aadhaar e-KYC. This ensures fully compliant government credentials."
-  },
-  {
-    q: "How does the AI Vision camera prevent cheating?",
-    a: "The AI scanner verifies the user's face in real-time, checks that they are wearing correct safety gear (gloves, goggles), and uses edge computer-vision coordinates to inspect tool execution patterns. If the face doesn't match the Aadhaar record, it flag-alerts the profile."
-  },
-  {
-    q: "Can workers use this platform offline?",
-    a: "KarmSetu features a local SQLite database that logs all diagnostic activities, voice transcripts, and credentials. When internet connectivity is restored, the client syncs all data packages to our Firestore backend seamlessly."
-  },
-  {
-    q: "How can employers verify a worker's Skill Passport?",
-    a: "Each worker has a unique QR Code on their digital Skill Passport. Employers can simply scan this QR code with any mobile device to view their verified scorecard, DNA meters, and assessment logs in 2 seconds."
-  }
-];
 
 const TRADE_SHOWCASE = {
   Electrician: {
@@ -193,9 +175,11 @@ export default function App() {
   // Employer active tab: directory | stats
   const [employerActiveTab, setEmployerActiveTab] = useState('directory');
 
-  // Landing Page Interactive States
+  // Interactive UI Preview slide state: home | assessment | passport | settings
+  const [uiPreviewSlide, setUiPreviewSlide] = useState('home');
+
+  // Selected trade for landing page showcase
   const [showcaseTrade, setShowcaseTrade] = useState('Electrician');
-  const [openFaqIndex, setOpenFaqIndex] = useState(null);
 
   // Login variables
   const [phoneInput, setPhoneInput] = useState('');
@@ -203,11 +187,8 @@ export default function App() {
   const [otpSent, setOtpSent] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('Hindi');
 
-  // Qualification form inputs
+  // Qualification list
   const [qualList, setQualList] = useState(INITIAL_QUALIFICATIONS);
-  const [newQualName, setNewQualName] = useState('');
-  const [newQualBody, setNewQualBody] = useState('');
-  const [newQualCode, setNewQualCode] = useState('');
 
   // Search/Filters Candidates Directory
   const [searchTerm, setSearchTerm] = useState('');
@@ -235,7 +216,7 @@ export default function App() {
   const [hiredWorkerId, setHiredWorkerId] = useState(null);
   const [showResume, setShowResume] = useState(false);
 
-  // QR Code Simulator scanner overlay
+  // QR Code Scanner simulator overlay
   const [qrScannedCandidateId, setQrScannedCandidateId] = useState(null);
 
   // Cloud backend variables
@@ -495,7 +476,7 @@ export default function App() {
             
             setTimeout(() => {
               addLog('success', 'AI_ENGINE: Verification metrics scores generated.');
-              // Instantly initiate the follow-up voice interview questions list
+              // Instantly initiate follow-up voice interview question
               startVoiceInterview(workerSelectedTrade);
               setWorkerFlowStep('voice_question');
             }, 600);
@@ -684,7 +665,7 @@ export default function App() {
   return (
     <div className="app-container">
       
-      {/* HEADER BAR (Visible always) */}
+      {/* HEADER BAR */}
       <header className="main-header">
         <div className="logo-group">
           <LogoSVG />
@@ -692,7 +673,7 @@ export default function App() {
             Karm<span>Setu</span>
           </span>
           <div className="infra-badge">
-            <Shield size={12} className="text-blue-500" /> NSDC Trust Infrastructure Mapped
+            <Shield size={12} className="text-blue-500" /> NSDC Trust Mapped
           </div>
         </div>
 
@@ -715,7 +696,7 @@ export default function App() {
         )}
 
         <div className="header-actions">
-          {/* GitHub link button in header */}
+          {/* GitHub Header link button */}
           <a 
             href="https://github.com/nikita000kumari/karmsetu" 
             target="_blank" 
@@ -800,223 +781,247 @@ export default function App() {
       <main className="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         
         {/* ======================================================== */}
-        {/* SCREEN 1: Welcome Brand Introduction Page                 */}
+        {/* SCREEN 1: Pitch Landing Page                             */}
         {/* ======================================================== */}
         {userRole === 'none' && !showLogin && (
           <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
             
-            {/* Hero Welcome banner */}
+            {/* HERO SECTION */}
             <section className="landing-hero">
-              <span style={{ fontSize: '0.8rem', backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary)', padding: '5px 14px', borderRadius: '20px', width: 'fit-content', margin: '0 auto', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <Shield size={12} /> National Skill Registry Verified Trust Network
-              </span>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', backgroundColor: 'var(--color-primary-light)', padding: '6px 16px', borderRadius: '30px', border: '1px solid var(--color-border)' }}>
+                <Smartphone size={14} className="text-blue-600" />
+                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-primary)' }}>Worker records camera drill</span>
+                <span style={{ color: 'var(--color-text-light)' }}>•</span>
+                <QrCode size={14} className="text-amber-600" />
+                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-accent)' }}>Employer scans Skill Passport</span>
+              </div>
+
               <h1 className="landing-title">
-                Verified Skill DNA & Passports for India's <span>Informal Workforce</span>
+                Every Skill Deserves Recognition.
               </h1>
+              
               <p className="landing-tagline">
-                KarmSetu creates tamperproof digital identities for blue-collar contractors. By combining live computer-vision checks, spoken dialect diagnostics, and Aadhaar e-KYC integration, we bridge skilled workers to top infrastructure jobs.
+                Helping India's informal workforce prove skills through practical demonstrations instead of certificates.
               </p>
 
               <div className="hero-cta-row">
-                <button className="btn-primary" style={{ padding: '12px 24px', fontSize: '0.9rem' }} onClick={() => setShowLogin(true)}>
-                  Enter Web App Portal <ArrowRight size={16} />
+                <button className="btn-primary" style={{ padding: '12px 28px', fontSize: '0.92rem' }} onClick={() => setShowLogin(true)}>
+                  View Prototype <ArrowRight size={16} />
                 </button>
                 <a 
                   href="https://github.com/nikita000kumari/karmsetu" 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="btn-outline" 
-                  style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '12px 24px', fontSize: '0.9rem', textDecoration: 'none' }}
+                  style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '12px 28px', fontSize: '0.92rem', textDecoration: 'none' }}
                 >
-                  <GithubIcon /> View Code on GitHub
+                  <GithubIcon /> GitHub
                 </a>
               </div>
             </section>
 
-            {/* Platform live metrics counter grid */}
-            <section className="landing-stats-grid">
-              {[
-                { count: "12,480+", label: "Verified Tradesmen" },
-                { count: "93.4%", label: "AI Diagnostic Accuracy" },
-                { count: "180+", label: "Active Construction Sites" },
-                { count: "₹4.8 Cr+", label: "Direct Wages Secured" }
-              ].map((st, idx) => (
-                <div key={idx} className="landing-stat-card">
-                  <div className="landing-stat-num">{st.count}</div>
-                  <div className="landing-stat-label">{st.label}</div>
+            {/* Meet Ravi Section */}
+            <section className="meet-ravi-section">
+              <div className="meet-ravi-card">
+                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'var(--color-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0 }}>
+                  👨‍🔧
                 </div>
-              ))}
-            </section>
-
-            {/* Problem vs Solution Split Section */}
-            <section className="problem-solution-section">
-              {/* Problem Card */}
-              <div className="prob-sol-card" style={{ borderTop: '4px solid var(--color-danger)' }}>
-                <h3 className="prob-sol-title" style={{ color: 'var(--color-danger)' }}>
-                  <AlertCircle size={20} /> The Problem
-                </h3>
-                <div className="prob-sol-list">
-                  <div className="prob-sol-item">
-                    <span style={{ color: 'var(--color-danger)' }}>✖</span>
-                    <span><strong>Credential Fraud</strong>: Fake ITI certificates and printed resumes are easy to forge, leaving builders vulnerable to unskilled labor.</span>
+                <div>
+                  <h4 style={{ fontSize: '0.95rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    Meet Ravi <span style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--color-text-secondary)' }}>• Electrician</span>
+                  </h4>
+                  <div className="ravi-badge-grid">
+                    <span className="ravi-badge">10 Years Experience</span>
+                    <span className="ravi-badge" style={{ color: 'var(--color-danger)' }}>No Formal Certificate</span>
+                    <span className="ravi-badge" style={{ color: 'var(--color-secondary)' }}>KarmSetu Verified</span>
                   </div>
-                  <div className="prob-sol-item">
-                    <span style={{ color: 'var(--color-danger)' }}>✖</span>
-                    <span><strong>No Performance Tracking</strong>: Lack of verified safety logs or practical project execution records for tradesmen.</span>
-                  </div>
-                  <div className="prob-sol-item">
-                    <span style={{ color: 'var(--color-danger)' }}>✖</span>
-                    <span><strong>Slow Recruiting Cycles</strong>: Employers waste days vetting contractors on-site using slow manual diagnostics.</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Solution Card */}
-              <div className="prob-sol-card" style={{ borderTop: '4px solid var(--color-secondary)' }}>
-                <h3 className="prob-sol-title" style={{ color: 'var(--color-secondary)' }}>
-                  <CheckCircle2 size={20} /> The Solution
-                </h3>
-                <div className="prob-sol-list">
-                  <div className="prob-sol-item">
-                    <span style={{ color: 'var(--color-secondary)' }}>✔</span>
-                    <span><strong>Tamperproof Passports</strong>: Skills DNA scorecards are mathematically bound to Aadhaar identities in a secure registry.</span>
-                  </div>
-                  <div className="prob-sol-item">
-                    <span style={{ color: 'var(--color-secondary)' }}>✔</span>
-                    <span><strong>AI-Powered Diagnostics</strong>: Real camera safety checking and verbal dialect assessments grades logic on-the-spot.</span>
-                  </div>
-                  <div className="prob-sol-item">
-                    <span style={{ color: 'var(--color-secondary)' }}>✔</span>
-                    <span><strong>Instant QR Verification</strong>: Contractors scan the worker's QR code to pull verified scorecards in 2 seconds.</span>
-                  </div>
+                  <p style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', lineHeight: 1.4, marginTop: '4px' }}>
+                    "I had years of experience wiring panels, but larger builders rejected me without papers. With KarmSetu, I filmed my wiring test, answered one safety voice check, got my Skill Passport, and was hired instantly on-site."
+                  </p>
                 </div>
               </div>
             </section>
 
-            {/* Portal Gateways Selector Grid */}
-            <section className="landing-grid-choices">
+            {/* Problem Section */}
+            <section className="problem-stats-section">
+              <h2 className="landing-section-title">The Problem</h2>
+              <p className="landing-section-subtitle">Why traditional credential systems leave millions behind.</p>
               
-              {/* Card 1: Workers */}
-              <div className="landing-choice-card" style={{ borderLeft: '4px solid var(--color-primary)' }}>
-                <div className="choice-icon-box" style={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary)' }}>
-                  <User size={24} />
+              <div className="problem-flow-box">
+                <div>
+                  <div className="problem-stat-huge">450M+</div>
+                  <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase' }}>Informal Workers</span>
                 </div>
-                <h3 className="choice-title">Verify My Skills</h3>
-                <p className="choice-desc">
-                  Take dynamic camera checks, answer spoken questions in your native dialect, verify your Aadhaar e-KYC, and share your secure QR Skill Passport with contractors.
-                </p>
-                <button 
-                  className="btn-accent" 
-                  style={{ width: 'fit-content', marginTop: 'auto', backgroundColor: 'var(--color-primary)', color: '#fff' }}
-                  onClick={() => {
-                    setShowLogin(true);
-                    setLoginTab('worker');
-                  }}
-                >
-                  Enter Worker Portal <ArrowRight size={14} />
-                </button>
-              </div>
-
-              {/* Card 2: Employers */}
-              <div className="landing-choice-card" style={{ borderLeft: '4px solid var(--color-secondary)' }}>
-                <div className="choice-icon-box" style={{ backgroundColor: 'var(--color-secondary-light)', color: 'var(--color-secondary)' }}>
-                  <Briefcase size={24} />
-                </div>
-                <h3 className="choice-title">Recruit Certified Contractors</h3>
-                <p className="choice-desc">
-                  Browse a curated catalog of verified electricians, plumbers, masons, and carpenters. Inspect complete video playback diagnostics, DNA scorecards, and make instant hires.
-                </p>
-                <button 
-                  className="btn-accent" 
-                  style={{ width: 'fit-content', marginTop: 'auto', backgroundColor: 'var(--color-secondary)', color: '#fff' }}
-                  onClick={() => {
-                    setShowLogin(true);
-                    setLoginTab('employer');
-                  }}
-                >
-                  Enter Employer Portal <ArrowRight size={14} />
-                </button>
-              </div>
-
-            </section>
-
-            {/* Workflow steps workflow block */}
-            <section style={{ padding: '40px 20px 40px 20px' }}>
-              <h2 className="landing-section-title">How KarmSetu Works</h2>
-              <p className="landing-section-subtitle">Secure, fast, and transparent validation from registration to employment.</p>
-              
-              <div className="landing-workflow-grid">
-                {[
-                  { step: "1", title: "Aadhaar e-KYC Verification", desc: "Instantly confirm identity and connect qualifications directly to UIDAI registries." },
-                  { step: "2", title: "5-Sec AI Camera Drill", desc: "Take tool verification checks. AI matches camera coordinates to check correct safety gear and technique." },
-                  { step: "3", title: "Native Dialect Voice Safety", desc: "Answer technical questions. AI evaluates problem-solving logic and vocabulary." },
-                  { step: "4", title: "Digital Skill Passport Issued", desc: "Receive a verified profile card with dynamic Skill DNA metrics and secure QR Code." }
-                ].map(wk => (
-                  <div key={wk.step} className="workflow-step-card">
-                    <div className="workflow-number-circle">{wk.step}</div>
-                    <h4 className="workflow-title">{wk.title}</h4>
-                    <p className="workflow-desc">{wk.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* Interactive Trades Showcase section */}
-            <section className="landing-trades-section">
-              <h2 className="landing-section-title">Verification Showcase Hub</h2>
-              <p className="landing-section-subtitle">Explore which safety metrics and checks our AI validates for each vocational trade class.</p>
-
-              <div className="trades-interactive-hub">
                 
-                {/* Left Trade buttons */}
-                <div className="trade-hub-tabs">
-                  {Object.keys(TRADE_SHOWCASE).map(trade => (
-                    <button 
-                      key={trade}
-                      className={`trade-hub-btn ${showcaseTrade === trade ? 'active' : ''}`}
-                      onClick={() => setShowcaseTrade(trade)}
-                    >
-                      {trade === 'Electrician' && '⚡ '}
-                      {trade === 'Plumber' && '🚰 '}
-                      {trade === 'Tailor' && '🧵 '}
-                      {trade === 'Carpenter' && '🪚 '}
-                      {trade} Verification
-                    </button>
-                  ))}
+                <div className="problem-flow-arrow">→</div>
+                
+                <div className="problem-flow-step">
+                  <span style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--color-danger)' }}>No Verification</span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>Most tradesmen have years of experience but no formal certifications.</span>
+                </div>
+                
+                <div className="problem-flow-arrow">→</div>
+                
+                <div className="problem-flow-step">
+                  <span style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--color-text-secondary)' }}>Locked Out</span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>No paper proof means no high-paying jobs, no banking loans, and zero recognition.</span>
+                </div>
+              </div>
+            </section>
+
+            {/* Why Existing Solutions Fail Table */}
+            <section className="comparison-section">
+              <h2 className="landing-section-title">Why Existing Solutions Fail</h2>
+              <p className="landing-section-subtitle">How KarmSetu replaces outdated paper models with live skill evidence.</p>
+              
+              <div className="comparison-table-wrapper">
+                <table className="comparison-table">
+                  <thead>
+                    <tr>
+                      <th>Parameters</th>
+                      <th>Traditional Certification</th>
+                      <th style={{ color: 'var(--color-secondary)' }}>KarmSetu Trust Protocol</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Core Evidence</strong></td>
+                      <td>Written Resume (Self-declared)</td>
+                      <td style={{ color: 'var(--color-secondary)', fontWeight: 600 }}>Live Practical Skill Evidence</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Validation</strong></td>
+                      <td>Paper Certificate (Easy to forge)</td>
+                      <td style={{ color: 'var(--color-secondary)', fontWeight: 600 }}>Real-Time Video Demonstration</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Verification Engine</strong></td>
+                      <td>Slow Manual Inspections</td>
+                      <td style={{ color: 'var(--color-secondary)', fontWeight: 600 }}>AI Vision & Dialect Diagnostics</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Connectivity</strong></td>
+                      <td>Always Online Required</td>
+                      <td style={{ color: 'var(--color-secondary)', fontWeight: 600 }}>Offline-First Local Database</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Languages</strong></td>
+                      <td>English/Hindi Only</td>
+                      <td style={{ color: 'var(--color-secondary)', fontWeight: 600 }}>Regional Dialect Speech Support</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            {/* Solution Visual Flow */}
+            <section className="solution-flow-section">
+              <h2 className="landing-section-title">The Solution</h2>
+              <p className="landing-section-subtitle">A seamless pipeline connecting worker skill verification directly to jobs.</p>
+              
+              <div className="solution-visual-flow">
+                <div className="solution-flow-step-card">
+                  <User size={18} className="text-blue-600" />
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>Worker Signup</span>
+                </div>
+                <div className="solution-flow-arrow">→</div>
+                
+                <div className="solution-flow-step-card">
+                  <Video size={18} className="text-blue-600" />
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>Records Video</span>
+                </div>
+                <div className="solution-flow-arrow">→</div>
+                
+                <div className="solution-flow-step-card">
+                  <Activity size={18} className="text-emerald-600" />
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>AI Analysis</span>
+                </div>
+                <div className="solution-flow-arrow">→</div>
+                
+                <div className="solution-flow-step-card">
+                  <Mic size={18} className="text-amber-600" />
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>Voice Check</span>
+                </div>
+                <div className="solution-flow-arrow">→</div>
+                
+                <div className="solution-flow-step-card">
+                  <Award size={18} className="text-blue-600" />
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>Skill Passport</span>
+                </div>
+                <div className="solution-flow-arrow">→</div>
+                
+                <div className="solution-flow-step-card">
+                  <QrCode size={18} className="text-amber-600" />
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>Employer Scan</span>
+                </div>
+                <div className="solution-flow-arrow">→</div>
+                
+                <div className="solution-flow-step-card" style={{ border: '1px solid var(--color-secondary)' }}>
+                  <Briefcase size={18} className="text-emerald-600" />
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>Job Hired</span>
+                </div>
+              </div>
+            </section>
+
+            {/* Features Showcase Grid */}
+            <section className="features-section">
+              <h2 className="landing-section-title">Platform Features</h2>
+              <p className="landing-section-subtitle">Engineered specifically for low-connectivity blue-collar labor markets.</p>
+              
+              <div className="features-card-grid">
+                
+                <div className="feature-card">
+                  <Video size={20} className="text-blue-600" />
+                  <h4 style={{ fontSize: '0.88rem', fontWeight: 700 }}>📹 Skill Assessment</h4>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', lineHeight: 1.45 }}>
+                    Record a 5-second video demonstration. Edge computer vision inspects tool grips, safety attire, and technique compliance.
+                  </p>
                 </div>
 
-                {/* Right details panel */}
-                <div className="trade-hub-details-box">
-                  <div className="trade-details-header">
-                    <h3 style={{ fontSize: '1.15rem', fontWeight: 700 }}>
-                      {showcaseTrade} Diagnostics Checklists (NSQF Level 4)
-                    </h3>
-                    <span style={{ fontSize: '0.72rem', backgroundColor: 'var(--color-secondary-light)', color: '#065F46', padding: '3px 8px', borderRadius: '4px', fontWeight: 700 }}>
-                      Target AI Confidence: {TRADE_SHOWCASE[showcaseTrade].confidence}
-                    </span>
-                  </div>
+                <div className="feature-card">
+                  <Mic size={20} className="text-emerald-600" />
+                  <h4 style={{ fontSize: '0.88rem', fontWeight: 700 }}>🎤 Voice Interview</h4>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', lineHeight: 1.45 }}>
+                    Respond to follow-up safety questions in your local dialect. Speech synthesis grades responses dynamically.
+                  </p>
+                </div>
 
-                  <div className="trade-details-grid">
-                    <div className="trade-details-column">
-                      <span className="trade-details-label">AI Video Diagnostics checks</span>
-                      <p style={{ fontSize: '0.82rem', color: 'var(--color-text-secondary)', lineHeight: 1.4 }}>
-                        {TRADE_SHOWCASE[showcaseTrade].vision}
-                      </p>
-                    </div>
+                <div className="feature-card">
+                  <Award size={20} className="text-amber-600" />
+                  <h4 style={{ fontSize: '0.88rem', fontWeight: 700 }}>📄 Skill Passport</h4>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', lineHeight: 1.45 }}>
+                    Instant creation of digital credentials showing trust ratings, verified badges, and personal experience portfolios.
+                  </p>
+                </div>
 
-                    <div className="trade-details-column">
-                      <span className="trade-details-label">Spoken Safety voice metrics</span>
-                      <p style={{ fontSize: '0.82rem', color: 'var(--color-text-secondary)', lineHeight: 1.4 }}>
-                        {TRADE_SHOWCASE[showcaseTrade].voice}
-                      </p>
-                    </div>
-                  </div>
+                <div className="feature-card">
+                  <QrCode size={20} className="text-blue-600" />
+                  <h4 style={{ fontSize: '0.88rem', fontWeight: 700 }}>📷 QR Verification</h4>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', lineHeight: 1.45 }}>
+                    No app download required for employers. Simply scan the passport QR code to pull verified worker logs from our backend.
+                  </p>
+                </div>
+
+                <div className="feature-card">
+                  <HardDrive size={20} className="text-emerald-600" />
+                  <h4 style={{ fontSize: '0.88rem', fontWeight: 700 }}>📶 Offline Support</h4>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', lineHeight: 1.45 }}>
+                    Assessments work fully offline using a local SQLite sync database. Syncs back to Firebase automatically when internet returns.
+                  </p>
+                </div>
+
+                <div className="feature-card">
+                  <Globe size={20} className="text-amber-600" />
+                  <h4 style={{ fontSize: '0.88rem', fontWeight: 700 }}>🌍 Regional Languages</h4>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', lineHeight: 1.45 }}>
+                    Complete onboarding and tests available in Hindi, Tamil, Telugu, Marathi, and Bengali to eliminate literacy barriers.
+                  </p>
                 </div>
 
               </div>
             </section>
 
-            {/* Architecture Visual Section */}
+            {/* System Architecture */}
             <section className="architecture-section">
               <h2 className="landing-section-title">System Architecture</h2>
               <p className="landing-section-subtitle">How our frontend diagnostics interface communicates with AI models and secure databases.</p>
@@ -1024,38 +1029,35 @@ export default function App() {
               <div className="arch-visual-card">
                 <div className="arch-stack">
                   
-                  {/* Layer 1 */}
                   <div className="arch-layer">
                     <div className="arch-layer-title">
-                      <User size={14} /> Client Interface
+                      <Smartphone size={14} /> Client Interface
                     </div>
                     <div className="arch-layer-components">
-                      <div className="arch-component">React Web App</div>
+                      <div className="arch-component">React Native Mobile App</div>
                       <div className="arch-component">Web Speech Speech-to-Text API</div>
-                      <div className="arch-component">Webcam Video Capture Stream</div>
+                      <div className="arch-component">Local Camera View Finder</div>
                     </div>
                   </div>
 
-                  {/* Layer 2 */}
                   <div className="arch-layer">
                     <div className="arch-layer-title">
-                      <Activity size={14} /> AI Processing Layer
+                      <Activity size={14} /> AI Engine Layer
                     </div>
                     <div className="arch-layer-components">
                       <div className="arch-component" style={{ borderColor: 'var(--color-accent)' }}>Google Gemini 1.5 Safety Grader</div>
-                      <div className="arch-component">OpenCV Coordinate Shutter Overlay</div>
+                      <div className="arch-component">OpenCV Coordinate Grid checks</div>
                     </div>
                   </div>
 
-                  {/* Layer 3 */}
                   <div className="arch-layer">
                     <div className="arch-layer-title">
-                      <Database size={14} /> Data & Security
+                      <Database size={14} /> Database & Sync
                     </div>
                     <div className="arch-layer-components">
                       <div className="arch-component">Firebase Firestore Sync</div>
-                      <div className="arch-component">SQLite Local Storage sync</div>
-                      <div className="arch-component" style={{ borderColor: 'var(--color-secondary)' }}>UIDAI Aadhaar e-KYC API</div>
+                      <div className="arch-component">SQLite Offline sync</div>
+                      <div className="arch-component" style={{ borderColor: 'var(--color-secondary)' }}>UIDAI Aadhaar Verification API</div>
                     </div>
                   </div>
 
@@ -1063,22 +1065,153 @@ export default function App() {
               </div>
             </section>
 
-            {/* Screenshots Showcase (Coming Soon) */}
-            <section className="screenshots-section">
-              <h2 className="landing-section-title">Portal Walkthrough Showcase</h2>
-              <p className="landing-section-subtitle">A visual preview of our upcoming mobile applications and enterprise hiring dashboards.</p>
+            {/* UI Preview phone mockup slider */}
+            <section className="ui-preview-section">
+              <h2 className="landing-section-title">Product UI Preview</h2>
+              <p className="landing-section-subtitle">Toggle through the core mobile screens of the worker app.</p>
               
-              <div className="screenshots-grid">
+              <div className="ui-preview-hub">
+                
+                {/* Left panel selectors */}
+                <div className="preview-nav-panel">
+                  <button 
+                    className={`preview-nav-btn ${uiPreviewSlide === 'home' ? 'active' : ''}`}
+                    onClick={() => setUiPreviewSlide('home')}
+                  >
+                    <strong style={{ fontSize: '0.85rem', display: 'block' }}>1. Home Onboarding</strong>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)' }}>Select trade categories and login</span>
+                  </button>
+
+                  <button 
+                    className={`preview-nav-btn ${uiPreviewSlide === 'assessment' ? 'active' : ''}`}
+                    onClick={() => setUiPreviewSlide('assessment')}
+                  >
+                    <strong style={{ fontSize: '0.85rem', display: 'block' }}>2. Camera Assessment</strong>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)' }}>Video safety recording checklist</span>
+                  </button>
+                </div>
+
+                {/* Center Phone Frame */}
+                <div className="phone-mockup-frame">
+                  <div className="phone-notch"></div>
+                  
+                  {/* Phone screen contents */}
+                  <div className="phone-screen-content">
+                    {uiPreviewSlide === 'home' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.78rem' }}>
+                        <span style={{ fontWeight: 800, fontSize: '0.9rem', color: 'var(--color-primary)' }}>Choose Trade Category</span>
+                        <div style={{ border: '1px solid var(--color-border)', borderRadius: '6px', padding: '8px', backgroundColor: 'var(--color-card)' }}>
+                          <strong>⚡ Electrician</strong>
+                          <p style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>wiring boards and switchbox checks</p>
+                        </div>
+                        <div style={{ border: '1.5px solid var(--color-primary)', borderRadius: '6px', padding: '8px', backgroundColor: 'var(--color-primary-light)' }}>
+                          <strong>🚰 Plumber</strong>
+                          <p style={{ fontSize: '0.65rem', color: 'var(--color-primary)' }}>Thread winding pipes and leak gauges</p>
+                        </div>
+                        <input type="tel" placeholder="Enter Mobile Number" style={{ width: '100%', padding: '6px', fontSize: '0.7rem', borderRadius: '4px', border: '1px solid var(--color-border)' }} defaultValue="9876543210" disabled />
+                        <button style={{ backgroundColor: 'var(--color-primary)', color: '#fff', border: 'none', padding: '8px', borderRadius: '4px', fontWeight: 700, fontSize: '0.7rem' }}>Get verification OTP</button>
+                      </div>
+                    )}
+
+                    {uiPreviewSlide === 'assessment' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.75rem', height: '100%' }}>
+                        <span style={{ fontWeight: 800, color: 'var(--color-primary)' }}>Record Skill Assessment</span>
+                        <div style={{ flex: 1, backgroundColor: '#000', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                          <span style={{ color: '#EF4444', fontSize: '0.65rem', position: 'absolute', top: '8px', right: '8px', fontWeight: 700 }}>• RECORDING</span>
+                          <span style={{ color: '#fff', fontSize: '0.7rem' }}>Video viewfinder feed</span>
+                        </div>
+                        <div style={{ backgroundColor: 'var(--color-card)', padding: '6px', borderRadius: '6px', fontSize: '0.62rem', border: '1px solid var(--color-border)' }}>
+                          <strong>Verify checks:</strong> Insulated handles, gloves, stable wire strip core size.
+                        </div>
+                      </div>
+                    )}
+
+                    {uiPreviewSlide === 'passport' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.75rem' }}>
+                        <span style={{ fontWeight: 800, color: 'var(--color-secondary)' }}>Skill Passport</span>
+                        <div style={{ border: '1px solid var(--color-border)', padding: '10px', borderRadius: '8px', backgroundColor: 'var(--color-card)' }}>
+                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '6px' }}>
+                            <div style={{ width: '30px', height: '30px', borderRadius: '50%', backgroundColor: '#E2E8F0' }}></div>
+                            <div>
+                              <strong style={{ fontSize: '0.75rem', display: 'block' }}>Ravi Kumar</strong>
+                              <span style={{ fontSize: '0.62rem', color: 'var(--color-text-secondary)' }}>Electrician • dwarka, delhi</span>
+                            </div>
+                          </div>
+                          <div style={{ backgroundColor: 'var(--color-secondary-light)', color: '#065F46', fontSize: '0.62rem', padding: '4px', borderRadius: '4px', textAlign: 'center', fontWeight: 700, marginBottom: '6px' }}>
+                            ✓ NSQF LEVEL 4 CERTIFIED
+                          </div>
+                          <span style={{ fontSize: '0.62rem', color: 'var(--color-text-secondary)' }}>QR Code Verification</span>
+                          <div style={{ display: 'flex', justifyContent: 'center', margin: '4px 0' }}>
+                            <svg viewBox="0 0 100 100" style={{ width: '40px', height: '40px' }}>
+                              <rect width="100" height="100" fill="white" />
+                              <path d="M10 10h30v30H10zm5 5h20v20H15zm45-5h30v30H60zm5 5h20v20H65zM10 60h30v30H10zm5 5h20v20H15zm50 15h10v10H65zm10-10h15v10H75zm-15-5h15v10H60zm25 0h5v10H85zm-15 15h5v5h-5z" fill="black" />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {uiPreviewSlide === 'profile' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.75rem' }}>
+                        <span style={{ fontWeight: 800, color: 'var(--color-primary)' }}>SQLite Sync Settings</span>
+                        <div style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)', borderRadius: '6px', padding: '8px' }}>
+                          <span style={{ display: 'block', fontSize: '0.62rem', textTransform: 'uppercase', color: 'var(--color-text-secondary)' }}>Offline Sync Queue</span>
+                          <strong>2 Assessments pending sync</strong>
+                        </div>
+                        <div style={{ display: 'flex', gap: '6px', marginTop: '4px' }}>
+                          <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--color-secondary)', alignSelf: 'center' }}></div>
+                          <span style={{ fontSize: '0.65rem' }}>SQLite database sync enabled</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                </div>
+
+                {/* Right panel selectors */}
+                <div className="preview-nav-panel">
+                  <button 
+                    className={`preview-nav-btn ${uiPreviewSlide === 'passport' ? 'active' : ''}`}
+                    onClick={() => setUiPreviewSlide('passport')}
+                  >
+                    <strong style={{ fontSize: '0.85rem', display: 'block' }}>3. Verified Passport</strong>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)' }}>QR Passport and Skill DNA matrix</span>
+                  </button>
+
+                  <button 
+                    className={`preview-nav-btn ${uiPreviewSlide === 'profile' ? 'active' : ''}`}
+                    onClick={() => setUiPreviewSlide('profile')}
+                  >
+                    <strong style={{ fontSize: '0.85rem', display: 'block' }}>4. Profile Settings</strong>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)' }}>SQLite offline status dashboard</span>
+                  </button>
+                </div>
+
+              </div>
+            </section>
+
+            {/* Roadmap Section */}
+            <section className="roadmap-section">
+              <h2 className="landing-section-title">Development Roadmap</h2>
+              <p className="landing-section-subtitle">Our milestone tracker from initial design to national integrations.</p>
+              
+              <div className="roadmap-list">
                 {[
-                  { name: "Mobile Diagnostics Scanner" },
-                  { name: "Contractor Hiring Console" },
-                  { name: "Live Skill DNA Metrics Ticker" }
-                ].map((sc, idx) => (
-                  <div key={idx} className="screenshot-placeholder-card">
-                    <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-text-secondary)' }}>{sc.name}</span>
-                    <div className="coming-soon-overlay">
-                      <span className="coming-soon-badge">Coming Soon</span>
+                  { text: "Registration & OTP Verification Flow", done: true },
+                  { text: "Camera Skill Assessment Video checks", done: true },
+                  { text: "Digital Skill Passport and QR Generation", done: true },
+                  { text: "Interactive Employer Directory & Verification Console", done: false },
+                  { text: "Government Integration (DigiLocker mapping)", done: false },
+                  { text: "NSDC Skill India Certification matching", done: false }
+                ].map((item, idx) => (
+                  <div key={idx} className="roadmap-item">
+                    <div className="roadmap-icon-box" style={{ 
+                      backgroundColor: item.done ? 'var(--color-secondary-light)' : 'var(--color-primary-light)', 
+                      color: item.done ? 'var(--color-secondary)' : 'var(--color-text-light)' 
+                    }}>
+                      {item.done ? '✓' : '⬜'}
                     </div>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 600, opacity: item.done ? 1 : 0.6 }}>{item.text}</span>
                   </div>
                 ))}
               </div>
@@ -1100,55 +1233,6 @@ export default function App() {
                     </p>
                   </div>
                 </div>
-              </div>
-            </section>
-
-            {/* Cryptographic tamperproof ledger panel */}
-            <section className="landing-security-registry">
-              <div className="security-infra-card">
-                <div className="security-infra-content">
-                  <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--color-accent)', fontWeight: 700 }}>
-                    Tamperproof Security Architecture
-                  </span>
-                  <h3 style={{ fontSize: '1.6rem', fontWeight: 800 }}>NSDC Mapped Trust Protocol</h3>
-                  <p style={{ fontSize: '0.85rem', color: '#CBD5E1', lineHeight: 1.5 }}>
-                    All contractor scorecards, verified qualifications, and skill DNA logs are recorded in a secure registry. Any attempts to alter parameters dynamically triggers console synchronization failure alerts inside our synchronization engine.
-                  </p>
-                </div>
-
-                <div className="security-infra-visuals">
-                  <div>[Sync Engine Status: ACTIVE]</div>
-                  <div>SQL: SELECT * FROM verification_registry;</div>
-                  <div>HEX: 58e2402b292dc36fbe3f8d401e93cd66f5d</div>
-                  <div>UIDAI: Aadhaar e-KYC Verification check: DONE</div>
-                  <div>Firestore Sync: BINDING COMPLETED [karmsetu-v1]</div>
-                </div>
-              </div>
-            </section>
-
-            {/* Interactive FAQ Accordion */}
-            <section className="landing-faq-section">
-              <h2 className="landing-section-title">Frequently Asked Questions</h2>
-              <p className="landing-section-subtitle">Find answers to common questions about KarmSetu's AI trust infrastructure.</p>
-
-              <div className="faq-accordion-list">
-                {FAQ_ITEMS.map((faq, idx) => (
-                  <div 
-                    key={idx} 
-                    className={`faq-item ${openFaqIndex === idx ? 'open' : ''}`}
-                  >
-                    <div 
-                      className="faq-header" 
-                      onClick={() => setOpenFaqIndex(openFaqIndex === idx ? null : idx)}
-                    >
-                      <span>{faq.q}</span>
-                      {openFaqIndex === idx ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                    </div>
-                    <div className="faq-answer">
-                      {faq.a}
-                    </div>
-                  </div>
-                ))}
               </div>
             </section>
 
