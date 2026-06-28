@@ -3,7 +3,7 @@ import {
   Shield, CheckCircle, Video, Mic, Briefcase, Award, Search, Users, QrCode, 
   MapPin, Star, ArrowRight, Check, AlertCircle, X, Activity, Server, Settings, 
   Key, Database, Play, Download, Sun, Moon, ChevronDown, ChevronUp, FileText,
-  User, CheckCircle2, Lock, Plus, Upload, BookOpen, Trash, LogOut
+  User, CheckCircle2, Lock, Plus, Upload, BookOpen, Trash, LogOut, Compass
 } from 'lucide-react';
 
 // Firebase imports
