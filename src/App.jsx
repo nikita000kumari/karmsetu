@@ -256,6 +256,12 @@ export default function App() {
     localStorage.setItem('karmsetu_theme', themeMode);
   }, [themeMode]);
 
+  const toggleTheme = () => {
+    const nextTheme = themeMode === 'light' ? 'dark' : 'light';
+    setThemeMode(nextTheme);
+    addLog('info', `SYSTEM: Switched UI Theme to: ${nextTheme.toUpperCase()}`);
+  };
+
   // Sync state helpers
   useEffect(() => {
     localStorage.setItem('karmsetu_workers', JSON.stringify(workers));
