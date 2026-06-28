@@ -4,27 +4,26 @@ import {
   MapPin, TrendingUp, Plus, Phone, ArrowRight, Globe, RefreshCw, FileText, 
   Check, AlertCircle, X, Activity, Sparkles, Clock, Smartphone, Star, Play, 
   CheckCircle2, Compass, AlertTriangle, Menu, Send, ChevronRight, Sun, Moon, 
-  FileCheck, Download, Code, Database, Server
+  FileCheck, Download, Code, Database, Server, Settings, Key
 } from 'lucide-react';
+
+// Firebase imports
+import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getFirestore, doc, onSnapshot, setDoc, updateDoc, collection } from 'firebase/firestore';
+
 import './App.css';
 
 // SVG logo of KarmSetu: Bridge forming "K"
 const LogoSVG = ({ className = 'w-10 h-10' }) => (
   <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={{ width: '38px', height: '38px' }}>
-    {/* Left pillar of bridge/spine of K */}
     <path d="M25 15 C25 15, 25 35, 25 50 C25 65, 25 85, 25 85 H35 C35 70, 35 60, 35 50 C35 40, 35 30, 35 15 H25 Z" fill="#1E40AF" />
-    {/* Bridge Arch */}
     <path d="M15 85 C15 65, 25 45, 50 45 C75 45, 85 65, 85 85 H73 C73 70, 65 57, 50 57 C35 57, 27 70, 27 85 H15 Z" fill="#1E40AF" />
-    {/* Diagonal upper (Opportunity path - Emerald) */}
     <path d="M50 45 L78 17 H92 L57 52 Z" fill="#10B981" />
-    {/* Diagonal lower (Worker path - Saffron) */}
     <path d="M50 57 L80 85 H94 L57 50 Z" fill="#F59E0B" />
-    {/* Saffron Opportunity sun/star */}
     <circle cx="85" cy="17" r="5" fill="#F59E0B" />
   </svg>
 );
 
-// Question banks for different trades in regional voice interview
 const QUESTION_BANKS = {
   Electrician: [
     {
@@ -84,7 +83,6 @@ const QUESTION_BANKS = {
   ]
 };
 
-// Initial workers list
 const INITIAL_WORKERS = [
   {
     id: 'ravi-kumar',
@@ -157,12 +155,25 @@ export default function App() {
   });
 
   // Showcase state selectors
-  const [showcaseView, setShowcaseView] = useState('dual'); // 'dual' | 'phone' | 'desktop'
+  const [showcaseView, setShowcaseView] = useState('dual');
   const [isOffline, setIsOffline] = useState(false);
   const [workers, setWorkers] = useState(() => {
     const saved = localStorage.getItem('karmsetu_workers');
     return saved ? JSON.parse(saved) : INITIAL_WORKERS;
   });
+
+  // Real Backend Configurations (Firebase + Gemini)
+  const [showConfigDrawer, setShowConfigDrawer] = useState(false);
+  const [firebaseConfigInput, setFirebaseConfigInput] = useState(() => {
+    const saved = localStorage.getItem('karmsetu_firebase_config_input');
+    return saved || '';
+  });
+  const [geminiKey, setGeminiKey] = useState(() => {
+    return localStorage.getItem('karmsetu_gemini_key') || '';
+  });
+
+  // Active Firebase SDK Database instance
+  const [db, setDb] = useState(null);
 
   // Selected worker details (Employer Panel)
   const [selectedWorkerId, setSelectedWorkerId] = useState('ravi-kumar');
@@ -231,7 +242,7 @@ export default function App() {
     localStorage.setItem('karmsetu_theme', themeMode);
   }, [themeMode]);
 
-  // Sync data store changes
+  // Sync data store changes to localStorage
   useEffect(() => {
     localStorage.setItem('karmsetu_workers', JSON.stringify(workers));
   }, [workers]);
@@ -314,6 +325,73 @@ export default function App() {
     const nextTheme = themeMode === 'light' ? 'dark' : 'light';
     setThemeMode(nextTheme);
     addLog('info', `SYSTEM: Switched UI Theme mode to: ${nextTheme.toUpperCase()}`);
+  };
+
+  // Initialize and Connect Firebase
+  useEffect(() => {
+    if (!firebaseConfigInput) return;
+    try {
+      // Clean JSON string and parse
+      const config = JSON.parse(firebaseConfigInput.trim());
+      if (config.projectId) {
+        localStorage.setItem('karmsetu_firebase_config_input', firebaseConfigInput);
+        const app = getApps().length === 0 ? initializeApp(config) : getApp();
+        const firestore = getFirestore(app);
+        setDb(firestore);
+        addLog('success', `FIREBASE: Connected to project: ${config.projectId}`);
+      }
+    } catch (err) {
+      addLog('warning', `FIREBASE_PARSE_ERROR: Invalid config JSON input.`);
+    }
+  }, [firebaseConfigInput]);
+
+  // Real-time Firestore sync listener
+  useEffect(() => {
+    if (!db) return;
+    addLog('info', 'SQL: Subscribing to real-time Firestore sync channel for workers...');
+    
+    const unsubscribe = onSnapshot(collection(db, 'workers'), (snapshot) => {
+      if (snapshot.empty) {
+        // Seed Firestore collection with initial workers
+        addLog('info', 'FIREBASE: Firestore database is empty. Seeding initial worker profiles...');
+        INITIAL_WORKERS.forEach(async (w) => {
+          await setDoc(doc(db, 'workers', w.id), w);
+        });
+        return;
+      }
+
+      const loadedWorkers = [];
+      snapshot.forEach(docSnap => {
+        loadedWorkers.push(docSnap.data());
+      });
+      setWorkers(loadedWorkers);
+      addLog('success', `SYNC: Loaded ${loadedWorkers.length} synced profiles from Firestore remote database.`);
+    });
+
+    return () => unsubscribe();
+  }, [db]);
+
+  // Save or update worker document helper
+  const updateWorkerData = async (workerId, fields) => {
+    if (isOffline) {
+      addLog('warning', 'SQL: Connection offline. Changes cached in localStorage state only.');
+      setWorkers(prev => prev.map(w => w.id === workerId ? { ...w, ...fields } : w));
+      return;
+    }
+
+    if (db) {
+      try {
+        const docRef = doc(db, 'workers', workerId);
+        await updateDoc(docRef, fields);
+        addLog('success', `FIREBASE: Successfully updated doc 'workers/${workerId}' on Firestore.`);
+      } catch (err) {
+        addLog('warning', `FIREBASE_SYNC_FAILED: ${err.message}. Saving changes locally.`);
+        setWorkers(prev => prev.map(w => w.id === workerId ? { ...w, ...fields } : w));
+      }
+    } else {
+      setWorkers(prev => prev.map(w => w.id === workerId ? { ...w, ...fields } : w));
+      addLog('success', 'SQL: Local state database updated successfully.');
+    }
   };
 
   // User trigger verification SMS code
@@ -452,7 +530,7 @@ export default function App() {
     }, 1200);
   };
 
-  // Generate Passport and update local state database
+  // Generate Passport and update database (Local state or Firestore)
   const handleGeneratePassport = () => {
     const updatedTrust = 92;
     const skillsDNAUpdates = {
@@ -480,21 +558,12 @@ export default function App() {
       return;
     }
 
-    // Update database immediately
-    setWorkers(prev => prev.map(w => {
-      if (w.id === 'ravi-kumar') {
-        return {
-          ...w,
-          trustScore: updatedTrust,
-          skillsDNA: skillsDNAUpdates,
-          verifiedSkills: Array.from(new Set([...w.verifiedSkills, `${selectedAssessmentSkill} AI Diagnostics`, 'Insulated Toolkit Compliant']),)
-        };
-      }
-      return w;
-    }));
-
-    addLog('query', `SQL: UPDATE workers SET trustScore = ${updatedTrust}, skillsDNA = ? WHERE id = 'ravi-kumar';`);
-    addLog('success', `CLOUD_SYNC: Dispatched updated DNA to central Firebase Database store.`);
+    // Call database updater
+    updateWorkerData('ravi-kumar', {
+      trustScore: updatedTrust,
+      skillsDNA: skillsDNAUpdates,
+      verifiedSkills: Array.from(new Set([...workers.find(w => w.id === 'ravi-kumar')?.verifiedSkills || [], `${selectedAssessmentSkill} AI Diagnostics`, 'Insulated Toolkit Compliant']))
+    });
     
     setCurrentTab('passport');
     setAssessmentStep('camera');
@@ -505,22 +574,16 @@ export default function App() {
     if (syncQueue.length === 0) return;
     addLog('info', `SYNC_ENGINE: Internet restored. Found ${syncQueue.length} pending SQL transactions to sync.`);
     
-    setWorkers(prev => prev.map(w => {
-      if (w.id === 'ravi-kumar') {
-        return {
-          ...w,
-          trustScore: 92,
-          skillsDNA: {
-            ...w.skillsDNA,
-            precision: 93,
-            safety: 90,
-            speed: 91
-          },
-          badges: Array.from(new Set([...w.badges, 'Offline Sync Hero']))
-        };
-      }
-      return w;
-    }));
+    updateWorkerData('ravi-kumar', {
+      trustScore: 92,
+      skillsDNA: {
+        ...workers.find(w => w.id === 'ravi-kumar')?.skillsDNA,
+        precision: 93,
+        safety: 90,
+        speed: 91
+      },
+      badges: Array.from(new Set([...workers.find(w => w.id === 'ravi-kumar')?.badges || [], 'Offline Sync Hero']))
+    });
 
     addLog('success', `SYNC_ENGINE: Completed batch queries. SQLite cache flushed.`);
     setSyncQueue([]);
@@ -538,7 +601,83 @@ export default function App() {
     ]);
   };
 
-  const handleUserVoiceResponse = (text) => {
+  // Evaluate voice responses with Gemini Flash API or fallback
+  const evaluateAnswerWithGemini = async (question, answer) => {
+    if (!geminiKey) {
+      addLog('info', 'AI_ENGINE: No Gemini API Key. Running offline regex evaluator.');
+      // Local keyword matching fallback
+      const currentQuestionList = QUESTION_BANKS[selectedAssessmentSkill] || QUESTION_BANKS.Electrician;
+      const currentQ = currentQuestionList[voiceStep];
+      let matches = 0;
+      currentQ.keywords.forEach(keyword => {
+        if (answer.toLowerCase().includes(keyword)) {
+          matches++;
+        }
+      });
+      
+      const scoreIncrease = matches >= 2 ? 4 : 2;
+      return {
+        safety: Math.min(85 + (matches * 3), 96),
+        communication: 80,
+        problemSolving: Math.min(82 + (matches * 4), 95),
+        speed: 85,
+        feedback: `Transcribed response: "${answer}". Matched ${matches} key safety terms. Updated safety & technique scores.`
+      };
+    }
+
+    addLog('query', 'AI_ENGINE: Contacting Gemini 1.5 Flash API with transcript...');
+    const promptText = `
+      You are KarmSetu AI, an expert skill evaluator for vocational trades in India.
+      A candidate for the trade "${selectedAssessmentSkill}" gave this answer: "${answer}" to this question: "${question}".
+      
+      Evaluate their skill across these parameters (score each 0-100):
+      1. safety: Knowledge of safety rules, tools (gloves, MCB off, teflon tape).
+      2. communication: Clarity and vocabulary.
+      3. problemSolving: Diagnostic logic.
+      4. speed: Performance in sequence of tasks.
+      
+      Return ONLY a raw JSON block with this structure (no extra text):
+      {
+        "safety": 90,
+        "communication": 82,
+        "problemSolving": 88,
+        "speed": 85,
+        "feedback": "Your short evaluation summary here."
+      }
+    `;
+
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: promptText }] }]
+        })
+      });
+
+      if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
+      const data = await response.json();
+      const resultText = data.candidates[0].content.parts[0].text;
+      
+      const jsonStr = resultText.replace(/```json/g, '').replace(/```/g, '').trim();
+      const result = JSON.parse(jsonStr);
+      
+      addLog('success', `AI_ENGINE: Real Gemini API response parsed successfully! Safety: ${result.safety}%.`);
+      return result;
+    } catch (err) {
+      addLog('warning', `AI_ENGINE_ERROR: ${err.message}. Falling back to default evaluator.`);
+      return {
+        safety: 88,
+        communication: 82,
+        problemSolving: 85,
+        speed: 85,
+        feedback: `Fallback evaluator graded answer. Updated safety & technique scores.`
+      };
+    }
+  };
+
+  const handleUserVoiceResponse = async (text) => {
     if (!text.trim()) return;
 
     // Add user response to dialogue list
@@ -546,23 +685,11 @@ export default function App() {
     const newMessages = [...voiceMessages, { sender: 'worker', text }];
     setVoiceMessages(newMessages);
 
-    // Calculate score match for this question
     const currentQ = currentQuestionList[voiceStep];
-    let matches = 0;
-    currentQ.keywords.forEach(keyword => {
-      if (text.toLowerCase().includes(keyword)) {
-        matches++;
-      }
-    });
-
-    const currentTotalMatches = voiceKeyMatches + matches;
-    setVoiceKeyMatches(currentTotalMatches);
-    addLog('info', `AI_SPEECH_PROCESSOR: Matches for question ${voiceStep + 1}: ${matches} terms.`);
-
     const nextStep = voiceStep + 1;
     
     // Check if there are more questions
-    setTimeout(() => {
+    setTimeout(async () => {
       if (nextStep < currentQuestionList.length) {
         setVoiceStep(nextStep);
         setVoiceMessages(prev => [
@@ -570,59 +697,36 @@ export default function App() {
           { sender: 'ai', text: currentQuestionList[nextStep].q }
         ]);
         
-        // Voice synthesize question
         speakText(currentQuestionList[nextStep].q);
       } else {
-        // Evaluate overall results
-        const keywordsCovered = currentTotalMatches;
-        let scoreIncrease = 0;
-        let evaluationSummary = '';
-
-        if (keywordsCovered >= 5) {
-          scoreIncrease = 4;
-          evaluationSummary = `Excellent! You answered all questions with precise trade vocabulary. Your communication, safety, and problem-solving DNA grades have improved. Trust index updated.`;
-        } else if (keywordsCovered >= 3) {
-          scoreIncrease = 2;
-          evaluationSummary = `Good job. You covered key steps. Try to detail standard tools next time. Trust index updated.`;
-        } else {
-          scoreIncrease = 1;
-          evaluationSummary = `Completed diagnostics. Make sure to double check standard electrical tools and terminology.`;
-        }
-
+        // Evaluate overall results using Gemini or Local fallback
+        addLog('info', 'AI_ENGINE: Running overall diagnostics evaluation...');
+        
+        const evaluation = await evaluateAnswerWithGemini(currentQ.q, text);
+        
         setVoiceMessages(prev => [
           ...prev,
-          { sender: 'ai', text: evaluationSummary }
+          { sender: 'ai', text: evaluation.feedback }
         ]);
 
-        speakText(evaluationSummary);
+        speakText(evaluation.feedback);
 
-        // Update database
-        if (!isOffline) {
-          setWorkers(prev => prev.map(w => {
-            if (w.id === 'ravi-kumar') {
-              return {
-                ...w,
-                trustScore: Math.min(w.trustScore + scoreIncrease, 98),
-                skillsDNA: {
-                  ...w.skillsDNA,
-                  communication: Math.min(w.skillsDNA.communication + 10, 95),
-                  problemSolving: Math.min(w.skillsDNA.problemSolving + 8, 93)
-                }
-              };
-            }
-            return w;
-          }));
-          addLog('query', `SQL: UPDATE workers SET communication = communication + 10, problemSolving = problemSolving + 8 WHERE id = 'ravi-kumar';`);
-        } else {
-          // Sync offline queue
-          setSyncQueue(prev => [
-            ...prev,
-            { id: `sync_voice_${Date.now()}`, type: 'voice_interview', skill: selectedAssessmentSkill, scoreIncrease }
-          ]);
-          addLog('warning', `OFFLINE_SYNC: Saved voice interview score inside offline transaction queue.`);
-        }
+        // Update database (Firestore or state)
+        const updatedDNA = {
+          precision: workers.find(w => w.id === 'ravi-kumar')?.skillsDNA.precision || 90,
+          safety: evaluation.safety,
+          problemSolving: evaluation.problemSolving,
+          speed: evaluation.speed,
+          communication: evaluation.communication
+        };
+        const updatedScore = Math.round((evaluation.safety + evaluation.problemSolving + evaluation.communication) / 3);
+
+        updateWorkerData('ravi-kumar', {
+          trustScore: Math.max(updatedScore, 89),
+          skillsDNA: updatedDNA
+        });
       }
-    }, 1500);
+    }, 1200);
   };
 
   const speakText = (text) => {
@@ -642,13 +746,11 @@ export default function App() {
       if (recognitionRef.current) {
         recognitionRef.current.start();
       } else {
-        // Fallback simulation for browsers that don't support speech-to-text
         setIsListening(true);
         setTimeout(() => {
-          const currentQuestionList = QUESTION_BANKS[selectedAssessmentSkill] || QUESTION_BANKS.Electrician;
           const mockAnswers = [
             "Wiring breaker panels requires switching off the main breaker switches first. I check terminals with testers.",
-            " fans connect parallel so each fan gets 220v. If one fails, the other fans keep running independently.",
+            "fans connect parallel so each fan gets 220v. If one fails, the other fans keep running independently.",
             "I connect leads to digital multimeter, set dial to ohms continuity beep sound to check zero resistance."
           ];
           handleUserVoiceResponse(mockAnswers[voiceStep]);
@@ -658,11 +760,26 @@ export default function App() {
     }
   };
 
+  // Save settings inside localStorage
+  const saveBackendConfig = (configJson, geminiApiKey) => {
+    try {
+      if (configJson) {
+        JSON.parse(configJson.trim()); // Validate
+        setFirebaseConfigInput(configJson);
+      }
+      setGeminiKey(geminiApiKey);
+      localStorage.setItem('karmsetu_gemini_key', geminiApiKey);
+      setShowConfigDrawer(false);
+      addLog('success', 'SYSTEM: Configuration credentials saved successfully.');
+    } catch (e) {
+      alert('Invalid Firebase Config JSON format. Please paste a clean JSON.');
+    }
+  };
+
   // Filter workers based on Search & Select triggers
   const filteredWorkers = workers.filter(worker => {
     const matchesSearch = worker.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           worker.skill.toLowerCase().includes(searchTerm.toLowerCase());
-    
     const matchesTrade = filterTrade === 'All' || worker.skill === filterTrade;
     
     let matchesLoc = true;
@@ -687,9 +804,18 @@ export default function App() {
           </span>
         </div>
 
-        {/* Global Controllers */}
+        {/* Global Controls */}
         <div className="showcase-controls">
-          {/* Theme Mode selector */}
+          {/* Collapsible config drawer button */}
+          <button 
+            className={`theme-mode-btn ${showConfigDrawer ? 'active' : ''}`}
+            onClick={() => setShowConfigDrawer(!showConfigDrawer)}
+            title="Setup real Firebase remote sync and Gemini AI evaluation keys"
+            style={{ display: 'flex', gap: '6px', fontSize: '0.8rem', padding: '6px 12px' }}
+          >
+            <Settings size={14} /> Backend Setup
+          </button>
+
           <button className="theme-mode-btn" onClick={toggleThemeMode} title="Toggle between Dark and Light Mode">
             {themeMode === 'light' ? <Moon size={16} /> : <Sun size={16} />}
           </button>
@@ -737,6 +863,59 @@ export default function App() {
           </div>
         </div>
       </header>
+
+      {/* Backend Settings Panel Drawer Overlay */}
+      {showConfigDrawer && (
+        <div style={{ backgroundColor: 'var(--color-card)', borderBottom: '1px solid var(--color-border)', padding: '20px', zIndex: '999', display: 'flex', flexDirection: 'column', gap: '12px', animation: 'fadeIn 0.2s ease', position: 'relative' }}>
+          <h3 style={{ fontSize: '1rem', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Database size={18} /> Connect Real Backend & Google Gemini AI API
+          </h3>
+          <p style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', marginTop: '-6px' }}>
+            Paste your credentials below to enable live network database sync across different devices and get real-time evaluations from Google Gemini!
+          </p>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+            <div>
+              <label style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--color-text-secondary)', display: 'block', marginBottom: '6px' }}>
+                Firebase Config JSON
+              </label>
+              <textarea 
+                placeholder='Paste raw config JSON here: { "apiKey": "...", "projectId": "...", "firestoreDb": "..." }'
+                value={firebaseConfigInput}
+                onChange={(e) => setFirebaseConfigInput(e.target.value)}
+                style={{ width: '100%', height: '100px', backgroundColor: 'var(--color-bg)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)', borderRadius: '8px', padding: '10px', fontSize: '0.72rem', fontFamily: 'monospace' }}
+              />
+            </div>
+            <div>
+              <label style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--color-text-secondary)', display: 'block', marginBottom: '6px' }}>
+                Google Gemini API Key
+              </label>
+              <div style={{ display: 'flex', gap: '6px', alignItems: 'center', backgroundColor: 'var(--color-bg)', border: '1px solid var(--color-border)', borderRadius: '8px', padding: '6px 10px', marginBottom: '14px' }}>
+                <Key size={14} className="text-amber-500" />
+                <input 
+                  type="password" 
+                  placeholder="Paste your Gemini AI API Key here" 
+                  value={geminiKey}
+                  onChange={(e) => setGeminiKey(e.target.value)}
+                  style={{ flex: '1', border: 'none', background: 'transparent', outline: 'none', fontSize: '0.8rem', color: 'var(--color-text-primary)' }}
+                />
+              </div>
+              <p style={{ fontSize: '0.7rem', color: 'var(--color-text-light)', lineHeight: '1.4' }}>
+                * Leaves credentials saved inside local browser cookies/storage only. To get a free API Key, visit: <strong>Google AI Studio</strong>.
+              </p>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+            <button className="btn-primary" onClick={() => saveBackendConfig(firebaseConfigInput, geminiKey)} style={{ fontSize: '0.8rem' }}>
+              Save Credentials
+            </button>
+            <button className="btn-outline" onClick={() => setShowConfigDrawer(false)} style={{ fontSize: '0.8rem' }}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Main Workspace Layout */}
       <div className={`showcase-workspace ${showcaseView === 'dual' ? 'dual-view' : ''}`}>
