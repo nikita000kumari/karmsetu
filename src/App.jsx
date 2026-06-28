@@ -254,7 +254,7 @@ export default function App() {
     { type: 'query', text: 'SQL: SELECT * FROM workers ORDER BY trustScore DESC;' },
     { type: 'success', text: 'SQL: Loaded 3 verified profiles from cached storage.' }
   ]);
-  const [consoleOpen, setConsoleOpen] = useState(true);
+  const [consoleOpen, setConsoleOpen] = useState(false);
 
   // Video Assessment states
   const [cameraActive, setCameraActive] = useState(false);
