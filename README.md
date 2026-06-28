@@ -1,16 +1,41 @@
-# React + Vite
+# KarmSetu 🌉
+> **"Skills deserve trust, not just certificates."**
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Empower India's informal workforce by creating a trusted digital identity based on demonstrated skills rather than paperwork. Mapped directly to NSDC levels and PMKVY standard checks.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Key Features
 
-## React Compiler
+* **Dual-View Dashboard**: Smartphone preview frame (Worker App) and Desktop Workspace (Employer Portal) side-by-side.
+* **Skill DNA**: Interactive visual parameters tracking trade precision, safety practices, speed, problem solving, and communication.
+* **AI Vision Skill Assessment**: Live camera diagnostics overlay matching trade-specific guidelines (Electrician, Plumber, Tailor, Carpenter).
+* **AI Speech diagnostics**: ChatGPT-style voice interview. Transcribes speech and evaluates safety answers dynamically using Google Gemini API.
+* **Cryptographic Passports**: Glassmorphic digital credential card with secure SVG QR code and DigiLocker/Aadhaar verification tags.
+* **Employer Directory Console**: Real-time filters (location, trade), full CV generators, and hiring offer triggers.
+* **Offline Database Cache**: Toggle offline mode to cache assessment results in local MMKV queues and sync automatically when connection is restored.
+* **SQLite Sync Console**: Visual logging feed printing real database queries and transaction outputs.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the Oxlint configuration
+## 🛠️ Setup & Local Development
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+1. **Clone & Install**:
+   ```bash
+   git clone https://github.com/nikita000kumari/karmsetu.git
+   cd karmsetu
+   npm install
+   ```
+2. **Start Dev Server**:
+   ```bash
+   npm run dev
+   ```
+3. **Open Browser**: Navigate to `http://localhost:5173/`
+
+---
+
+## 🔗 Cloud Backend & AI Integration
+
+Click **Backend Setup** inside the top header to configure:
+1. **Firebase Firestore**: Paste your web project config JSON to sync data in real-time across multiple devices.
+2. **Google Gemini API**: Paste your API key from Google AI Studio to run real generative AI voice grading!
