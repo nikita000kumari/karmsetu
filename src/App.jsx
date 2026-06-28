@@ -74,56 +74,24 @@ const QUESTION_BANKS = {
     {
       q: "Distribution Box: What is the first safety action you take before stripping wire inside a distribution panel?",
       keywords: ["power off", "mains", "mcb", "voltage", "tester", "gloves", "mains switch"]
-    },
-    {
-      q: "Circuit Design: Can you describe why we connect household ceiling fans in a parallel circuit instead of series?",
-      keywords: ["voltage", "independent", "control", "series", "parallel", "resistance", "fuse"]
-    },
-    {
-      q: "Fault Finding: How do you identify a short circuit in a system using a digital multimeter?",
-      keywords: ["resistance", "continuity", "beep", "multimeter", "zero", "ohms", "leads"]
     }
   ],
   Plumber: [
     {
       q: "Leaks: What precaution do you take before assembling a threaded pipe joint to prevent micro leaks?",
       keywords: ["teflon", "tape", "sealant", "thread", "clean", "grease", "tighten"]
-    },
-    {
-      q: "Blockage: What tool and approach do you use to clear a heavy fat deposit inside a main sewer pipe?",
-      keywords: ["plunger", "drain snake", "chemical", "auger", "pressure", "water jet"]
-    },
-    {
-      q: "System setup: How do you verify the pressure levels in a new PPR water supply piping network?",
-      keywords: ["pressure gauge", "pump", "psi", "leakage", "water test", "bar"]
     }
   ],
   Tailor: [
     {
       q: "Fabric Prep: Why is it important to pre-wash linen or heavy cotton fabrics before patterns are drafted?",
       keywords: ["shrink", "shrinkage", "size", "iron", "measure", "fit", "stretch"]
-    },
-    {
-      q: "Machine safety: What adjustment is needed when switching from light silk to heavy canvas denim?",
-      keywords: ["needle", "tension", "thread", "stitch length", "presser foot", "speed"]
-    },
-    {
-      q: "Pattern cuts: What precaution do you take when layout out templates on a checkered fabric grid?",
-      keywords: ["match", "alignment", "grainline", "checks", "stripes", "seam allowance"]
     }
   ],
   Carpenter: [
     {
       q: "Timber Check: How do you identify if a teak plank has excessive moisture content before planning joints?",
       keywords: ["moisture meter", "weight", "warp", "dry", "humidity", "crack"]
-    },
-    {
-      q: "Joint Assembly: Describe the steps to prepare a flush mortise and tenon joint using hand tools.",
-      keywords: ["chisel", "saw", "mortise", "tenon", "glue", "clamp", "square", "measure"]
-    },
-    {
-      q: "Finishing: What sanding grit progression do you use to prepare a veneer surface for PU polish?",
-      keywords: ["grit", "sanding", "smooth", "veneer", "dust", "polish"]
     }
   ]
 };
@@ -209,10 +177,13 @@ export default function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [loginTab, setLoginTab] = useState('worker'); // worker | employer
 
-  // Worker navigation tab: dashboard | tests | qualifications | profile
-  const [workerActiveTab, setWorkerActiveTab] = useState('dashboard');
-  
-  // Employer navigation tab: directory | stats
+  // MVP Worker Flow wizard state: choose_trade | record_video | video_processing | voice_question | passport_generated
+  const [workerFlowStep, setWorkerFlowStep] = useState('choose_trade');
+
+  // Selected trade for the worker during signup
+  const [workerSelectedTrade, setWorkerSelectedTrade] = useState('Electrician');
+
+  // Employer active tab: directory | stats
   const [employerActiveTab, setEmployerActiveTab] = useState('directory');
 
   // Landing Page Interactive States
@@ -257,6 +228,9 @@ export default function App() {
   const [hiredWorkerId, setHiredWorkerId] = useState(null);
   const [showResume, setShowResume] = useState(false);
 
+  // QR Code Simulator scanner overlay
+  const [qrScannedCandidateId, setQrScannedCandidateId] = useState(null);
+
   // Cloud backend variables
   const [showConfig, setShowConfig] = useState(false);
   const [firebaseConfigInput, setFirebaseConfigInput] = useState(() => {
@@ -277,10 +251,8 @@ export default function App() {
 
   // Video Assessment states
   const [cameraActive, setCameraActive] = useState(false);
-  const [selectedAssessmentSkill, setSelectedAssessmentSkill] = useState('Electrician');
   const [recordingState, setRecordingState] = useState('idle');
   const [recordingSeconds, setRecordingSeconds] = useState(0);
-  const [assessmentStep, setAssessmentStep] = useState('camera');
   const [processingStages, setProcessingStages] = useState({
     tools: 'waiting',
     safety: 'waiting',
@@ -289,7 +261,6 @@ export default function App() {
   });
 
   // Voice Interview states
-  const [voiceStep, setVoiceStep] = useState(0);
   const [voiceMessages, setVoiceMessages] = useState([]);
   const [isListening, setIsListening] = useState(false);
   const [voiceInputText, setVoiceInputText] = useState('');
@@ -394,11 +365,10 @@ export default function App() {
     if (otpInput === '4821') {
       addLog('success', `AUTH: Successfully verified +91 ${phoneInput}. Session type: WORKER`);
       setUserRole('worker');
-      setWorkerActiveTab('dashboard');
+      setWorkerFlowStep('choose_trade');
       setPhoneInput('');
       setOtpInput('');
       setOtpSent(false);
-      startVoiceInterview(selectedAssessmentSkill);
     } else {
       alert('Demo Code is 4821');
     }
@@ -414,30 +384,7 @@ export default function App() {
     addLog('info', `AUTH: Revoked active session for ${userRole.toUpperCase()}. Redirected to login landing page.`);
     setUserRole('none');
     setShowLogin(false);
-  };
-
-  // Add a qualification logic
-  const handleAddQualification = (e) => {
-    e.preventDefault();
-    if (!newQualName.trim() || !newQualBody.trim() || !newQualCode.trim()) {
-      alert('Please fill out all qualification input fields.');
-      return;
-    }
-    const newQual = {
-      id: `qual-${Date.now()}`,
-      name: newQualName,
-      body: newQualBody,
-      code: newQualCode,
-      status: 'pending'
-    };
-    setQualList(prev => [...prev, newQual]);
-    addLog('query', `SQL: INSERT INTO qualifications (name, organization, certificate_id, status) VALUES ('${newQualName}', '${newQualBody}', '${newQualCode}', 'pending');`);
-    
-    // Reset fields
-    setNewQualName('');
-    setNewQualBody('');
-    setNewQualCode('');
-    alert('Qualification details uploaded successfully! Mapped to pending verification state.');
+    setQrScannedCandidateId(null);
   };
 
   // Skill Camera diagnostics guidelines
@@ -471,14 +418,14 @@ export default function App() {
     }
   };
 
-  const activeOverlay = getCameraGuidelines(selectedAssessmentSkill);
+  const activeOverlay = getCameraGuidelines(workerSelectedTrade);
 
   // Video Assessment webcam helpers
   const startCamera = async () => {
     setCameraActive(true);
     setRecordingState('idle');
     setRecordingSeconds(0);
-    addLog('info', `HARDWARE: Loading webcam device layer for ${selectedAssessmentSkill} verification...`);
+    addLog('info', `HARDWARE: Loading webcam device layer for ${workerSelectedTrade} verification...`);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
       if (videoRef.current) {
@@ -500,7 +447,7 @@ export default function App() {
 
   const startRecording = () => {
     setRecordingState('recording');
-    addLog('query', `SQL: INSERT INTO assessments (trade, type, status) VALUES ('${selectedAssessmentSkill}', 'video', 'recording');`);
+    addLog('query', `SQL: INSERT INTO assessments (trade, type, status) VALUES ('${workerSelectedTrade}', 'video', 'recording');`);
     let secs = 0;
     const interval = setInterval(() => {
       secs++;
@@ -515,7 +462,7 @@ export default function App() {
   const finishRecording = () => {
     setRecordingState('finished');
     stopCamera();
-    setAssessmentStep('processing');
+    setWorkerFlowStep('video_processing');
     simulateAIEngine();
   };
 
@@ -540,8 +487,10 @@ export default function App() {
             setProcessingStages(prev => ({ ...prev, workflow: 'done' }));
             
             setTimeout(() => {
-              setAssessmentStep('result');
               addLog('success', 'AI_ENGINE: Verification metrics scores generated.');
+              // Instantly initiate the follow-up voice interview questions list
+              startVoiceInterview(workerSelectedTrade);
+              setWorkerFlowStep('voice_question');
             }, 600);
           }, 1200);
         }, 1200);
@@ -549,32 +498,11 @@ export default function App() {
     }, 1200);
   };
 
-  const saveAssessment = () => {
-    const updatedDNA = {
-      precision: 93,
-      safety: 90,
-      problemSolving: 82,
-      speed: 91,
-      communication: 78
-    };
-    
-    updateWorkerProfile('ravi-kumar', {
-      trustScore: 92,
-      skillsDNA: updatedDNA,
-      verifiedSkills: Array.from(new Set([...workers.find(w => w.id === 'ravi-kumar')?.verifiedSkills || [], `${selectedAssessmentSkill} Level L4`, 'AI Video Approved']))
-    });
-
-    setWorkerActiveTab('dashboard');
-    setAssessmentStep('camera');
-    addLog('success', 'SYNC: Synchronized worker scorecard database successfully.');
-  };
-
   // Voice AI speech evaluators
   const startVoiceInterview = (trade) => {
     const list = QUESTION_BANKS[trade] || QUESTION_BANKS.Electrician;
-    setVoiceStep(0);
     setVoiceMessages([
-      { sender: 'ai', text: `Welcome to KarmSetu AI Voice Verification. Let's begin the safety check for the ${trade} trade.` },
+      { sender: 'ai', text: `Welcome to KarmSetu AI Voice Verification. Let's finish with one follow-up safety question for the ${trade} trade.` },
       { sender: 'ai', text: list[0].q }
     ]);
   };
@@ -582,38 +510,30 @@ export default function App() {
   const evaluateSpeech = async (question, answer) => {
     if (!geminiKey) {
       addLog('info', 'AI_ENGINE: No Gemini API Key. Running local keyword evaluator.');
-      const questions = QUESTION_BANKS[selectedAssessmentSkill] || QUESTION_BANKS.Electrician;
+      const questions = QUESTION_BANKS[workerSelectedTrade] || QUESTION_BANKS.Electrician;
       let matches = 0;
-      questions[voiceStep].keywords.forEach(word => {
+      questions[0].keywords.forEach(word => {
         if (answer.toLowerCase().includes(word)) matches++;
       });
       return {
-        safety: Math.min(84 + (matches * 4), 96),
+        safety: Math.min(84 + (matches * 6), 96),
         communication: 80,
-        problemSolving: Math.min(80 + (matches * 5), 94),
+        problemSolving: Math.min(80 + (matches * 7), 94),
         speed: 85,
-        feedback: `Offline grade: Transcribed "${answer}". Matched ${matches} keywords. Updated scorecard.`
+        feedback: `Transcribed response: "${answer}". Safety requirements checked out. updated scorecard metrics.`
       };
     }
 
     addLog('query', 'AI_ENGINE: Querying Gemini API...');
     const promptText = `
-      You are KarmSetu AI, an expert skill evaluator for vocational trades in India.
-      Evaluate this candidate response: "${answer}" to this question: "${question}".
-      
-      Score parameters 0-100:
-      1. safety (Insulated tools, switching power off, thread tapes)
-      2. communication (vocabulary)
-      3. problemSolving (diagnostics)
-      4. speed
-      
+      Evaluate this candidate response: "${answer}" to this trade question: "${question}".
       Return ONLY a raw JSON block:
       {
         "safety": 92,
         "communication": 80,
         "problemSolving": 88,
         "speed": 85,
-        "feedback": "Your short evaluation summary here."
+        "feedback": "Custom evaluation feedback sentence here."
       }
     `;
 
@@ -637,45 +557,47 @@ export default function App() {
 
   const handleVoiceMessageSubmit = async (text) => {
     if (!text.trim()) return;
-    const questions = QUESTION_BANKS[selectedAssessmentSkill] || QUESTION_BANKS.Electrician;
+    const questions = QUESTION_BANKS[workerSelectedTrade] || QUESTION_BANKS.Electrician;
     const newChat = [...voiceMessages, { sender: 'worker', text }];
     setVoiceMessages(newChat);
 
-    const currentQ = questions[voiceStep];
-    const nextQStep = voiceStep + 1;
+    const currentQ = questions[0];
 
     setTimeout(async () => {
-      if (nextQStep < questions.length) {
-        setVoiceStep(nextQStep);
-        setVoiceMessages(prev => [...prev, { sender: 'ai', text: questions[nextQStep].q }]);
-        if (window.speechSynthesis) {
-          window.speechSynthesis.cancel();
-          window.speechSynthesis.speak(new SpeechSynthesisUtterance(questions[nextQStep].q));
-        }
-      } else {
-        addLog('info', 'AI_ENGINE: Formulating speech test grade summary...');
-        const evaluation = await evaluateSpeech(currentQ.q, text);
-        setVoiceMessages(prev => [...prev, { sender: 'ai', text: evaluation.feedback }]);
-        
-        if (window.speechSynthesis) {
-          window.speechSynthesis.cancel();
-          window.speechSynthesis.speak(new SpeechSynthesisUtterance(evaluation.feedback));
-        }
-
-        const updatedDNA = {
-          precision: workers.find(w => w.id === 'ravi-kumar')?.skillsDNA?.precision || 90,
-          safety: evaluation.safety,
-          problemSolving: evaluation.problemSolving,
-          speed: evaluation.speed,
-          communication: evaluation.communication
-        };
-        const avgScore = Math.round((evaluation.safety + evaluation.problemSolving + evaluation.communication) / 3);
-
-        updateWorkerProfile('ravi-kumar', {
-          trustScore: Math.max(avgScore, 89),
-          skillsDNA: updatedDNA
-        });
+      addLog('info', 'AI_ENGINE: Formulating speech test grade summary...');
+      const evaluation = await evaluateSpeech(currentQ.q, text);
+      
+      setVoiceMessages(prev => [...prev, { sender: 'ai', text: evaluation.feedback }]);
+      
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(new SpeechSynthesisUtterance(evaluation.feedback));
       }
+
+      // Generate the verified passport card details
+      const updatedDNA = {
+        precision: 93,
+        safety: evaluation.safety,
+        problemSolving: evaluation.problemSolving,
+        speed: evaluation.speed,
+        communication: evaluation.communication
+      };
+      
+      const avgScore = Math.round((evaluation.safety + evaluation.problemSolving + evaluation.communication) / 3);
+
+      updateWorkerProfile('ravi-kumar', {
+        skill: workerSelectedTrade,
+        trustScore: Math.max(avgScore, 90),
+        skillsDNA: updatedDNA,
+        verifiedSkills: Array.from(new Set([...workers.find(w => w.id === 'ravi-kumar')?.verifiedSkills || [], `${workerSelectedTrade} Level L4`, 'AI Video Approved']))
+      });
+
+      addLog('success', 'SYNC: Generated digital Skill Passport with verified QR code mappings.');
+      
+      setTimeout(() => {
+        setWorkerFlowStep('passport_generated');
+      }, 1500);
+
     }, 1200);
   };
 
@@ -704,15 +626,25 @@ export default function App() {
     } else {
       setIsListening(true);
       setTimeout(() => {
-        const mockResponses = [
-          "I switch off the main MCB breaker switches, use test leads to check voltage, and wear heavy rubber gloves.",
-          "Parallel circuits divide the current, so if one fan fails, the other fans keep running on 220V voltage.",
-          "We set digital multimeter dial to continuity ohms beep sound and look for zero resistance values."
-        ];
-        handleVoiceMessageSubmit(mockResponses[voiceStep]);
+        const mockResponses = {
+          Electrician: "I switch off the main MCB breaker switches, use test leads to check voltage, and wear heavy rubber gloves.",
+          Plumber: "I always use Teflon tape on threads clockwise, clean them, and tighten with a wrench.",
+          Tailor: "I pre-wash linen cotton fabrics before pattern drafts to prevent fabric shrinkage.",
+          Carpenter: "I check timber moisture with a digital moisture meter and ensure levels are below 12%."
+        };
+        handleVoiceMessageSubmit(mockResponses[workerSelectedTrade] || mockResponses.Electrician);
         setIsListening(false);
       }, 2500);
     }
+  };
+
+  const handleSimulatedQRScan = () => {
+    addLog('success', `QR_SCANNER: Successfully scanned Skill Passport. Decoded candidate: ravi-kumar`);
+    setUserRole('employer');
+    setEmployerActiveTab('directory');
+    setSelectedWorkerId('ravi-kumar');
+    setQrScannedCandidateId('ravi-kumar');
+    setHiredWorkerId(null);
   };
 
   const handleSaveBackendConfig = (jsonInput, keyInput) => {
@@ -771,39 +703,6 @@ export default function App() {
               onClick={() => setEmployerActiveTab('stats')}
             >
               <Activity size={14} /> Stats Index
-            </button>
-          </nav>
-        )}
-
-        {userRole === 'worker' && (
-          <nav className="nav-tabs">
-            <button 
-              className={`nav-tab-btn ${workerActiveTab === 'dashboard' ? 'active' : ''}`}
-              onClick={() => setWorkerActiveTab('dashboard')}
-            >
-              <Compass size={14} /> Dashboard
-            </button>
-            <button 
-              className={`nav-tab-btn ${workerActiveTab === 'tests' ? 'active' : ''}`}
-              onClick={() => {
-                setWorkerActiveTab('tests');
-                setAssessmentStep('camera');
-                startVoiceInterview(selectedAssessmentSkill);
-              }}
-            >
-              <Video size={14} /> AI Tests
-            </button>
-            <button 
-              className={`nav-tab-btn ${workerActiveTab === 'qualifications' ? 'active' : ''}`}
-              onClick={() => setWorkerActiveTab('qualifications')}
-            >
-              <BookOpen size={14} /> Qualifications
-            </button>
-            <button 
-              className={`nav-tab-btn ${workerActiveTab === 'profile' ? 'active' : ''}`}
-              onClick={() => setWorkerActiveTab('profile')}
-            >
-              <User size={14} /> Profile Settings
             </button>
           </nav>
         )}
@@ -1190,9 +1089,8 @@ export default function App() {
                   <span 
                     onClick={() => {
                       setUserRole('worker');
-                      setWorkerActiveTab('dashboard');
+                      setWorkerFlowStep('choose_trade');
                       addLog('success', 'AUTH: Bypassed worker authentication via Quick Login.');
-                      startVoiceInterview(selectedAssessmentSkill);
                     }}
                     style={{ fontSize: '0.78rem', color: 'var(--color-primary)', textAlign: 'center', cursor: 'pointer', fontWeight: 600, textDecoration: 'underline' }}
                   >
@@ -1240,27 +1138,220 @@ export default function App() {
         )}
 
         {/* ======================================================== */}
-        {/* VIEW: WORKER PORTAL DASHBOARD VIEW                        */}
+        {/* VIEW: WORKER ASSESSMENT MVP WIZARD FLOW                  */}
         {/* ======================================================== */}
         {userRole === 'worker' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '24px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '24px', flex: 1 }}>
             
-            {/* Dashboard Tab */}
-            {workerActiveTab === 'dashboard' && (
-              <div className="dashboard-grid">
-                
-                {/* Left content: Trust score dashboard */}
-                <div className="dashboard-card">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h3 style={{ fontSize: '1.05rem', fontWeight: 800 }}>Skill Index Overview</h3>
-                    <div className="govt-verified-pill">
-                      <CheckCircle2 size={11} style={{ color: 'var(--color-secondary)' }} /> Aadhaar Verified e-KYC
+            {/* Step Wizard Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--color-border)', paddingBottom: '12px', marginBottom: '10px' }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--color-primary)' }}>Worker Skills Assessment Wizard</h3>
+              <div style={{ display: 'flex', gap: '6px', fontSize: '0.72rem', color: 'var(--color-text-secondary)', fontWeight: 600 }}>
+                <span style={{ color: workerFlowStep === 'choose_trade' ? 'var(--color-primary)' : '' }}>1. Trade</span> • 
+                <span style={{ color: workerFlowStep === 'record_video' ? 'var(--color-primary)' : '' }}>2. Camera Drill</span> • 
+                <span style={{ color: workerFlowStep === 'video_processing' ? 'var(--color-primary)' : '' }}>3. AI Score</span> • 
+                <span style={{ color: workerFlowStep === 'voice_question' ? 'var(--color-primary)' : '' }}>4. AI Voice</span> • 
+                <span style={{ color: workerFlowStep === 'passport_generated' ? 'var(--color-primary)' : '' }}>5. Skill Passport</span>
+              </div>
+            </div>
+
+            {/* WIZARD STEP 1: Choose a trade */}
+            {workerFlowStep === 'choose_trade' && (
+              <div className="dashboard-card" style={{ maxWidth: '600px', margin: '20px auto', width: '100%' }}>
+                <div style={{ textAlign: 'center' }}>
+                  <Award size={32} className="text-blue-500" style={{ margin: '0 auto 10px auto' }} />
+                  <h4 style={{ fontSize: '1.1rem', fontWeight: 800 }}>Choose Your Trade Category</h4>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginTop: '4px' }}>Select the skill you want to verify on camera.</p>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '10px' }}>
+                  {[
+                    { id: 'Electrician', label: 'Electrician (⚡)', desc: 'Wiring boards, MCBs & Switchboxes checks' },
+                    { id: 'Plumber', label: 'Plumber (🚰)', desc: 'Thread winding pipes & Pressure seal joints' },
+                    { id: 'Tailor', label: 'Tailor (🧵)', desc: 'Draft outlines & Machine stitch lines' },
+                    { id: 'Carpenter', label: 'Carpenter (🪚)', desc: 'Timber joints & chisel alignment checks' }
+                  ].map(tr => (
+                    <div 
+                      key={tr.id}
+                      onClick={() => setWorkerSelectedTrade(tr.id)}
+                      style={{ 
+                        border: '1.5px solid', 
+                        borderColor: workerSelectedTrade === tr.id ? 'var(--color-primary)' : 'var(--color-border)',
+                        backgroundColor: workerSelectedTrade === tr.id ? 'var(--color-primary-light)' : 'var(--color-card)',
+                        padding: '16px',
+                        borderRadius: '10px',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <strong style={{ display: 'block', fontSize: '0.85rem', color: workerSelectedTrade === tr.id ? 'var(--color-primary)' : '' }}>{tr.label}</strong>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', display: 'block', marginTop: '4px' }}>{tr.desc}</span>
                     </div>
+                  ))}
+                </div>
+
+                <button 
+                  className="btn-primary" 
+                  style={{ width: '100%', justifyContent: 'center', marginTop: '10px' }}
+                  onClick={() => {
+                    setWorkerFlowStep('record_video');
+                    startCamera();
+                  }}
+                >
+                  Start Camera Assessment <ArrowRight size={14} />
+                </button>
+              </div>
+            )}
+
+            {/* WIZARD STEP 2: Record Video Demonstration */}
+            {workerFlowStep === 'record_video' && (
+              <div className="camera-card" style={{ maxWidth: '640px', margin: '0 auto', width: '100%' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--color-border)', paddingBottom: '10px' }}>
+                  <div>
+                    <h3 style={{ fontSize: '0.95rem', fontWeight: 700 }}>Record {workerSelectedTrade} Demo</h3>
+                    <p style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', marginTop: '2px' }}>Verify compliance criteria on camera</p>
+                  </div>
+                  <span style={{ fontSize: '0.72rem', backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary)', padding: '2px 8px', borderRadius: '4px', fontWeight: 700 }}>
+                    5-Sec Shutter Drill
+                  </span>
+                </div>
+
+                <div className="camera-stream-box" style={{ height: '300px' }}>
+                  {cameraActive ? (
+                    <video ref={videoRef} style={{ width: '100%', height: '100%', objectFit: 'cover' }} autoPlay playsInline muted></video>
+                  ) : (
+                    <div style={{ textAlign: 'center', color: 'var(--color-text-secondary)', padding: '20px' }}>
+                      <p style={{ fontSize: '0.8rem' }}>Webcam streaming simulator online.</p>
+                      <p style={{ fontSize: '0.72rem', color: 'var(--color-text-light)', marginTop: '2px' }}>Click record button to initiate.</p>
+                    </div>
+                  )}
+
+                  <div className="camera-crop-overlay">
+                    <div className="camera-scan-bar"></div>
+                    {recordingState === 'recording' && (
+                      <div style={{ color: '#EF4444', fontSize: '0.72rem', fontWeight: 700, background: 'rgba(0,0,0,0.6)', padding: '2px 8px', borderRadius: '4px', position: 'absolute', top: '10px', right: '10px' }}>
+                        RECORDING {recordingSeconds}s
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div style={{ backgroundColor: 'var(--color-bg)', padding: '12px', borderRadius: '8px', border: '1px solid var(--color-border)', fontSize: '0.75rem' }}>
+                  <strong>Diagnostic Target: {activeOverlay.title}</strong>
+                  <p style={{ color: 'var(--color-text-secondary)', marginTop: '2px', fontSize: '0.7rem' }}>{activeOverlay.desc}</p>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  {!cameraActive && recordingState === 'idle' ? (
+                    <button className="btn-secondary" onClick={startCamera}>
+                      Activate Camera Feed
+                    </button>
+                  ) : (
+                    <button 
+                      className={`camera-record-btn ${recordingState === 'recording' ? 'recording' : ''}`}
+                      onClick={recordingState === 'idle' ? startRecording : finishRecording}
+                    ></button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* WIZARD STEP 3: AI Video Processing screen */}
+            {workerFlowStep === 'video_processing' && (
+              <div className="camera-card" style={{ maxWidth: '500px', margin: '40px auto', width: '100%', textAlign: 'center' }}>
+                <div style={{ padding: '30px 20px', display: 'flex', flexDirection: 'column', gap: '20px', alignItems: 'center' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', border: '3px solid var(--color-primary-light)', borderTopColor: 'var(--color-secondary)', animation: 'spin 1s linear infinite' }}></div>
+                  <div>
+                    <h3 style={{ fontSize: '1.05rem', fontWeight: 800 }}>AI Vision Analyzing Video</h3>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginTop: '2px' }}>Checking frames for NSQF Level 4 compliance...</p>
                   </div>
 
-                  <div className="trust-index-banner">
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', maxWidth: '280px', textAlign: 'left', marginTop: '10px' }}>
+                    {[
+                      { name: activeOverlay.checklist[0], stage: processingStages.tools },
+                      { name: activeOverlay.checklist[1], stage: processingStages.safety },
+                      { name: activeOverlay.checklist[2], stage: processingStages.technique },
+                      { name: activeOverlay.checklist[3], stage: processingStages.workflow }
+                    ].map((step, idx) => (
+                      <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.78rem', opacity: step.stage === 'waiting' ? 0.4 : 1 }}>
+                        <div style={{ width: '16px', height: '16px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                                      backgroundColor: step.stage === 'done' ? 'var(--color-secondary)' : 'var(--color-border)', color: '#fff', fontSize: '8px' }}>
+                          {step.stage === 'done' ? '✓' : ''}
+                        </div>
+                        <span>{step.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* WIZARD STEP 4: AI Voice Follow-up Question */}
+            {workerFlowStep === 'voice_question' && (
+              <div className="voice-card" style={{ maxWidth: '600px', margin: '10px auto', width: '100%' }}>
+                <div style={{ borderBottom: '1px solid var(--color-border)', paddingBottom: '10px', marginBottom: '10px' }}>
+                  <h3 style={{ fontSize: '0.95rem', fontWeight: 700 }}>AI Voice Follow-up Interview</h3>
+                  <p style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', marginTop: '2px' }}>Answer verbally or type. AI will evaluate safety practices.</p>
+                </div>
+
+                <div className="voice-chat-box" style={{ height: '200px' }}>
+                  {voiceMessages.map((msg, idx) => (
+                    <div key={idx} className={`chat-bubble ${msg.sender}`}>
+                      {msg.text}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="voice-actions-footer" style={{ borderTop: '1px solid var(--color-border)', paddingTop: '14px', marginTop: '10px' }}>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', fontWeight: 600, display: 'block', marginBottom: '8px', textAlign: 'center' }}>
+                    {isListening ? '🎙 Listening... Speak your safety response now.' : 'Click mic to answer verbally, or type below.'}
+                  </span>
+
+                  <button className={`mic-btn-circle ${isListening ? 'listening' : ''}`} onClick={toggleMicListener} style={{ margin: '0 auto 12px auto' }}>
+                    <Mic size={20} />
+                  </button>
+
+                  <div style={{ display: 'flex', width: '100%', gap: '6px' }}>
+                    <input 
+                      type="text" 
+                      placeholder="Type your safety explanation here (fast simulator option)..." 
+                      value={voiceInputText}
+                      onChange={(e) => setVoiceInputText(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          handleVoiceMessageSubmit(voiceInputText);
+                          setVoiceInputText('');
+                        }
+                      }}
+                      style={{ flex: 1, backgroundColor: 'var(--color-bg)', border: '1px solid var(--color-border)', color: 'var(--color-text-primary)', padding: '8px 12px', borderRadius: '6px', fontSize: '0.78rem', outline: 'none' }}
+                    />
+                    <button className="btn-secondary" style={{ padding: '8px 16px' }} onClick={() => {
+                      handleVoiceMessageSubmit(voiceInputText);
+                      setVoiceInputText('');
+                    }}>
+                      Submit Answer
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* WIZARD STEP 5: Skill Passport Generated */}
+            {workerFlowStep === 'passport_generated' && (
+              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '20px', maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
+                
+                {/* Score Summary */}
+                <div className="dashboard-card">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h3 style={{ fontSize: '1.05rem', fontWeight: 800 }}>Verification Scores</h3>
+                    <span className="govt-verified-pill" style={{ backgroundColor: 'var(--color-secondary-light)', color: '#065F46' }}>
+                      ✓ Verified L4
+                    </span>
+                  </div>
+
+                  <div className="trust-index-banner" style={{ background: 'linear-gradient(135deg, var(--color-primary) 0%, #1D4ED8 100%)' }}>
                     <div>
-                      <span style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.5px' }}>GLOBAL TRUST SCORE</span>
+                      <span style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.5px' }}>GLOBAL TRUST SCORE</span>
                       <h2 style={{ fontSize: '2.5rem', fontWeight: 800, lineHeight: 1, marginTop: '4px' }}>
                         {raviWorker?.trustScore} <span style={{ fontSize: '1rem', opacity: 0.7 }}>/ 100</span>
                       </h2>
@@ -1272,24 +1363,16 @@ export default function App() {
                     </div>
                   </div>
 
-                  <div className="dashboard-alert" onClick={() => setWorkerActiveTab('tests')}>
-                    <div>
-                      <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--color-text-secondary)', display: 'block' }}>RECOMMENDED DRILL</span>
-                      <strong style={{ fontSize: '0.8rem' }}>Complete {selectedAssessmentSkill} Safety verification check</strong>
-                    </div>
-                    <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--color-primary)' }}>+5 Trust Index</span>
-                  </div>
-
                   {/* Skill DNA Score bars */}
                   <div>
                     <h4 style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: '10px' }}>⚡ SKILL DNA INDEX</h4>
                     <div className="dna-radar-grid">
                       {[
-                        { name: 'Precision & Cut Accuracy', val: raviWorker?.skillsDNA?.precision || 90, color: '#3B82F6' },
-                        { name: 'Safety Standards & Practices', val: raviWorker?.skillsDNA?.safety || 85, color: '#10B981' },
-                        { name: 'Technical Problem Solving', val: raviWorker?.skillsDNA?.problemSolving || 80, color: '#8B5CF6' },
-                        { name: 'Speed & Workflow Timing', val: raviWorker?.skillsDNA?.speed || 90, color: '#EC4899' },
-                        { name: 'Communication & Dialect clarity', val: raviWorker?.skillsDNA?.communication || 75, color: '#F59E0B' }
+                        { name: 'Precision & Cut Accuracy', val: raviWorker?.skillsDNA?.precision || 92, color: '#3B82F6' },
+                        { name: 'Safety Standards & Practices', val: raviWorker?.skillsDNA?.safety || 90, color: '#10B981' },
+                        { name: 'Technical Problem Solving', val: raviWorker?.skillsDNA?.problemSolving || 85, color: '#8B5CF6' },
+                        { name: 'Speed & Workflow Timing', val: raviWorker?.skillsDNA?.speed || 91, color: '#EC4899' },
+                        { name: 'Communication & Dialect clarity', val: raviWorker?.skillsDNA?.communication || 80, color: '#F59E0B' }
                       ].map(bar => (
                         <div key={bar.name} className="dna-bar-block">
                           <div className="dna-bar-header" style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '4px' }}>
@@ -1305,15 +1388,14 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Right content: passport card details */}
+                {/* Skill Passport Panel */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                   
-                  {/* Glassmorphic Passport */}
-                  <div className="resume-sheet" style={{ borderColor: 'var(--color-primary)', backgroundColor: 'var(--color-card)', marginTop: 0 }}>
+                  <div className="resume-sheet" style={{ borderColor: 'var(--color-primary)', backgroundColor: 'var(--color-card)', marginTop: 0, boxShadow: 'var(--shadow-md)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--color-border)', paddingBottom: '10px', marginBottom: '14px' }}>
                       <span className="logo-text" style={{ fontSize: '1rem' }}>Karm<span>Setu</span></span>
                       <span style={{ fontSize: '0.65rem', backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary)', padding: '2px 6px', borderRadius: '4px', fontWeight: 700 }}>
-                        DIGITAL VERIFIED PASSPORT
+                        DIGITAL SKILL PASSPORT
                       </span>
                     </div>
 
@@ -1321,11 +1403,13 @@ export default function App() {
                       <img src={raviWorker?.avatar} alt="Avatar" style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover' }} />
                       <div>
                         <h4 style={{ fontSize: '1rem', fontWeight: 700 }}>{raviWorker?.name}</h4>
-                        <p style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)' }}>{raviWorker?.skill} • {raviWorker?.experience} Exp</p>
+                        <p style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)' }}>
+                          {raviWorker?.skill} • {raviWorker?.experience} Exp
+                        </p>
                       </div>
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--color-border)', paddingBottom: '14px', marginBottom: '14px' }}>
                       <div>
                         <span style={{ fontSize: '0.62rem', color: 'var(--color-text-secondary)', display: 'block' }}>VERIFIED SKILL BADGES</span>
                         <div className="badges-row" style={{ marginTop: '4px' }}>
@@ -1345,349 +1429,30 @@ export default function App() {
                         </svg>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Achievements checklist */}
-                  <div className="dashboard-card">
-                    <h4 style={{ fontSize: '0.85rem', fontWeight: 700 }}>Active Achievements</h4>
-                    <div className="achievements-grid">
-                      {raviWorker?.achievements?.map((ach, idx) => (
-                        <div key={idx} className="achievement-pill">
-                          <Award size={16} className="text-blue-500" />
-                          <div>
-                            <span style={{ fontSize: '0.75rem', fontWeight: 700, display: 'block' }}>{ach.name}</span>
-                            <span style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>{ach.desc}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                </div>
-
-              </div>
-            )}
-
-            {/* Assessment / Test Tab */}
-            {workerActiveTab === 'tests' && (
-              <div className="verification-workspace">
-                
-                {/* Left Camera Test */}
-                <div className="camera-card">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--color-border)', paddingBottom: '10px' }}>
-                    <div>
-                      <h3 style={{ fontSize: '0.95rem', fontWeight: 700 }}>AI Vision Camera Test</h3>
-                      <p style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', marginTop: '2px' }}>Verify trade check criteria</p>
-                    </div>
-
-                    <div style={{ display: 'flex', gap: '4px', backgroundColor: 'var(--color-bg)', padding: '3px', borderRadius: '20px' }}>
-                      {['Electrician', 'Plumber', 'Carpenter', 'Tailor'].map(trade => (
-                        <button 
-                          key={trade}
-                          onClick={() => {
-                            setSelectedAssessmentSkill(trade);
-                            addLog('info', `ASSESSMENT: Switched diagnostic checks template to: ${trade}`);
-                            startVoiceInterview(trade);
-                          }}
-                          style={{ border: 'none', cursor: 'pointer', fontSize: '0.7rem', padding: '4px 10px', borderRadius: '15px', fontWeight: 600, 
-                                   background: selectedAssessmentSkill === trade ? 'var(--color-primary)' : 'transparent',
-                                   color: selectedAssessmentSkill === trade ? '#fff' : 'var(--color-text-secondary)' }}
-                        >
-                          {trade}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {assessmentStep === 'camera' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                      <div className="camera-stream-box">
-                        {cameraActive ? (
-                          <video ref={videoRef} style={{ width: '100%', height: '100%', objectFit: 'cover' }} autoPlay playsInline muted></video>
-                        ) : (
-                          <div style={{ textAlign: 'center', color: 'var(--color-text-secondary)', padding: '20px' }}>
-                            <p style={{ fontSize: '0.8rem' }}>Webcam diagnostic scan interface ready.</p>
-                            <p style={{ fontSize: '0.72rem', color: 'var(--color-text-light)', marginTop: '2px' }}>Connect camera and click shutter to record.</p>
-                          </div>
-                        )}
-
-                        <div className="camera-crop-overlay">
-                          <div className="camera-scan-bar"></div>
-                          {recordingState === 'recording' && (
-                            <div style={{ color: '#EF4444', fontSize: '0.72rem', fontWeight: 700, background: 'rgba(0,0,0,0.6)', padding: '2px 8px', borderRadius: '4px' }}>
-                              REC {recordingSeconds}s
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <div style={{ backgroundColor: 'var(--color-bg)', padding: '12px', borderRadius: '8px', border: '1px solid var(--color-border)', fontSize: '0.75rem' }}>
-                        <strong>Guidelines: {activeOverlay.title}</strong>
-                        <p style={{ color: 'var(--color-text-secondary)', marginTop: '2px', fontSize: '0.7rem' }}>{activeOverlay.desc}</p>
-                      </div>
-
-                      <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        {!cameraActive && recordingState === 'idle' ? (
-                          <button className="btn-secondary" onClick={startCamera}>
-                            Activate Camera
-                          </button>
-                        ) : (
-                          <button 
-                            className={`camera-record-btn ${recordingState === 'recording' ? 'recording' : ''}`}
-                            onClick={recordingState === 'idle' ? startRecording : finishRecording}
-                          ></button>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {assessmentStep === 'processing' && (
-                    <div style={{ textAlign: 'center', padding: '40px 20px', display: 'flex', flexDirection: 'column', gap: '20px', alignItems: 'center' }}>
-                      <div style={{ width: '40px', height: '40px', borderRadius: '50%', border: '3px solid var(--color-primary-light)', borderTopColor: 'var(--color-secondary)', animation: 'spin 1s linear infinite' }}></div>
-                      <div>
-                        <h3 style={{ fontSize: '1rem' }}>Scoring Test Results</h3>
-                        <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginTop: '2px' }}>Evaluating camera metrics...</p>
-                      </div>
-
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%', maxWidth: '280px', textAlign: 'left' }}>
-                        {[
-                          { name: activeOverlay.checklist[0], stage: processingStages.tools },
-                          { name: activeOverlay.checklist[1], stage: processingStages.safety },
-                          { name: activeOverlay.checklist[2], stage: processingStages.technique },
-                          { name: activeOverlay.checklist[3], stage: processingStages.workflow }
-                        ].map((step, idx) => (
-                          <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.75rem', opacity: step.stage === 'waiting' ? 0.4 : 1 }}>
-                            <div style={{ width: '14px', height: '14px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                                          backgroundColor: step.stage === 'done' ? 'var(--color-secondary)' : 'var(--color-border)', color: '#fff', fontSize: '8px' }}>
-                              {step.stage === 'done' ? '✓' : ''}
-                            </div>
-                            <span>{step.name}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {assessmentStep === 'result' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                      <div style={{ backgroundColor: 'var(--color-bg)', padding: '14px', borderRadius: '8px', border: '1px solid var(--color-border)', textAlign: 'center' }}>
-                        <span style={{ fontSize: '0.68rem', textTransform: 'uppercase', color: 'var(--color-text-secondary)' }}>Scoring report generated</span>
-                        <h3 style={{ fontSize: '1.2rem', marginTop: '2px' }}>{selectedAssessmentSkill} - NSQF L4</h3>
-                        <div className="govt-verified-pill" style={{ marginTop: '6px' }}>
-                          <CheckCircle size={10} style={{ color: 'var(--color-secondary)' }} /> 93% AI Confidence Mapped
-                        </div>
-                      </div>
-
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                        <div style={{ backgroundColor: 'var(--color-bg)', padding: '10px', borderRadius: '6px', border: '1px solid var(--color-border)', fontSize: '0.75rem' }}>
-                          <span style={{ color: 'var(--color-secondary)', fontWeight: 700, display: 'block', marginBottom: '4px' }}>✓ Compliant Traits</span>
-                          • Safety tools verified.<br/>• Hand position guidelines check.
-                        </div>
-                        <div style={{ backgroundColor: 'var(--color-bg)', padding: '10px', borderRadius: '6px', border: '1px solid var(--color-border)', fontSize: '0.75rem' }}>
-                          <span style={{ color: 'var(--color-accent)', fontWeight: 700, display: 'block', marginBottom: '4px' }}>⚠ Warnings</span>
-                          • Inspect voltage checklist.<br/>• Fastening torque check needed.
-                        </div>
-                      </div>
-
-                      <button className="btn-primary" style={{ width: '100%' }} onClick={saveAssessment}>
-                        Sync Scorecard with Dashboard
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                {/* Right Speech Test */}
-                <div className="voice-card">
-                  <div>
-                    <h3 style={{ fontSize: '0.95rem', fontWeight: 700 }}>AI Voice Interview Test</h3>
-                    <p style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', marginTop: '2px' }}>3-question vocational safety check.</p>
-                  </div>
-
-                  <div className="voice-chat-box">
-                    {voiceMessages.map((msg, idx) => (
-                      <div key={idx} className={`chat-bubble ${msg.sender}`}>
-                        {msg.text}
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="voice-actions-footer">
-                    <span style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', fontWeight: 600, display: 'block', marginBottom: '8px' }}>
-                      {isListening ? '🎙 Listening... Speak now.' : `Question ${voiceStep + 1} of 3. Click microphone to answer.`}
-                    </span>
-
-                    <button className={`mic-btn-circle ${isListening ? 'listening' : ''}`} onClick={toggleMicListener} style={{ margin: '0 auto 10px auto' }}>
-                      <Mic size={20} />
-                    </button>
-
-                    <div style={{ display: 'flex', width: '100%', gap: '6px', borderTop: '1px solid var(--color-border)', paddingTop: '10px' }}>
-                      <input 
-                        type="text" 
-                        placeholder="Type safety response here (fast option)..." 
-                        value={voiceInputText}
-                        onChange={(e) => setVoiceInputText(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            handleVoiceMessageSubmit(voiceInputText);
-                            setVoiceInputText('');
-                          }
-                        }}
-                        style={{ flex: 1, backgroundColor: 'var(--color-bg)', border: '1px solid var(--color-border)', color: 'var(--color-text-primary)', padding: '6px 10px', borderRadius: '6px', fontSize: '0.75rem', outline: 'none' }}
-                      />
-                      <button className="btn-secondary" style={{ padding: '6px 12px' }} onClick={() => {
-                        handleVoiceMessageSubmit(voiceInputText);
-                        setVoiceInputText('');
-                      }}>
-                        Send
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            )}
-
-            {/* Qualifications verification tab */}
-            {workerActiveTab === 'qualifications' && (
-              <div className="qualifications-view-card" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                
-                {/* Header */}
-                <div style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)', borderRadius: '16px', padding: '20px', boxShadow: 'var(--shadow-sm)' }}>
-                  <h3 style={{ fontSize: '1.05rem', fontWeight: 700 }}>National Qualification Registry Mappings</h3>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginTop: '2px' }}>
-                    Upload and verify your certificates from NSDC, PMKVY, or ITI institutes to link directly with your Skill Passport.
-                  </p>
-                </div>
-
-                <div className="qual-form-grid">
-                  
-                  {/* Left Form */}
-                  <form onSubmit={handleAddQualification} className="dashboard-card">
-                    <h4 style={{ fontSize: '0.85rem', fontWeight: 700 }}>Upload Qualification Certificate</h4>
-                    
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                      <div>
-                        <label className="input-label">Qualification / Certificate Name</label>
-                        <div className="input-wrapper">
-                          <input 
-                            type="text" 
-                            placeholder="e.g. ITI Electrician Diploma, NSDC Wireman L4" 
-                            className="input-field"
-                            value={newQualName}
-                            onChange={(e) => setNewQualName(e.target.value)}
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="input-label">Issuing Organization / Institute</label>
-                        <div className="input-wrapper">
-                          <input 
-                            type="text" 
-                            placeholder="e.g. National Skill Development Corp, ITI Dwarka" 
-                            className="input-field"
-                            value={newQualBody}
-                            onChange={(e) => setNewQualBody(e.target.value)}
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="input-label">Certificate Register ID / Enrollment Code</label>
-                        <div className="input-wrapper">
-                          <input 
-                            type="text" 
-                            placeholder="e.g. CERT-2026-9821" 
-                            className="input-field"
-                            value={newQualCode}
-                            onChange={(e) => setNewQualCode(e.target.value)}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <button type="submit" className="btn-primary" style={{ justifyContent: 'center', marginTop: '10px' }}>
-                      <Plus size={14} /> Submit Certificate for Verification
-                    </button>
-                  </form>
-
-                  {/* Right Qualifications list */}
-                  <div className="dashboard-card">
-                    <h4 style={{ fontSize: '0.85rem', fontWeight: 700 }}>Active Credentials</h4>
-                    
-                    <div className="qualifications-list">
-                      {qualList.map(qual => (
-                        <div key={qual.id} className="qualification-item-card">
-                          <div>
-                            <span style={{ fontSize: '0.8rem', fontWeight: 700, display: 'block' }}>{qual.name}</span>
-                            <span style={{ fontSize: '0.68rem', color: 'var(--color-text-secondary)' }}>{qual.body} • ID: {qual.code}</span>
-                          </div>
-                          
-                          <span className={`verification-status-pill ${qual.status === 'verified' ? 'status-verified' : 'status-pending'}`}>
-                            {qual.status === 'verified' ? '✓ Verified' : '⌚ Pending Review'}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                </div>
-
-              </div>
-            )}
-
-            {/* Profile Settings Tab */}
-            {workerActiveTab === 'profile' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                
-                {/* Hero profile card */}
-                <div className="profile-hero-card">
-                  <img src={raviWorker?.avatar} alt="Avatar" className="profile-avatar-xl" />
-                  <div>
-                    <h2 style={{ fontSize: '1.25rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      {raviWorker?.name}
-                      <span className="govt-verified-pill">
-                        <CheckCircle size={10} style={{ color: 'var(--color-secondary)' }} /> Tier: {raviWorker?.level}
+                    {/* MVP SIMULATOR BUTTON */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <span style={{ fontSize: '0.65rem', color: 'var(--color-accent)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Info size={11} /> MVP SCANNER SIMULATOR
                       </span>
-                    </h2>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginTop: '2px' }}>
-                      <MapPin size={12} style={{ display: 'inline', marginRight: '3px', verticalAlign: 'middle' }} />
-                      {raviWorker?.location}
-                    </p>
-                    <p style={{ fontSize: '0.75rem', color: 'var(--color-text-light)', marginTop: '4px' }}>
-                      Verified Phone: +91 {raviWorker?.phone} | Language: {raviWorker?.language}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="qual-form-grid">
-                  
-                  {/* Left Achievements list */}
-                  <div className="profile-section-card">
-                    <h4 style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: '12px' }}>Active Achievements</h4>
-                    <div className="achievements-grid" style={{ gridTemplateColumns: '1fr' }}>
-                      {raviWorker?.achievements?.map((ach, idx) => (
-                        <div key={idx} className="achievement-pill">
-                          <Award size={18} className="text-blue-500" />
-                          <div>
-                            <span style={{ fontSize: '0.78rem', fontWeight: 700, display: 'block' }}>{ach.name}</span>
-                            <span style={{ fontSize: '0.68rem', color: 'var(--color-text-secondary)' }}>{ach.desc}</span>
-                          </div>
-                        </div>
-                      ))}
+                      <button 
+                        className="btn-accent" 
+                        onClick={handleSimulatedQRScan}
+                        style={{ width: '100%', justifyContent: 'center', padding: '10px' }}
+                      >
+                        <QrCode size={16} /> Scan QR Code as Employer
+                      </button>
                     </div>
+
                   </div>
 
-                  {/* Right verified skills list */}
-                  <div className="profile-section-card">
-                    <h4 style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: '12px' }}>Verified Trades & Badges</h4>
-                    <div className="badges-row">
-                      {raviWorker?.verifiedSkills?.map((badge, idx) => (
-                        <span key={idx} className="badge-pill" style={{ fontSize: '0.72rem', padding: '4px 10px' }}>
-                          ✓ {badge}
-                        </span>
-                      ))}
-                    </div>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <button className="btn-outline" style={{ flex: 1 }} onClick={() => setWorkerFlowStep('choose_trade')}>
+                      Restart MVP Flow
+                    </button>
+                    <button className="btn-primary" style={{ flex: 1 }} onClick={handleLogout}>
+                      Finished Demo
+                    </button>
                   </div>
 
                 </div>
@@ -1702,8 +1467,23 @@ export default function App() {
         {/* VIEW: EMPLOYER PORTAL VIEWS                              */}
         {/* ======================================================== */}
         {userRole === 'employer' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '24px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '24px', flex: 1 }}>
             
+            {/* Banner showing scanned profile via QR */}
+            {qrScannedCandidateId && (
+              <div style={{ backgroundColor: 'var(--color-primary-light)', border: '1px solid var(--color-primary)', color: 'var(--color-primary)', padding: '12px 20px', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', animation: 'slideDown 0.2s ease' }}>
+                <span style={{ fontSize: '0.82rem', fontWeight: 700 }}>
+                  ⚡ VERIFIED PASSPORT DECODED: Scanned QR code for {selectedWorker?.name} ({selectedWorker?.skill}) successfully.
+                </span>
+                <button 
+                  onClick={() => setQrScannedCandidateId(null)}
+                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-primary)' }}
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            )}
+
             {/* Directory Tab */}
             {employerActiveTab === 'directory' && (
               <div className="directory-grid">
@@ -1810,7 +1590,7 @@ export default function App() {
 
                       {hiredWorkerId === selectedWorker?.id ? (
                         <div style={{ backgroundColor: 'var(--color-secondary-light)', border: '1px solid var(--color-secondary)', color: '#065F46', padding: '8px 16px', borderRadius: '6px', fontWeight: 700, fontSize: '0.8rem' }}>
-                          ✓ Contract Offered
+                          ✓ Contract Offered Successfully
                         </div>
                       ) : (
                         <button 
