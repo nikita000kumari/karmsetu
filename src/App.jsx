@@ -23,6 +23,13 @@ const LogoSVG = () => (
   </svg>
 );
 
+// SVG Github Icon
+const GithubIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: '16px', height: '16px' }}>
+    <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+  </svg>
+);
+
 const FAQ_ITEMS = [
   {
     q: "Is KarmSetu government certified?",
@@ -708,6 +715,17 @@ export default function App() {
         )}
 
         <div className="header-actions">
+          {/* GitHub link button in header */}
+          <a 
+            href="https://github.com/nikita000kumari/karmsetu" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="btn-outline" 
+            style={{ display: 'flex', gap: '6px', alignItems: 'center', fontSize: '0.75rem', padding: '6px 12px', textDecoration: 'none' }}
+          >
+            <GithubIcon /> GitHub
+          </a>
+
           <button 
             className={`btn-secondary ${showConfig ? 'active' : ''}`}
             onClick={() => setShowConfig(!showConfig)}
@@ -798,6 +816,21 @@ export default function App() {
               <p className="landing-tagline">
                 KarmSetu creates tamperproof digital identities for blue-collar contractors. By combining live computer-vision checks, spoken dialect diagnostics, and Aadhaar e-KYC integration, we bridge skilled workers to top infrastructure jobs.
               </p>
+
+              <div className="hero-cta-row">
+                <button className="btn-primary" style={{ padding: '12px 24px', fontSize: '0.9rem' }} onClick={() => setShowLogin(true)}>
+                  Enter Web App Portal <ArrowRight size={16} />
+                </button>
+                <a 
+                  href="https://github.com/nikita000kumari/karmsetu" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="btn-outline" 
+                  style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '12px 24px', fontSize: '0.9rem', textDecoration: 'none' }}
+                >
+                  <GithubIcon /> View Code on GitHub
+                </a>
+              </div>
             </section>
 
             {/* Platform live metrics counter grid */}
@@ -813,6 +846,51 @@ export default function App() {
                   <div className="landing-stat-label">{st.label}</div>
                 </div>
               ))}
+            </section>
+
+            {/* Problem vs Solution Split Section */}
+            <section className="problem-solution-section">
+              {/* Problem Card */}
+              <div className="prob-sol-card" style={{ borderTop: '4px solid var(--color-danger)' }}>
+                <h3 className="prob-sol-title" style={{ color: 'var(--color-danger)' }}>
+                  <AlertCircle size={20} /> The Problem
+                </h3>
+                <div className="prob-sol-list">
+                  <div className="prob-sol-item">
+                    <span style={{ color: 'var(--color-danger)' }}>✖</span>
+                    <span><strong>Credential Fraud</strong>: Fake ITI certificates and printed resumes are easy to forge, leaving builders vulnerable to unskilled labor.</span>
+                  </div>
+                  <div className="prob-sol-item">
+                    <span style={{ color: 'var(--color-danger)' }}>✖</span>
+                    <span><strong>No Performance Tracking</strong>: Lack of verified safety logs or practical project execution records for tradesmen.</span>
+                  </div>
+                  <div className="prob-sol-item">
+                    <span style={{ color: 'var(--color-danger)' }}>✖</span>
+                    <span><strong>Slow Recruiting Cycles</strong>: Employers waste days vetting contractors on-site using slow manual diagnostics.</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Solution Card */}
+              <div className="prob-sol-card" style={{ borderTop: '4px solid var(--color-secondary)' }}>
+                <h3 className="prob-sol-title" style={{ color: 'var(--color-secondary)' }}>
+                  <CheckCircle2 size={20} /> The Solution
+                </h3>
+                <div className="prob-sol-list">
+                  <div className="prob-sol-item">
+                    <span style={{ color: 'var(--color-secondary)' }}>✔</span>
+                    <span><strong>Tamperproof Passports</strong>: Skills DNA scorecards are mathematically bound to Aadhaar identities in a secure registry.</span>
+                  </div>
+                  <div className="prob-sol-item">
+                    <span style={{ color: 'var(--color-secondary)' }}>✔</span>
+                    <span><strong>AI-Powered Diagnostics</strong>: Real camera safety checking and verbal dialect assessments grades logic on-the-spot.</span>
+                  </div>
+                  <div className="prob-sol-item">
+                    <span style={{ color: 'var(--color-secondary)' }}>✔</span>
+                    <span><strong>Instant QR Verification</strong>: Contractors scan the worker's QR code to pull verified scorecards in 2 seconds.</span>
+                  </div>
+                </div>
+              </div>
             </section>
 
             {/* Portal Gateways Selector Grid */}
@@ -863,7 +941,7 @@ export default function App() {
             </section>
 
             {/* Workflow steps workflow block */}
-            <section style={{ padding: '40px 20px 60px 20px' }}>
+            <section style={{ padding: '40px 20px 40px 20px' }}>
               <h2 className="landing-section-title">How KarmSetu Works</h2>
               <p className="landing-section-subtitle">Secure, fast, and transparent validation from registration to employment.</p>
               
@@ -938,6 +1016,93 @@ export default function App() {
               </div>
             </section>
 
+            {/* Architecture Visual Section */}
+            <section className="architecture-section">
+              <h2 className="landing-section-title">System Architecture</h2>
+              <p className="landing-section-subtitle">How our frontend diagnostics interface communicates with AI models and secure databases.</p>
+
+              <div className="arch-visual-card">
+                <div className="arch-stack">
+                  
+                  {/* Layer 1 */}
+                  <div className="arch-layer">
+                    <div className="arch-layer-title">
+                      <User size={14} /> Client Interface
+                    </div>
+                    <div className="arch-layer-components">
+                      <div className="arch-component">React Web App</div>
+                      <div className="arch-component">Web Speech Speech-to-Text API</div>
+                      <div className="arch-component">Webcam Video Capture Stream</div>
+                    </div>
+                  </div>
+
+                  {/* Layer 2 */}
+                  <div className="arch-layer">
+                    <div className="arch-layer-title">
+                      <Activity size={14} /> AI Processing Layer
+                    </div>
+                    <div className="arch-layer-components">
+                      <div className="arch-component" style={{ borderColor: 'var(--color-accent)' }}>Google Gemini 1.5 Safety Grader</div>
+                      <div className="arch-component">OpenCV Coordinate Shutter Overlay</div>
+                    </div>
+                  </div>
+
+                  {/* Layer 3 */}
+                  <div className="arch-layer">
+                    <div className="arch-layer-title">
+                      <Database size={14} /> Data & Security
+                    </div>
+                    <div className="arch-layer-components">
+                      <div className="arch-component">Firebase Firestore Sync</div>
+                      <div className="arch-component">SQLite Local Storage sync</div>
+                      <div className="arch-component" style={{ borderColor: 'var(--color-secondary)' }}>UIDAI Aadhaar e-KYC API</div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </section>
+
+            {/* Screenshots Showcase (Coming Soon) */}
+            <section className="screenshots-section">
+              <h2 className="landing-section-title">Portal Walkthrough Showcase</h2>
+              <p className="landing-section-subtitle">A visual preview of our upcoming mobile applications and enterprise hiring dashboards.</p>
+              
+              <div className="screenshots-grid">
+                {[
+                  { name: "Mobile Diagnostics Scanner" },
+                  { name: "Contractor Hiring Console" },
+                  { name: "Live Skill DNA Metrics Ticker" }
+                ].map((sc, idx) => (
+                  <div key={idx} className="screenshot-placeholder-card">
+                    <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-text-secondary)' }}>{sc.name}</span>
+                    <div className="coming-soon-overlay">
+                      <span className="coming-soon-badge">Coming Soon</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Meet the Team Section */}
+            <section className="team-section">
+              <h2 className="landing-section-title">Meet the Team</h2>
+              <p className="landing-section-subtitle">The creators and engineers behind the KarmSetu Trust Protocol.</p>
+              
+              <div className="team-grid">
+                <div className="team-member-card">
+                  <div className="team-avatar">NK</div>
+                  <div className="team-info">
+                    <h4 className="team-name">Nikita Kumari</h4>
+                    <span className="team-role">Lead Developer & Co-Founder</span>
+                    <p className="team-bio">
+                      Full-stack developer specialized in React applications, Firebase infrastructure, and generative AI models integrations. Dedicated to building trust solutions for India's informal sectors.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
             {/* Cryptographic tamperproof ledger panel */}
             <section className="landing-security-registry">
               <div className="security-infra-card">
@@ -986,6 +1151,20 @@ export default function App() {
                 ))}
               </div>
             </section>
+
+            {/* Brand Footer */}
+            <footer className="landing-footer">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <LogoSVG />
+                <span className="logo-text">Karm<span>Setu</span></span>
+              </div>
+              <p>© 2026 KarmSetu India. Skill India registries and NSDC mapping protocol compliant.</p>
+              <div style={{ display: 'flex', gap: '14px', marginTop: '10px' }}>
+                <a href="https://github.com/nikita000kumari/karmsetu" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'underline', fontSize: '0.78rem' }}>
+                  GitHub Codebase Repository
+                </a>
+              </div>
+            </footer>
 
           </div>
         )}
