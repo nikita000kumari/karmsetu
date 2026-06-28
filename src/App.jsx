@@ -187,8 +187,19 @@ export default function App() {
 
   // Selected Candidate (Employer dashboard view)
   const [workers, setWorkers] = useState(() => {
-    const saved = localStorage.getItem('karmsetu_workers');
-    return saved ? JSON.parse(saved) : INITIAL_WORKERS;
+    try {
+      const saved = localStorage.getItem('karmsetu_workers');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length >= 3 && parsed.every(w => w.skillsDNA && w.verifiedSkills)) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.error("Cache corrupted:", e);
+    }
+    localStorage.removeItem('karmsetu_workers');
+    return INITIAL_WORKERS;
   });
   const [selectedWorkerId, setSelectedWorkerId] = useState('ravi-kumar');
   const [hiredWorkerId, setHiredWorkerId] = useState(null);
