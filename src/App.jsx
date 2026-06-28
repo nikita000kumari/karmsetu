@@ -160,6 +160,7 @@ export default function App() {
 
   // User role flow state: none | employer | worker
   const [userRole, setUserRole] = useState('none');
+  const [showLogin, setShowLogin] = useState(false);
   const [loginTab, setLoginTab] = useState('worker'); // worker | employer
 
   // Worker navigation tab: dashboard | tests | qualifications | profile
@@ -201,6 +202,7 @@ export default function App() {
     localStorage.removeItem('karmsetu_workers');
     return INITIAL_WORKERS;
   });
+  
   const [selectedWorkerId, setSelectedWorkerId] = useState('ravi-kumar');
   const [hiredWorkerId, setHiredWorkerId] = useState(null);
   const [showResume, setShowResume] = useState(false);
@@ -361,6 +363,7 @@ export default function App() {
   const handleLogout = () => {
     addLog('info', `AUTH: Revoked active session for ${userRole.toUpperCase()}. Redirected to login landing page.`);
     setUserRole('none');
+    setShowLogin(false);
   };
 
   // Add a qualification logic
@@ -610,7 +613,7 @@ export default function App() {
         }
 
         const updatedDNA = {
-          precision: workers.find(w => w.id === 'ravi-kumar')?.skillsDNA.precision || 90,
+          precision: workers.find(w => w.id === 'ravi-kumar')?.skillsDNA?.precision || 90,
           safety: evaluation.safety,
           problemSolving: evaluation.problemSolving,
           speed: evaluation.speed,
@@ -696,7 +699,9 @@ export default function App() {
       <header className="main-header">
         <div className="logo-group">
           <LogoSVG />
-          <span className="logo-text">Karm<span>Setu</span></span>
+          <span className="logo-text" style={{ cursor: 'pointer' }} onClick={handleLogout}>
+            Karm<span>Setu</span>
+          </span>
           <div className="infra-badge">
             <Shield size={12} className="text-blue-500" /> NSDC Trust Infrastructure Mapped
           </div>
@@ -825,19 +830,133 @@ export default function App() {
       )}
 
       {/* WORKSPACE CONTENT AREA */}
-      <main className="main-content">
+      <main className="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         
         {/* ======================================================== */}
-        {/* SCREEN: Auth Login Panel (userRole === 'none')           */}
+        {/* SCREEN 1: Welcome Brand Introduction Page                 */}
         {/* ======================================================== */}
-        {userRole === 'none' && (
+        {userRole === 'none' && !showLogin && (
+          <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+            
+            {/* Hero Welcome banner */}
+            <section className="landing-hero">
+              <span style={{ fontSize: '0.8rem', backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary)', padding: '5px 14px', borderRadius: '20px', width: 'fit-content', margin: '0 auto', fontWeight: 700 }}>
+                NSDC Trust Protocol Mapped
+              </span>
+              <h1 className="landing-title">
+                Verified Credentials for India's <span>Informal Workforce</span>
+              </h1>
+              <p className="landing-tagline">
+                KarmSetu replaces paper qualifications with tamperproof Skill Passports. We combine AI camera checks, voice safety diagnostics, and Aadhaar identities to help tradesmen get hired instantly.
+              </p>
+            </section>
+
+            {/* Selector Grid */}
+            <section className="landing-grid-choices">
+              
+              {/* Card 1: Workers */}
+              <div className="landing-choice-card" style={{ borderLeft: '4px solid var(--color-primary)' }}>
+                <div className="choice-icon-box" style={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary)' }}>
+                  <User size={24} />
+                </div>
+                <h3 className="choice-title">For Skilled Workers</h3>
+                <p className="choice-desc">
+                  Prove your skills on camera, answer safety interviews in your native dialect, upload government certificates, and print your secure QR passport.
+                </p>
+                <button 
+                  className="btn-accent" 
+                  style={{ width: 'fit-content', marginTop: 'auto', backgroundColor: 'var(--color-primary)', color: '#fff' }}
+                  onClick={() => {
+                    setShowLogin(true);
+                    setLoginTab('worker');
+                  }}
+                >
+                  Verify My Skills <ArrowRight size={14} />
+                </button>
+              </div>
+
+              {/* Card 2: Employers */}
+              <div className="landing-choice-card" style={{ borderLeft: '4px solid var(--color-secondary)' }}>
+                <div className="choice-icon-box" style={{ backgroundColor: 'var(--color-secondary-light)', color: 'var(--color-secondary)' }}>
+                  <Briefcase size={24} />
+                </div>
+                <h3 className="choice-title">For Infrastructure Contractors</h3>
+                <p className="choice-desc">
+                  Browse a directory of verified candidates (electricians, plumbers, tailors), inspect scorecards, view assessment videos, and hire with confidence.
+                </p>
+                <button 
+                  className="btn-accent" 
+                  style={{ width: 'fit-content', marginTop: 'auto', backgroundColor: 'var(--color-secondary)', color: '#fff' }}
+                  onClick={() => {
+                    setShowLogin(true);
+                    setLoginTab('employer');
+                  }}
+                >
+                  Find Certified Workers <ArrowRight size={14} />
+                </button>
+              </div>
+
+            </section>
+
+            {/* Core Pillars Feature List */}
+            <section className="landing-features-section">
+              <div className="features-grid">
+                
+                <div className="feature-item">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--color-primary)' }}>
+                    <Video size={18} />
+                    <h4 className="feature-title">AI Vision Checker</h4>
+                  </div>
+                  <p className="feature-desc">
+                    Checks safety gloves and correct tool usage live using custom computer-vision overlays.
+                  </p>
+                </div>
+
+                <div className="feature-item">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--color-secondary)' }}>
+                    <Mic size={18} />
+                    <h4 className="feature-title">AI Voice Diagnostics</h4>
+                  </div>
+                  <p className="feature-desc">
+                    Asks trade-specific questions in regional dialects to grade problem-solving vocabulary.
+                  </p>
+                </div>
+
+                <div className="feature-item">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--color-accent)' }}>
+                    <Shield size={18} />
+                    <h4 className="feature-title">Tamperproof Skill DNA</h4>
+                  </div>
+                  <p className="feature-desc">
+                    Links Aadhaar profiles with secure credential registries to protect against fake profiles.
+                  </p>
+                </div>
+
+              </div>
+            </section>
+
+          </div>
+        )}
+
+        {/* ======================================================== */}
+        {/* SCREEN 2: Auth Login Panel (showLogin === true)          */}
+        {/* ======================================================== */}
+        {userRole === 'none' && showLogin && (
           <div className="login-screen-wrapper">
             <div className="login-card">
               
-              <div style={{ textAlign: 'center' }}>
+              {/* Back to landing link */}
+              <span 
+                onClick={() => setShowLogin(false)}
+                style={{ position: 'absolute', top: '20px', left: '20px', fontSize: '0.75rem', color: 'var(--color-text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 600 }}
+              >
+                ← Back
+              </span>
+
+              <div style={{ textAlign: 'center', marginTop: '10px' }}>
                 <LogoSVG />
                 <h2 style={{ fontSize: '1.4rem', fontWeight: 800, marginTop: '8px', color: 'var(--color-primary)' }}>KarmSetu Login</h2>
-                <p style={{ fontSize: '0.82rem', color: 'var(--color-text-secondary)', marginTop: '2px' }}>"Skills deserve trust, not just paperwork."</p>
+                <p style={{ fontSize: '0.82rem', color: 'var(--color-text-secondary)', marginTop: '2px' }}>Choose your portal and enter authentication details.</p>
               </div>
 
               {/* Tab Selector */}
@@ -971,7 +1090,7 @@ export default function App() {
         {/* VIEW: WORKER PORTAL DASHBOARD VIEW                        */}
         {/* ======================================================== */}
         {userRole === 'worker' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '24px' }}>
             
             {/* Dashboard Tab */}
             {workerActiveTab === 'dashboard' && (
@@ -982,7 +1101,7 @@ export default function App() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h3 style={{ fontSize: '1.05rem', fontWeight: 800 }}>Skill Index Overview</h3>
                     <div className="govt-verified-pill">
-                      <CheckCircle2 size={11} /> Aadhaar Verified e-KYC
+                      <CheckCircle2 size={11} style={{ color: 'var(--color-secondary)' }} /> Aadhaar Verified e-KYC
                     </div>
                   </div>
 
@@ -990,12 +1109,12 @@ export default function App() {
                     <div>
                       <span style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.5px' }}>GLOBAL TRUST SCORE</span>
                       <h2 style={{ fontSize: '2.5rem', fontWeight: 800, lineHeight: 1, marginTop: '4px' }}>
-                        {raviWorker.trustScore} <span style={{ fontSize: '1rem', opacity: 0.7 }}>/ 100</span>
+                        {raviWorker?.trustScore} <span style={{ fontSize: '1rem', opacity: 0.7 }}>/ 100</span>
                       </h2>
                     </div>
                     <div style={{ textAlign: 'right' }}>
                       <span style={{ fontSize: '0.72rem', backgroundColor: 'rgba(255,255,255,0.2)', padding: '3px 8px', borderRadius: '4px', fontWeight: 700 }}>
-                        Tier: {raviWorker.level}
+                        Tier: {raviWorker?.level}
                       </span>
                     </div>
                   </div>
@@ -1013,19 +1132,19 @@ export default function App() {
                     <h4 style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: '10px' }}>⚡ SKILL DNA INDEX</h4>
                     <div className="dna-radar-grid">
                       {[
-                        { name: 'Precision & Cut Accuracy', val: raviWorker.skillsDNA.precision, color: '#3B82F6' },
-                        { name: 'Safety Standards & Practices', val: raviWorker.skillsDNA.safety, color: '#10B981' },
-                        { name: 'Technical Problem Solving', val: raviWorker.skillsDNA.problemSolving, color: '#8B5CF6' },
-                        { name: 'Speed & Workflow Timing', val: raviWorker.skillsDNA.speed, color: '#EC4899' },
-                        { name: 'Communication & Dialect clarity', val: raviWorker.skillsDNA.communication, color: '#F59E0B' }
+                        { name: 'Precision & Cut Accuracy', val: raviWorker?.skillsDNA?.precision || 90, color: '#3B82F6' },
+                        { name: 'Safety Standards & Practices', val: raviWorker?.skillsDNA?.safety || 85, color: '#10B981' },
+                        { name: 'Technical Problem Solving', val: raviWorker?.skillsDNA?.problemSolving || 80, color: '#8B5CF6' },
+                        { name: 'Speed & Workflow Timing', val: raviWorker?.skillsDNA?.speed || 90, color: '#EC4899' },
+                        { name: 'Communication & Dialect clarity', val: raviWorker?.skillsDNA?.communication || 75, color: '#F59E0B' }
                       ].map(bar => (
                         <div key={bar.name} className="dna-bar-block">
-                          <div className="dna-bar-header">
+                          <div className="dna-bar-header" style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '4px' }}>
                             <span>{bar.name}</span>
-                            <span>{bar.val}%</span>
+                            <span style={{ fontWeight: 700 }}>{bar.val}%</span>
                           </div>
-                          <div className="dna-bar-track">
-                            <div className="dna-bar-fill" style={{ width: `${bar.val}%`, backgroundColor: bar.color }}></div>
+                          <div className="dna-bar-track" style={{ backgroundColor: 'var(--color-border)', height: '6px', borderRadius: '3px', overflow: 'hidden' }}>
+                            <div className="dna-bar-fill" style={{ width: `${bar.val}%`, backgroundColor: bar.color, height: '100%' }}></div>
                           </div>
                         </div>
                       ))}
@@ -1037,7 +1156,7 @@ export default function App() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                   
                   {/* Glassmorphic Passport */}
-                  <div className="resume-sheet" style={{ borderColor: 'var(--color-primary)', backgroundColor: 'var(--color-card)' }}>
+                  <div className="resume-sheet" style={{ borderColor: 'var(--color-primary)', backgroundColor: 'var(--color-card)', marginTop: 0 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--color-border)', paddingBottom: '10px', marginBottom: '14px' }}>
                       <span className="logo-text" style={{ fontSize: '1rem' }}>Karm<span>Setu</span></span>
                       <span style={{ fontSize: '0.65rem', backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary)', padding: '2px 6px', borderRadius: '4px', fontWeight: 700 }}>
@@ -1046,10 +1165,10 @@ export default function App() {
                     </div>
 
                     <div style={{ display: 'flex', gap: '14px', alignItems: 'center', marginBottom: '14px' }}>
-                      <img src={raviWorker.avatar} alt="Avatar" style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover' }} />
+                      <img src={raviWorker?.avatar} alt="Avatar" style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover' }} />
                       <div>
-                        <h4 style={{ fontSize: '1rem', fontWeight: 700 }}>{raviWorker.name}</h4>
-                        <p style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)' }}>{raviWorker.skill} • {raviWorker.experience} Exp</p>
+                        <h4 style={{ fontSize: '1rem', fontWeight: 700 }}>{raviWorker?.name}</h4>
+                        <p style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)' }}>{raviWorker?.skill} • {raviWorker?.experience} Exp</p>
                       </div>
                     </div>
 
@@ -1057,7 +1176,7 @@ export default function App() {
                       <div>
                         <span style={{ fontSize: '0.62rem', color: 'var(--color-text-secondary)', display: 'block' }}>VERIFIED SKILL BADGES</span>
                         <div className="badges-row" style={{ marginTop: '4px' }}>
-                          {raviWorker.verifiedSkills.map((badge, idx) => (
+                          {raviWorker?.verifiedSkills?.map((badge, idx) => (
                             <span key={idx} className="badge-pill" style={{ fontSize: '0.65rem' }}>
                               ✓ {badge}
                             </span>
@@ -1075,11 +1194,11 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Actions checklist */}
+                  {/* Achievements checklist */}
                   <div className="dashboard-card">
                     <h4 style={{ fontSize: '0.85rem', fontWeight: 700 }}>Active Achievements</h4>
                     <div className="achievements-grid">
-                      {raviWorker.achievements.map((ach, idx) => (
+                      {raviWorker?.achievements?.map((ach, idx) => (
                         <div key={idx} className="achievement-pill">
                           <Award size={16} className="text-blue-500" />
                           <div>
@@ -1197,12 +1316,12 @@ export default function App() {
                   )}
 
                   {assessmentStep === 'result' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', animation: 'fadeIn 0.2s ease' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                       <div style={{ backgroundColor: 'var(--color-bg)', padding: '14px', borderRadius: '8px', border: '1px solid var(--color-border)', textAlign: 'center' }}>
                         <span style={{ fontSize: '0.68rem', textTransform: 'uppercase', color: 'var(--color-text-secondary)' }}>Scoring report generated</span>
                         <h3 style={{ fontSize: '1.2rem', marginTop: '2px' }}>{selectedAssessmentSkill} - NSQF L4</h3>
                         <div className="govt-verified-pill" style={{ marginTop: '6px' }}>
-                          <CheckCircle size={10} /> 93% AI Confidence Mapped
+                          <CheckCircle size={10} style={{ color: 'var(--color-secondary)' }} /> 93% AI Confidence Mapped
                         </div>
                       </div>
 
@@ -1240,18 +1359,18 @@ export default function App() {
                   </div>
 
                   <div className="voice-actions-footer">
-                    <span style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', fontWeight: 600 }}>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', fontWeight: 600, display: 'block', marginBottom: '8px' }}>
                       {isListening ? '🎙 Listening... Speak now.' : `Question ${voiceStep + 1} of 3. Click microphone to answer.`}
                     </span>
 
-                    <button className={`mic-btn-circle ${isListening ? 'listening' : ''}`} onClick={toggleMicListener}>
+                    <button className={`mic-btn-circle ${isListening ? 'listening' : ''}`} onClick={toggleMicListener} style={{ margin: '0 auto 10px auto' }}>
                       <Mic size={20} />
                     </button>
 
-                    <div style={{ display: 'flex', width: '100%', gap: '6px', borderTop: '1px solid var(--color-border)', paddingTop: '10px', marginTop: '6px' }}>
+                    <div style={{ display: 'flex', width: '100%', gap: '6px', borderTop: '1px solid var(--color-border)', paddingTop: '10px' }}>
                       <input 
                         type="text" 
-                        placeholder="Type speech response simulation..." 
+                        placeholder="Type safety response here (fast option)..." 
                         value={voiceInputText}
                         onChange={(e) => setVoiceInputText(e.target.value)}
                         onKeyDown={(e) => {
@@ -1370,20 +1489,20 @@ export default function App() {
                 
                 {/* Hero profile card */}
                 <div className="profile-hero-card">
-                  <img src={raviWorker.avatar} alt="Avatar" className="profile-avatar-xl" />
+                  <img src={raviWorker?.avatar} alt="Avatar" className="profile-avatar-xl" />
                   <div>
                     <h2 style={{ fontSize: '1.25rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      {raviWorker.name}
+                      {raviWorker?.name}
                       <span className="govt-verified-pill">
-                        <CheckCircle size={10} /> Tier: {raviWorker.level}
+                        <CheckCircle size={10} style={{ color: 'var(--color-secondary)' }} /> Tier: {raviWorker?.level}
                       </span>
                     </h2>
                     <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginTop: '2px' }}>
                       <MapPin size={12} style={{ display: 'inline', marginRight: '3px', verticalAlign: 'middle' }} />
-                      {raviWorker.location}
+                      {raviWorker?.location}
                     </p>
                     <p style={{ fontSize: '0.75rem', color: 'var(--color-text-light)', marginTop: '4px' }}>
-                      Verified Phone: +91 {raviWorker.phone} | Language: {raviWorker.language}
+                      Verified Phone: +91 {raviWorker?.phone} | Language: {raviWorker?.language}
                     </p>
                   </div>
                 </div>
@@ -1394,7 +1513,7 @@ export default function App() {
                   <div className="profile-section-card">
                     <h4 style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: '12px' }}>Active Achievements</h4>
                     <div className="achievements-grid" style={{ gridTemplateColumns: '1fr' }}>
-                      {raviWorker.achievements.map((ach, idx) => (
+                      {raviWorker?.achievements?.map((ach, idx) => (
                         <div key={idx} className="achievement-pill">
                           <Award size={18} className="text-blue-500" />
                           <div>
@@ -1410,7 +1529,7 @@ export default function App() {
                   <div className="profile-section-card">
                     <h4 style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: '12px' }}>Verified Trades & Badges</h4>
                     <div className="badges-row">
-                      {raviWorker.verifiedSkills.map((badge, idx) => (
+                      {raviWorker?.verifiedSkills?.map((badge, idx) => (
                         <span key={idx} className="badge-pill" style={{ fontSize: '0.72rem', padding: '4px 10px' }}>
                           ✓ {badge}
                         </span>
@@ -1430,7 +1549,7 @@ export default function App() {
         {/* VIEW: EMPLOYER PORTAL VIEWS                              */}
         {/* ======================================================== */}
         {userRole === 'employer' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '24px' }}>
             
             {/* Directory Tab */}
             {employerActiveTab === 'directory' && (
@@ -1440,7 +1559,7 @@ export default function App() {
                 <div className="candidates-list-card">
                   <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--color-text-secondary)' }}>Candidate Search</h3>
                   
-                  <div className="search-filter-box">
+                  <div className="search-filter-box" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     <div className="search-input-wrapper">
                       <Search size={14} className="search-icon" />
                       <input 
@@ -1451,18 +1570,18 @@ export default function App() {
                           setSearchTerm(e.target.value);
                           addLog('query', `SQL: SELECT * FROM workers WHERE name LIKE '%${e.target.value}%';`);
                         }}
-                        className="search-input"
+                        style={{ border: 'none', background: 'transparent', outline: 'none', fontSize: '0.8rem', color: 'var(--color-text-primary)', flex: 1 }}
                       />
                     </div>
 
-                    <div className="filter-selects">
+                    <div className="filter-selects" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
                       <select 
                         value={filterTrade} 
                         onChange={(e) => {
                           setFilterTrade(e.target.value);
                           addLog('query', `SQL: SELECT * FROM workers WHERE skill = '${e.target.value}';`);
                         }}
-                        className="filter-select"
+                        style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)', borderRadius: '6px', padding: '6px', fontSize: '0.75rem', outline: 'none' }}
                       >
                         <option value="All">All Trades</option>
                         <option value="Electrician">Electrician</option>
@@ -1476,7 +1595,7 @@ export default function App() {
                           setFilterLocation(e.target.value);
                           addLog('query', `SQL: SELECT * FROM workers WHERE location LIKE '%${e.target.value}%';`);
                         }}
-                        className="filter-select"
+                        style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)', borderRadius: '6px', padding: '6px', fontSize: '0.75rem', outline: 'none' }}
                       >
                         <option value="All">All Locations</option>
                         <option value="Delhi">Delhi</option>
@@ -1514,19 +1633,19 @@ export default function App() {
                 {/* Right detail profile pane */}
                 <div className="profile-detail-card">
                   
-                  <div className="profile-main-header">
-                    <div className="profile-avatar-row">
-                      <img src={selectedWorker.avatar} alt="Avatar" className="profile-avatar-lg" />
+                  <div className="profile-main-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--color-border)', paddingBottom: '16px' }}>
+                    <div className="profile-avatar-row" style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
+                      <img src={selectedWorker?.avatar} alt="Avatar" className="profile-avatar-lg" style={{ width: '56px', height: '56px', borderRadius: '50%', objectFit: 'cover' }} />
                       <div>
                         <h2 style={{ fontSize: '1.25rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          {selectedWorker.name}
+                          {selectedWorker?.name}
                           <span className="govt-verified-pill">
-                            <CheckCircle size={10} /> Aadhaar Verified
+                            <CheckCircle size={10} style={{ color: 'var(--color-secondary)' }} /> Aadhaar Verified
                           </span>
                         </h2>
                         <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginTop: '2px' }}>
                           <MapPin size={12} style={{ display: 'inline', marginRight: '3px', verticalAlign: 'middle' }} />
-                          {selectedWorker.location}
+                          {selectedWorker?.location}
                         </p>
                       </div>
                     </div>
@@ -1536,7 +1655,7 @@ export default function App() {
                         <FileText size={14} /> {showResume ? 'Hide CV Details' : 'Generate AI CV'}
                       </button>
 
-                      {hiredWorkerId === selectedWorker.id ? (
+                      {hiredWorkerId === selectedWorker?.id ? (
                         <div style={{ backgroundColor: 'var(--color-secondary-light)', border: '1px solid var(--color-secondary)', color: '#065F46', padding: '8px 16px', borderRadius: '6px', fontWeight: 700, fontSize: '0.8rem' }}>
                           ✓ Contract Offered
                         </div>
@@ -1544,9 +1663,9 @@ export default function App() {
                         <button 
                           className="btn-primary" 
                           onClick={() => {
-                            setHiredWorkerId(selectedWorker.id);
-                            addLog('success', `HIRING_SERVICE: Dispatched contract offer to ${selectedWorker.name}.`);
-                            alert(`Contract offer sent to ${selectedWorker.name}!`);
+                            setHiredWorkerId(selectedWorker?.id);
+                            addLog('success', `HIRING_SERVICE: Dispatched contract offer to ${selectedWorker?.name}.`);
+                            alert(`Contract offer sent to ${selectedWorker?.name}!`);
                           }}
                         >
                           Hire Candidate
@@ -1570,15 +1689,15 @@ export default function App() {
                       <div className="resume-grid">
                         <div className="resume-sec">
                           <span className="resume-sec-title">Personal Information</span>
-                          <span><strong>Candidate:</strong> {selectedWorker.name}</span>
-                          <span><strong>Profession:</strong> {selectedWorker.skill}</span>
-                          <span><strong>Experience:</strong> {selectedWorker.experience}</span>
-                          <span><strong>Location:</strong> {selectedWorker.location}</span>
+                          <span><strong>Candidate:</strong> {selectedWorker?.name}</span>
+                          <span><strong>Profession:</strong> {selectedWorker?.skill}</span>
+                          <span><strong>Experience:</strong> {selectedWorker?.experience}</span>
+                          <span><strong>Location:</strong> {selectedWorker?.location}</span>
                         </div>
 
                         <div className="resume-sec">
                           <span className="resume-sec-title">Skill DNA Matrix</span>
-                          {Object.entries(selectedWorker.skillsDNA).map(([key, val]) => (
+                          {selectedWorker?.skillsDNA && Object.entries(selectedWorker.skillsDNA).map(([key, val]) => (
                             <span key={key}>• {key.toUpperCase()}: {val}%</span>
                           ))}
                         </div>
@@ -1592,15 +1711,15 @@ export default function App() {
                       </div>
                     </div>
                   ) : (
-                    <div className="profile-grid-details">
+                    <div className="profile-grid-details" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                       
-                      <div className="media-container">
+                      <div className="media-container" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                         <span style={{ fontSize: '0.82rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
                           <Video size={14} className="text-blue-500" /> AI Vision Skill Assessment
                         </span>
 
                         <div className="video-frame-box">
-                          <div className="video-play-overlay" onClick={() => alert('Starting simulated vision feed playback...')}>
+                          <div className="video-play-overlay" style={{ textAlign: 'center', cursor: 'pointer' }} onClick={() => alert('Starting simulated vision feed playback...')}>
                             <Play size={32} style={{ margin: '0 auto 6px auto' }} />
                             <p style={{ fontSize: '0.72rem', color: '#94A3B8' }}>Watch Assessment Playback Feed</p>
                           </div>
@@ -1610,7 +1729,7 @@ export default function App() {
                           <Mic size={14} className="text-blue-500" /> Voice Interview Transcript
                         </span>
                         <div className="transcript-block">
-                          <blockquote>"{selectedWorker.voiceTranscript}"</blockquote>
+                          <blockquote>"{selectedWorker?.voiceTranscript}"</blockquote>
                         </div>
                       </div>
 
@@ -1620,12 +1739,12 @@ export default function App() {
                         </span>
 
                         <div className="dna-card-box">
-                          <div className="dna-title-row">
+                          <div className="dna-title-row" style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--color-text-secondary)', borderBottom: '1px solid var(--color-border)', paddingBottom: '4px', marginBottom: '8px' }}>
                             <span>Trade Traits</span>
                             <span>Rating %</span>
                           </div>
                           
-                          <div className="dna-bars-wrapper">
+                          <div className="dna-bars-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             {[
                               { name: 'Precision & Cut Accuracy', key: 'precision', color: '#3B82F6' },
                               { name: 'Safety Practices & Gear', key: 'safety', color: '#10B981' },
@@ -1633,15 +1752,15 @@ export default function App() {
                               { name: 'Speed & Process timing', key: 'speed', color: '#EC4899' },
                               { name: 'Communication & Dialect', key: 'communication', color: '#F59E0B' }
                             ].map(trait => {
-                              const val = selectedWorker.skillsDNA[trait.key];
+                              const val = selectedWorker?.skillsDNA ? selectedWorker.skillsDNA[trait.key] : 80;
                               return (
                                 <div key={trait.key} className="dna-bar-block">
-                                  <div className="dna-bar-header">
+                                  <div className="dna-bar-header" style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', marginBottom: '2px' }}>
                                     <span>{trait.name}</span>
                                     <span>{val}%</span>
                                   </div>
-                                  <div className="dna-bar-track">
-                                    <div className="dna-bar-fill" style={{ width: `${val}%`, backgroundColor: trait.color }}></div>
+                                  <div className="dna-bar-track" style={{ backgroundColor: 'var(--color-border)', height: '4px', borderRadius: '2px', overflow: 'hidden' }}>
+                                    <div className="dna-bar-fill" style={{ width: `${val}%`, backgroundColor: trait.color, height: '100%' }}></div>
                                   </div>
                                 </div>
                               );
@@ -1652,7 +1771,7 @@ export default function App() {
                         <div style={{ marginTop: '16px' }}>
                           <span style={{ fontSize: '0.82rem', fontWeight: 700, display: 'block', marginBottom: '8px' }}>Verified Credentials</span>
                           <div className="badges-row">
-                            {selectedWorker.verifiedSkills.map((badge, idx) => (
+                            {selectedWorker?.verifiedSkills?.map((badge, idx) => (
                               <span key={idx} className="badge-pill">
                                 ✓ {badge}
                               </span>

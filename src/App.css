@@ -1,9 +1,9 @@
-/* KarmSetu Premium Web Portal Style */
+/* KarmSetu Unified Landing Page & Web Portal CSS */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap');
 
 :root {
-  /* Light Theme variables */
+  /* Light Theme Variables */
   --color-bg: #F8FAFC;
   --color-card: #FFFFFF;
   --color-border: #E2E8F0;
@@ -83,6 +83,7 @@ body {
   font-weight: 800;
   font-size: 1.25rem;
   color: var(--color-primary);
+  letter-spacing: -0.5px;
 }
 
 .logo-text span {
@@ -139,7 +140,124 @@ body {
   gap: 12px;
 }
 
-/* Landing / Login Screen Styles */
+/* ======================================================== */
+/* WELCOME LANDING PAGE STYLES                              */
+/* ======================================================== */
+.landing-hero {
+  text-align: center;
+  padding: 60px 20px 40px 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.landing-title {
+  font-family: var(--font-heading);
+  font-size: 2.8rem;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--color-text-primary);
+}
+
+.landing-title span {
+  color: var(--color-primary);
+}
+
+.landing-tagline {
+  font-size: 1.1rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.landing-grid-choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  max-width: 900px;
+  width: 100%;
+  margin: 20px auto 40px auto;
+  padding: 0 20px;
+}
+
+.landing-choice-card {
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.landing-choice-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.choice-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.choice-title {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.choice-desc {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  line-height: 1.45;
+}
+
+.landing-features-section {
+  background-color: var(--color-card);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  padding: 50px 20px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.feature-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.feature-title {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.feature-desc {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  line-height: 1.45;
+}
+
+/* ======================================================== */
+/* LOGIN CARD STYLES                                        */
+/* ======================================================== */
 .login-screen-wrapper {
   flex: 1;
   display: flex;
@@ -159,6 +277,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  position: relative;
 }
 
 .user-type-selector {
@@ -296,7 +415,7 @@ body {
   color: #A7F3D0;
 }
 
-/* Qualifications verification form styles */
+/* Qualifications Form Styles */
 .qual-form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -380,7 +499,7 @@ body {
   gap: 8px;
 }
 
-/* Candidate directory grid */
+/* Candidate directory split grid */
 .directory-grid {
   display: grid;
   grid-template-columns: 350px 1fr;
@@ -451,7 +570,7 @@ body {
   gap: 20px;
 }
 
-/* Video assessment & transcript elements */
+/* Diagnostics Widgets */
 .video-frame-box {
   background-color: #0B0F19;
   height: 200px;
@@ -499,7 +618,7 @@ body {
   color: #A7F3D0;
 }
 
-/* Resume PDF summary view */
+/* Resume Builders */
 .resume-sheet {
   background-color: var(--color-card);
   border: 1.5px solid var(--color-primary);
@@ -670,7 +789,7 @@ body {
   animation: pulseListening 1.2s infinite;
 }
 
-/* Floating sync logging console */
+/* Floating bottom SQL Console drawer */
 .sync-console-drawer {
   position: fixed;
   bottom: 0;
@@ -721,6 +840,27 @@ body {
 .console-row.info { color: #E2E8F0; }
 .console-row.warning { color: #FBBF24; }
 
+/* Buttons & styling utilities */
+.btn-accent {
+  background-color: var(--color-accent);
+  color: #0F172A;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity 0.15s ease;
+}
+
+.btn-accent:hover {
+  opacity: 0.9;
+}
+
 /* Responsive tweaks */
 @media (max-width: 992px) {
   .directory-grid {
@@ -737,6 +877,12 @@ body {
     grid-template-columns: 1fr;
   }
   .qual-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .landing-grid-choices {
+    grid-template-columns: 1fr;
+  }
+  .features-grid {
     grid-template-columns: 1fr;
   }
 }
