@@ -1377,3 +1377,42 @@ input:checked + .slider:before {
   color: #FFFFFF;
   border-color: var(--color-primary);
 }
+
+@media (max-width: 500px) {
+  /* Strip the virtual phone bezel completely and fill screen on mobile devices */
+  .mobile-pane {
+    padding: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    display: flex !important;
+    align-items: stretch !important;
+    justify-content: stretch !important;
+  }
+  .smartphone-frame {
+    width: 100% !important;
+    height: 100% !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+  }
+  .phone-notch {
+    display: none !important;
+  }
+  .phone-screen {
+    border-radius: 0 !important;
+    height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  .showcase-header {
+    display: none !important; /* Hide showcase header on mobile so worker app is fullscreen */
+  }
+  .showcase-workspace {
+    padding: 0 !important;
+    height: 100vh !important;
+  }
+  .sql-sync-console {
+    display: none !important; /* Hide floating console on actual mobile phones */
+  }
+}

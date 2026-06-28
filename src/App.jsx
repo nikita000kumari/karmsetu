@@ -228,6 +228,39 @@ export default function App() {
     return saved ? JSON.parse(saved) : [];
   });
 
+  // Onboarding touch swipe detection
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+
+  const handleTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const minSwipeDistance = 50;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      if (onboardingSlide < 2) {
+        setOnboardingSlide(prev => prev + 1);
+      } else {
+        setAppStep('auth');
+      }
+    } else if (isRightSwipe) {
+      if (onboardingSlide > 0) {
+        setOnboardingSlide(prev => prev - 1);
+      }
+    }
+  };
+
   const videoRef = useRef(null);
   const recognitionRef = useRef(null);
   const consoleBottomRef = useRef(null);
@@ -975,7 +1008,26 @@ export default function App() {
                 {/* SCREEN: Onboarding                                       */}
                 {/* ======================================================== */}
                 {appStep === 'onboarding' && (
-                  <div className="onboarding-screen">
+                  <div 
+                    className="onboarding-screen"
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
+                    style={{ position: 'relative' }}
+                  >
+                    {/* Demo Skip Link */}
+                    <span 
+                      onClick={() => {
+                        setAppStep('home');
+                        setCurrentTab('home');
+                        addLog('success', 'AUTH: Bypassed onboarding via Demo Skip trigger.');
+                        initiateVoiceInterview(selectedAssessmentSkill);
+                      }}
+                      style={{ position: 'absolute', top: '16px', right: '16px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-primary)', cursor: 'pointer', zIndex: 10, display: 'flex', alignItems: 'center', gap: '2px' }}
+                    >
+                      Skip <ArrowRight size={12} />
+                    </span>
+
                     <div className="onboarding-slider">
                       <div className="onboarding-image-container">
                         {onboardingSlide === 0 && (
@@ -1032,7 +1084,20 @@ export default function App() {
                 {/* SCREEN: Authentication                                   */}
                 {/* ======================================================== */}
                 {appStep === 'auth' && (
-                  <div className="auth-screen">
+                  <div className="auth-screen" style={{ position: 'relative' }}>
+                    {/* Demo Skip Link */}
+                    <span 
+                      onClick={() => {
+                        setAppStep('home');
+                        setCurrentTab('home');
+                        addLog('success', 'AUTH: Bypassed auth via Demo Skip trigger.');
+                        initiateVoiceInterview(selectedAssessmentSkill);
+                      }}
+                      style={{ position: 'absolute', top: '16px', right: '16px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-primary)', cursor: 'pointer', zIndex: 10, display: 'flex', alignItems: 'center', gap: '2px' }}
+                    >
+                      Skip <ArrowRight size={12} />
+                    </span>
+
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                       <h2 style={{ fontSize: '1.4rem', color: 'var(--color-primary)' }}>Select Language</h2>
                       <p className="auth-subtitle" style={{ fontSize: '0.82rem', marginBottom: '14px' }}>Choose the language for voice-guided assessments.</p>
