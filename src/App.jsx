@@ -10,6 +10,7 @@ import {
 // Firebase imports
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore, doc, onSnapshot, setDoc, updateDoc, collection } from 'firebase/firestore';
+import { getAuth, signInWithPhoneNumber, RecaptchaVerifier } from 'firebase/auth';
 
 import './App.css';
 
@@ -228,6 +229,9 @@ export default function App() {
     return localStorage.getItem('karmsetu_gemini_key') || '';
   });
   const [db, setDb] = useState(null);
+  const [auth, setAuth] = useState(null);
+  const [confirmationResult, setConfirmationResult] = useState(null);
+  const [realSmsActive, setRealSmsActive] = useState(false);
 
   // SQLite Console logs queue
   const [consoleLogs, setConsoleLogs] = useState([
@@ -297,8 +301,11 @@ export default function App() {
         localStorage.setItem('karmsetu_firebase_config_input', firebaseConfigInput);
         const app = getApps().length === 0 ? initializeApp(config) : getApp();
         const firestore = getFirestore(app);
+        const firebaseAuth = getAuth(app);
         setDb(firestore);
-        addLog('success', `FIREBASE: Connected to project: ${config.projectId}`);
+        setAuth(firebaseAuth);
+        setRealSmsActive(true);
+        addLog('success', `FIREBASE: Connected to project: ${config.projectId}. Real Phone SMS enabled.`);
       }
     } catch (e) {
       addLog('warning', `FIREBASE_ERROR: Invalid config JSON.`);
@@ -339,26 +346,88 @@ export default function App() {
     }
   };
 
-  // OTP login simulated triggers
+  const setupRecaptcha = () => {
+    if (!auth) return null;
+    try {
+      const existing = document.getElementById('recaptcha-container');
+      if (existing) existing.innerHTML = '';
+      
+      const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        size: 'invisible',
+        callback: (response) => {
+          // reCAPTCHA solved
+        },
+        'expired-callback': () => {
+          addLog('warning', 'AUTH: reCAPTCHA expired. Please try again.');
+        }
+      });
+      return verifier;
+    } catch (e) {
+      addLog('warning', `AUTH_RECAPTCHA_ERROR: ${e.message}`);
+      return null;
+    }
+  };
+
+  // OTP login triggers (Real SMS with Demo Fallback)
   const handleSendOTP = () => {
     if (!phoneInput || phoneInput.length < 10) {
       alert('Please enter a valid 10-digit mobile number');
       return;
     }
-    setOtpSent(true);
-    addLog('query', `SMS_SERVICE: Dispatched authorization code to +91 ${phoneInput}`);
+
+    if (realSmsActive && auth) {
+      const verifier = setupRecaptcha();
+      if (verifier) {
+        addLog('info', `AUTH: Requesting real SMS OTP via Firebase Auth for +91${phoneInput}...`);
+        signInWithPhoneNumber(auth, `+91${phoneInput}`, verifier)
+          .then((result) => {
+            setConfirmationResult(result);
+            setOtpSent(true);
+            addLog('success', `SMS_SERVICE: Real OTP dispatched successfully to +91 ${phoneInput}`);
+          })
+          .catch((err) => {
+            addLog('warning', `SMS_FAILED: ${err.message}. Falling back to simulated Demo Mode (OTP: 4821).`);
+            setRealSmsActive(false);
+            setOtpSent(true);
+          });
+      } else {
+        setOtpSent(true);
+        addLog('query', `SMS_SERVICE: Dispatched simulated code to +91 ${phoneInput}`);
+      }
+    } else {
+      setOtpSent(true);
+      addLog('query', `SMS_SERVICE: Dispatched simulated code to +91 ${phoneInput}`);
+    }
   };
 
   const handleVerifyOTP = () => {
-    if (otpInput === '4821') {
-      addLog('success', `AUTH: Successfully verified +91 ${phoneInput}. Session type: WORKER`);
-      setUserRole('worker');
-      setWorkerFlowStep('choose_trade');
-      setPhoneInput('');
-      setOtpInput('');
-      setOtpSent(false);
+    if (realSmsActive && confirmationResult) {
+      addLog('info', `AUTH: Confirming real SMS OTP code "${otpInput}"...`);
+      confirmationResult.confirm(otpInput)
+        .then((result) => {
+          addLog('success', `AUTH: Successfully verified real mobile +91 ${phoneInput}. Session type: WORKER`);
+          setUserRole('worker');
+          setWorkerFlowStep('choose_trade');
+          setPhoneInput('');
+          setOtpInput('');
+          setOtpSent(false);
+          setConfirmationResult(null);
+        })
+        .catch((err) => {
+          addLog('warning', `AUTH_ERROR: Invalid code. ${err.message}`);
+          alert('Incorrect SMS code. Please try again or use Demo Bypass/Quick Skip.');
+        });
     } else {
-      alert('Demo Code is 4821');
+      if (otpInput === '4821') {
+        addLog('success', `AUTH: Successfully verified +91 ${phoneInput} via Demo Mode. Session type: WORKER`);
+        setUserRole('worker');
+        setWorkerFlowStep('choose_trade');
+        setPhoneInput('');
+        setOtpInput('');
+        setOtpSent(false);
+      } else {
+        alert('Demo OTP code is 4821. (To use a real SMS, connect Firebase under Cloud Setup).');
+      }
     }
   };
 
@@ -1359,6 +1428,9 @@ export default function App() {
                   >
                     Quick Demo Skip Login (Worker)
                   </span>
+
+                  {/* Invisible Recaptcha target element */}
+                  <div id="recaptcha-container"></div>
 
                 </div>
               ) : (
