@@ -1,6 +1,8 @@
 # KarmSetu — Skills deserve trust, not just certificates.
 
-KarmSetu is a secure, offline-first digital trust protocol designed to empower India's informal workforce. By replacing paper-based credentials with live skill evidence, verified biometric e-KYC, and spoken dialect assessments, KarmSetu builds a reliable pathway connecting tradesmen directly to infrastructure jobs.
+> **"A worker's future should be decided by what they can do, not by the certificates they couldn't afford to earn."**
+
+KarmSetu is an offline-first digital skill verification platform built for India's informal workforce. Instead of relying on certificates, workers demonstrate their skills through practical tasks and receive a verified digital Skill Passport that employers can trust.
 
 👉 **Live Demo Portal URL**: [https://nikita000kumari.github.io/karmsetu/](https://nikita000kumari.github.io/karmsetu/)
 
@@ -8,57 +10,101 @@ KarmSetu is a secure, offline-first digital trust protocol designed to empower I
 
 ## ⚡ The Problem
 
-Over **450 million informal workers** in India possess years of practical, on-the-job vocational experience but lack formal ITI certifications or paper degrees. Consequently, they are locked out of higher-paying contracts, formal credit loops, and social insurance, while construction builders waste days manually vetting skills on-site.
+* **450M+** Informal Workers in India
+* **80%+** Lack formal documentation or certificates
+* **Thousands** Miss out on higher-paying employment and formal credit daily
 
-## 💡 The Solution
+Millions of skilled carpenters, plumbers, electricians, and tailors possess years of practical experience but struggle to access formal job markets. Without physical paper credentials, they are locked out of higher-paying contracts, formal credit, and social security.
 
-KarmSetu bridges this gap by issuing tamperproof digital **Skill Passports** mapped directly to National Skill Development Corporation (NSDC) frameworks. Workers prove their skills by recording a short video drill and completing a spoken dialect safety test. The platform evaluates their technique, validates their Aadhaar e-KYC, and generates a verified profile with a QR code that employers can scan to instantly inspect audit logs and confirm hiring.
+---
+
+## ⚖️ Why Current Hiring Fails
+
+| Traditional Hiring | KarmSetu |
+| :--- | :--- |
+| **Resume** | Practical Skill Demo |
+| **Certificates** | AI Skill Verification |
+| **Manual Interviews** | Voice Assessment |
+| **Paper Documents** | Digital Skill Passport |
+| **Internet Required** | Offline-first |
+
+---
+
+## 💡 Our Solution
+
+KarmSetu bridges this gap by creating a digital Skill Passport using on-device tests, voice checks, and offline syncing.
+
+1. **Practical Demonstration**: Workers film a short video performing a standard trade task.
+2. **AI Analysis & Feedback**: The platform detects workflow patterns, tool grips, and safety practices.
+3. **Voice Interview**: A quick local-language safety follow-up checks vocational concepts.
+4. **Digital Skill Passport**: Generated instantly, containing verifiable skill ratings and badges.
+5. **Secure Scanning**: Employers scan the passport QR code to confirm credentials on-site.
+
+---
+
+## ⚙️ How KarmSetu Works
+
+```
+Worker
+  ↓
+Video Recording
+  ↓
+Local Storage (SQLite)
+  ↓
+Sync Engine
+  ↓
+Firebase
+  ↓
+Gemini Analysis
+  ↓
+Skill Passport
+  ↓
+Employer Verification
+```
+
+---
+
+## 📈 How the Trust Score is Generated
+
+Employers need a clear reason to trust a worker's score. KarmSetu calculates the rating transparently:
+
+* **40% Practical Demonstration**: AI analysis of tool safety, alignment, and execution.
+* **30% Voice Assessment**: Verification of safety procedures in the worker's native language.
+* **20% Experience Logs**: Self-reported work history, duration, and reference check ledger.
+* **10% Community Verification**: Peer signatures and contractor feedback ratings.
 
 ---
 
 ## 🚀 Core Features
 
-*   **📹 AI Skill Assessment**: Worker films a 5-second camera drill. Edge coordinate inspection checks safety gear compliance and correct tool alignment patterns.
-*   **🎤 Spoken Voice Interview**: AI reads follow-up safety questions aloud. Workers answer verbally in regional dialects; the response is transcribed and graded.
-*   **📄 Verified Skill Passport**: A digital identity containing verified badges, trust index scorecards, and practical project performance registries.
-*   **📷 QR Verification**: Employers scan the passport QR code to instantly verify workers on-site without needing to download any app.
-*   **📶 Offline-First Support**: Local SQLite sync database stores all assessment logs and transcripts in low-connectivity areas, syncing to Firestore when internet returns.
+*   **📹 Skill Assessment**: Workers record a 5-second video demonstration. AI analyzes the recorded task to identify tools, workflow, and basic safety practices.
+*   **🎤 Voice Interview**: Voice-based assessment in the worker's preferred language. Gemini provides structured feedback and identifies visible workflow patterns.
+*   **📄 Skill Passport**: Instantly generated digital passport containing trust scores, verified skill badges, and past project links.
+*   **📷 QR Verification**: Employers scan a worker's QR code on any device without installing an app to pull real-time verification logs.
+*   **📶 Offline Support**: Assessments work fully offline using a local SQLite sync engine, syncing to Firebase automatically when internet connectivity returns.
+*   **🌍 Regional Languages**: Complete onboarding in Hindi, Bengali, Tamil, Telugu, and Marathi to eliminate literacy barriers.
+
+---
+
+## 📸 Screenshots
+
+### 1. Unified Landing & Pitch Deck
+![Unified Landing Page](src/assets/landing_preview.png)
+
+### 2. Worker Skill Assessment & Voice Interview
+![Worker Setup Flow](src/assets/assessment_preview.png)
+
+### 3. Digital Verified Skill Passport (Gold Tier)
+![Digital Verified Skill Passport](src/assets/passport_preview.png)
 
 ---
 
 ## 🛠️ Tech Stack
 
-*   **Frontend Mobile**: React Native / Expo (Android & iOS)
-*   **Web Portal**: React 18 / Vite / Vanilla CSS (Modern premium dark themes)
-*   **Cloud Database**: Firebase Firestore (Real-time syncing)
-*   **Local Database**: SQLite Synchronization Engine (Offline-first data buffers)
-*   **AI Engine**: Google Gemini 1.5 Pro/Flash APIs (Spoken safety grader)
-*   **Identity Layer**: UIDAI Aadhaar e-KYC API bindings
-
----
-
-## 📐 System Architecture
-
-```text
-       +---------------------------------------------+
-       |           React Native Mobile Client        |
-       |  (Webcam viewfinder, Voice speech inputs)   |
-       +---------------------+-----------------------+
-                             |
-                   (Local SQLite Sync Offline)
-                             |
-                             v
-       +---------------------+-----------------------+
-       |            KarmSetu Cloud Core              |
-       +-------+---------------------+---------------+
-               |                     |
-               v                     v
-       +-------+-------+     +-------+-------+
-       |   Firebase    |     | Google Gemini |
-       |   Firestore   |     |   1.5 Flash   |
-       | (Remote Sync) |     | (Voice Grader)|
-       +---------------+     +---------------+
-```
+*   **AI**: Gemini, Speech Recognition, Computer Vision
+*   **Backend**: Firebase
+*   **Mobile**: React Native
+*   **Storage**: SQLite
 
 ---
 
@@ -68,10 +114,11 @@ KarmSetu bridges this gap by issuing tamperproof digital **Skill Passports** map
 karmsetu/
 ├── dist/                # Production distribution builds
 ├── src/
+│   ├── assets/          # Project screenshot assets
 │   ├── App.css          # Premium responsive styling sheet
 │   ├── App.jsx          # Primary workspace portal & interactive landing
 │   ├── main.jsx         # React application entry point
-│   └── index.css        # Core layout resets and variable variables
+│   └── index.css        # Core layout resets and variables
 ├── index.html           # Main HTML container layout
 ├── package.json         # Build dependencies and commands registry
 └── README.md            # Premium repository documentation
@@ -106,10 +153,10 @@ To run the codebase workspace locally:
 
 ---
 
-## 🔮 Future Roadmap
+## 🔮 Roadmap
 
-*   [x] Aadhaar e-KYC Verification Onboarding flow
-*   [x] AI Video camera assessment simulation coordinates
+*   [x] Mobile number verification (Demo Mode)
+*   [x] Camera skill assessment video analysis simulation
 *   [x] Skill Passport QR verification mapping
 *   [ ] Direct integration with NSDC Skill India portal credentials
 *   [ ] Micro-lending bank portal mapping for certified passport holders
@@ -117,12 +164,6 @@ To run the codebase workspace locally:
 
 ---
 
-## 📄 License
-
-Distributed under the **MIT License**. See `LICENSE` for details.
-
----
-
-## 🤝 Contributors
+## 🤝 Team & Contributors
 
 *   **Nikita Kumari** (Lead Developer & Co-Founder) — specialized in React interfaces, SQLite syncing, and Gemini model pipelines.
