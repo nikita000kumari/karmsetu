@@ -86,19 +86,6 @@ Employers need a clear reason to trust a worker's score. KarmSetu calculates the
 
 ---
 
-## 📸 Screenshots
-
-### 1. Unified Landing & Pitch Deck
-![Unified Landing Page](src/assets/landing_preview.png)
-
-### 2. Worker Skill Assessment & Voice Interview
-![Worker Setup Flow](src/assets/assessment_preview.png)
-
-### 3. Digital Verified Skill Passport (Gold Tier)
-![Digital Verified Skill Passport](src/assets/passport_preview.png)
-
----
-
 ## 🛠️ Tech Stack
 
 *   **AI**: Gemini, Speech Recognition, Computer Vision
