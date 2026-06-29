@@ -1399,7 +1399,7 @@ export default function App() {
                         <Lock size={14} className="text-blue-500" />
                         <input 
                           type="text" 
-                          placeholder="Demo OTP code: 4821" 
+                          placeholder="Enter Code (Demo OTP: 4821)" 
                           className="input-field"
                           value={otpInput}
                           onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, '').slice(0, 4))}
@@ -1673,49 +1673,49 @@ export default function App() {
 
             {/* WIZARD STEP 5: Skill Passport Generated */}
             {workerFlowStep === 'passport_generated' && (
-              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '20px', maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px', maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
                 
-                {/* Score Summary */}
-                <div className="dashboard-card">
+                {/* Score & Skill DNA Summary */}
+                <div className="dashboard-card" style={{ display: 'flex', flexDirection: 'column', gap: '20px', background: 'linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(30,41,59,0.9) 100%)', border: '1px solid rgba(255,255,255,0.08)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h3 style={{ fontSize: '1.05rem', fontWeight: 800 }}>Verification Scores</h3>
-                    <span className="govt-verified-pill" style={{ backgroundColor: 'var(--color-secondary-light)', color: '#065F46' }}>
+                    <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--color-primary-light)' }}>AI Assessment Audit Scores</h3>
+                    <span style={{ fontSize: '0.68rem', backgroundColor: 'var(--color-secondary-light)', color: '#10B981', padding: '3px 8px', borderRadius: '4px', fontWeight: 700 }}>
                       ✓ Verified L4
                     </span>
                   </div>
 
-                  <div className="trust-index-banner" style={{ background: 'linear-gradient(135deg, var(--color-primary) 0%, #1D4ED8 100%)' }}>
+                  <div className="trust-index-banner" style={{ background: 'linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%)', borderRadius: '12px', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
-                      <span style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.5px' }}>GLOBAL TRUST SCORE</span>
-                      <h2 style={{ fontSize: '2.5rem', fontWeight: 800, lineHeight: 1, marginTop: '4px' }}>
-                        {raviWorker?.trustScore} <span style={{ fontSize: '1rem', opacity: 0.7 }}>/ 100</span>
+                      <span style={{ fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.5px', color: '#93C5FD' }}>GLOBAL TRUST RATING</span>
+                      <h2 style={{ fontSize: '2.4rem', fontWeight: 800, lineHeight: 1, marginTop: '4px', color: '#FFF' }}>
+                        {raviWorker?.trustScore || 92}%
                       </h2>
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                      <span style={{ fontSize: '0.72rem', backgroundColor: 'rgba(255,255,255,0.2)', padding: '3px 8px', borderRadius: '4px', fontWeight: 700 }}>
-                        Tier: {raviWorker?.level}
+                      <span style={{ fontSize: '0.7rem', backgroundColor: 'rgba(255,255,255,0.15)', color: '#FFF', padding: '3px 8px', borderRadius: '4px', fontWeight: 700 }}>
+                        Tier: {raviWorker?.level || 'Gold'}
                       </span>
                     </div>
                   </div>
 
                   {/* Skill DNA Score bars */}
                   <div>
-                    <h4 style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: '10px' }}>⚡ SKILL DNA INDEX</h4>
-                    <div className="dna-radar-grid">
+                    <h4 style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--color-primary-light)', marginBottom: '14px', letterSpacing: '0.5px' }}>⚡ SKILL DNA INDEX</h4>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                       {[
-                        { name: 'Precision & Cut Accuracy', val: raviWorker?.skillsDNA?.precision || 92, color: '#3B82F6' },
-                        { name: 'Safety Standards & Practices', val: raviWorker?.skillsDNA?.safety || 90, color: '#10B981' },
-                        { name: 'Technical Problem Solving', val: raviWorker?.skillsDNA?.problemSolving || 85, color: '#8B5CF6' },
-                        { name: 'Speed & Workflow Timing', val: raviWorker?.skillsDNA?.speed || 91, color: '#EC4899' },
-                        { name: 'Communication & Dialect clarity', val: raviWorker?.skillsDNA?.communication || 80, color: '#F59E0B' }
+                        { name: 'Precision & Cut Accuracy', val: raviWorker?.skillsDNA?.precision || 94, color: '#3B82F6' },
+                        { name: 'Safety Standards & Practices', val: raviWorker?.skillsDNA?.safety || 88, color: '#10B981' },
+                        { name: 'Technical Problem Solving', val: raviWorker?.skillsDNA?.problemSolving || 90, color: '#8B5CF6' },
+                        { name: 'Speed & Workflow Timing', val: raviWorker?.skillsDNA?.speed || 92, color: '#EC4899' },
+                        { name: 'Communication & Dialect clarity', val: raviWorker?.skillsDNA?.communication || 85, color: '#F59E0B' }
                       ].map(bar => (
-                        <div key={bar.name} className="dna-bar-block">
-                          <div className="dna-bar-header" style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '4px' }}>
-                            <span>{bar.name}</span>
-                            <span style={{ fontWeight: 700 }}>{bar.val}%</span>
+                        <div key={bar.name}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', marginBottom: '4px' }}>
+                            <span style={{ color: '#E2E8F0' }}>{bar.name}</span>
+                            <span style={{ fontWeight: 700, color: '#FFF' }}>{bar.val}%</span>
                           </div>
-                          <div className="dna-bar-track" style={{ backgroundColor: 'var(--color-border)', height: '6px', borderRadius: '3px', overflow: 'hidden' }}>
-                            <div className="dna-bar-fill" style={{ width: `${bar.val}%`, backgroundColor: bar.color, height: '100%' }}></div>
+                          <div style={{ backgroundColor: 'rgba(255,255,255,0.06)', height: '6px', borderRadius: '3px', overflow: 'hidden' }}>
+                            <div style={{ width: `${bar.val}%`, backgroundColor: bar.color, height: '100%' }}></div>
                           </div>
                         </div>
                       ))}
@@ -1726,38 +1726,58 @@ export default function App() {
                 {/* Skill Passport Panel */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                   
-                  <div className="resume-sheet" style={{ borderColor: 'var(--color-primary)', backgroundColor: 'var(--color-card)', marginTop: 0, boxShadow: 'var(--shadow-md)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--color-border)', paddingBottom: '10px', marginBottom: '14px' }}>
-                      <span className="logo-text" style={{ fontSize: '1rem' }}>Karm<span>Setu</span></span>
-                      <span style={{ fontSize: '0.65rem', backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary)', padding: '2px 6px', borderRadius: '4px', fontWeight: 700 }}>
-                        DIGITAL SKILL PASSPORT
+                  <div className="premium-passport-card">
+                    {/* Hologram design strip */}
+                    <div className="hologram-strip"></div>
+                    
+                    <div className="passport-badge-header">
+                      <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#F59E0B', letterSpacing: '0.5px' }}>★ KARMSETU VERIFIED ★</span>
+                      <span style={{ fontSize: '0.62rem', background: 'rgba(255,255,255,0.08)', padding: '2px 8px', borderRadius: '4px', color: '#94A3B8' }}>
+                        ID: KS-AADH-9821
                       </span>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '14px', alignItems: 'center', marginBottom: '14px' }}>
-                      <img src={raviWorker?.avatar} alt="Avatar" style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover' }} />
+                    <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                      <div className="passport-avatar-glow">
+                        <img src={raviWorker?.avatar} alt="Avatar" className="passport-avatar-img" />
+                      </div>
                       <div>
-                        <h4 style={{ fontSize: '1rem', fontWeight: 700 }}>{raviWorker?.name}</h4>
-                        <p style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)' }}>
-                          {raviWorker?.skill} • {raviWorker?.experience} Exp
+                        <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#FFF' }}>{raviWorker?.name || 'Ravi Kumar'}</h4>
+                        <p style={{ fontSize: '0.78rem', color: '#94A3B8', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <Briefcase size={12} /> {raviWorker?.skill || 'Electrician'} • {raviWorker?.experience || '5 Years'} Exp
+                        </p>
+                        <p style={{ fontSize: '0.72rem', color: '#64748B', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
+                          <MapPin size={11} /> {raviWorker?.location || 'New Delhi, Delhi'}
                         </p>
                       </div>
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--color-border)', paddingBottom: '14px', marginBottom: '14px' }}>
+                    {/* Skill badging row */}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                      <span className="passport-badge-pill" style={{ color: '#F59E0B' }}>★ Safety Champion</span>
+                      <span className="passport-badge-pill" style={{ color: '#3B82F6' }}>⚡ MCB Insulated</span>
+                      <span className="passport-badge-pill" style={{ color: '#10B981' }}>✓ Aadhaar Verified</span>
+                    </div>
+
+                    {/* Live Video Diagnostics Replay */}
+                    <div style={{ backgroundColor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', padding: '10px 14px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <Video size={16} className="text-emerald-400" />
                       <div>
-                        <span style={{ fontSize: '0.62rem', color: 'var(--color-text-secondary)', display: 'block' }}>VERIFIED SKILL BADGES</span>
-                        <div className="badges-row" style={{ marginTop: '4px' }}>
-                          {raviWorker?.verifiedSkills?.map((badge, idx) => (
-                            <span key={idx} className="badge-pill" style={{ fontSize: '0.65rem' }}>
-                              ✓ {badge}
-                            </span>
-                          ))}
-                        </div>
+                        <span style={{ fontSize: '0.72rem', fontWeight: 700, display: 'block', color: '#FFF' }}>Live Video Diagnostic Replay</span>
+                        <span style={{ fontSize: '0.62rem', color: '#94A3B8' }}>5s Camera Check: Insulated Stripper Drill Verified</span>
+                      </div>
+                    </div>
+
+                    {/* QR Code and verification stamps */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '16px', marginTop: '4px' }}>
+                      <div>
+                        <span style={{ fontSize: '0.6rem', color: '#64748B', display: 'block', textTransform: 'uppercase' }}>Registry Seals</span>
+                        <span style={{ fontSize: '0.65rem', color: '#E2E8F0', display: 'block', fontWeight: 700, marginTop: '2px' }}>NSDC NSQF L4 mapping</span>
+                        <span style={{ fontSize: '0.6rem', color: '#34D399', display: 'block' }}>SQLite sync status: OK</span>
                       </div>
 
                       {/* SVG QR Code */}
-                      <div style={{ width: '60px', height: '60px', border: '1px solid var(--color-border)', padding: '4px', backgroundColor: '#fff', borderRadius: '4px' }}>
+                      <div style={{ width: '64px', height: '64px', border: '1px solid rgba(255,255,255,0.1)', padding: '4px', backgroundColor: '#fff', borderRadius: '6px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
                         <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
                           <rect width="100" height="100" fill="white" />
                           <path d="M10 10h30v30H10zm5 5h20v20H15zm45-5h30v30H60zm5 5h20v20H65zM10 60h30v30H10zm5 5h20v20H15zm50 15h10v10H65zm10-10h15v10H75zm-15-5h15v10H60zm25 0h5v10H85zm-15 15h5v5h-5z" fill="black" />
@@ -1765,24 +1785,18 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* MVP SIMULATOR BUTTON */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      <span style={{ fontSize: '0.65rem', color: 'var(--color-accent)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <Info size={11} /> MVP SCANNER SIMULATOR
-                      </span>
-                      <button 
-                        className="btn-accent" 
-                        onClick={handleSimulatedQRScan}
-                        style={{ width: '100%', justifyContent: 'center', padding: '10px' }}
-                      >
-                        <QrCode size={16} /> Scan QR Code as Employer
-                      </button>
-                    </div>
-
+                    {/* Employer scanning button simulator */}
+                    <button 
+                      className="btn-accent" 
+                      onClick={handleSimulatedQRScan}
+                      style={{ width: '100%', justifyContent: 'center', padding: '12px', marginTop: '4px', backgroundColor: '#F59E0B', color: '#000' }}
+                    >
+                      <QrCode size={16} /> Simulate Employer QR Scan
+                    </button>
                   </div>
 
                   <div style={{ display: 'flex', gap: '10px' }}>
-                    <button className="btn-outline" style={{ flex: 1 }} onClick={() => setWorkerFlowStep('choose_trade')}>
+                    <button className="btn-outline" style={{ flex: 1, color: '#94A3B8', borderColor: 'rgba(255,255,255,0.1)' }} onClick={() => setWorkerFlowStep('choose_trade')}>
                       Restart MVP Flow
                     </button>
                     <button className="btn-primary" style={{ flex: 1 }} onClick={handleLogout}>
