@@ -14,27 +14,17 @@ KarmSetu bridges this gap by helping informal workers build a trusted digital sk
 
 To give judges and mentors a direct preview of the mobile client experience, we have built an **Interactive Smartphone Simulator** directly inside our live portal.
 
-Rather than clicking through a static sequence of forms, you can select any of the **18 client screens** in the **Developer Control Panel** to jump directly to any state of the application.
+Rather than clicking through a static sequence of forms, you can select any of the **8 core client screens** in the **Developer Control Panel** to jump directly to any step of the end-to-end verification journey.
 
-### Mapped Mobile Screens (1 to 18)
-1. **01 Splash Screen**: Centered logo connection loader (2s auto-timer transition).
-2. **02 Onboarding 1**: Skill recognition pitch with trade task illustrations.
-3. **03 Onboarding 2**: Practical verification over physical certificates illustration.
-4. **04 Onboarding 3**: "Show your work. We'll help prove it" onboarding call-to-action.
-5. **05 Language Selection**: Support for regional dialects (Hindi, English, Tamil, Bengali, Marathi, Telugu).
-6. **06 Phone Login**: Minimalist credential input with country code prefix `+91`.
-7. **07 OTP Verification**: Demo bypass code container (accepts code `4821` to log in).
-8. **08 Home Dashboard**: Ravi Kumar's electrician feed showing Trust Score (92%), trade tier, and next required drills.
-9. **09 Choose Trade**: Assessment list mapping trade rules (Electrician, Plumber, Carpenter, Tailor, Mason).
-10. **10 Camera Viewfinder**: Simulated recording stream with rule targets, safety crops, and 5s drill countdown.
-11. **11 AI Analysis**: Visual analysis frame checker running diagnostics checklist logs.
-12. **12 AI Diagnostic Report**: Grade score, highlighted trade strengths, and recommended improvements.
-13. **13 Voice Interview**: ChatGPT-style speech responder with voice waveforms and simulated voice-to-text typing.
-14. **14 Skill Passport**: Apple Wallet-style digital passport showing verified tags, score, and central registry QR.
-15. **15 Scanner Simulator**: Camera overlay viewfinder designed to scan worker QR codes.
-16. **16 Employer View**: Scanned worker profile diagnostic summary with audit logs playback and "Hire" actions (confetti feedback).
-17. **17 Worker Profile**: Avatar, verified credentials shelf, language selections, and past drills history.
-18. **18 System Settings**: Settings panel supporting Dark Mode and offline database toggles.
+### Mapped Mobile Simulator Screens (1 to 8)
+1. **01 Login & OTP (Authentication)**: Support for regional language selection cards, phone login prefix inputs, and bypass code bypassing (uses code `4821` to simulate).
+2. **02 Home Dashboard (Home)**: Ravi Kumar's workspace metric feed displaying global trust score (92%), trade credentials shelf, and required safety verification tasks.
+3. **03 Choose Trade (Trade Selection)**: Drill listing panel mapping active trade rules (Electrician, Plumber, Tailor, Carpenter, Mason).
+4. **04 Camera Viewfinder (Camera & Capturing)**: Active video camera capture guide mockup overlay highlighting safety checklist drills.
+5. **05 AI Result & Report (Gemini Diagnostics)**: Real-time status diagnostics loading sequences parsing candidate strengths, observations, recommended safety improvements, and confidence scores.
+6. **06 Skill Passport (Wow Screen)**: Apple Wallet-style holographic identity card showing verified safety compliance meters and central registry secure QR tags.
+7. **07 Employer Verify (QR Verification)**: SECURE QR scanning overlay retrieval matching diagnostic audit playback checklists and dispatch contract hiring callbacks.
+8. **08 Profile & Settings (Polish & Sync Console)**: Settings manager control panels with dark theme overrides and offline SQLite synchronization log toggles.
 
 ---
 
@@ -113,15 +103,14 @@ To run the client codebase and developer workspace locally:
 
 ## 🔮 Implementation Roadmap
 
-* [x] **Splash & Authentication**: Minimal connection loader, regional language cards, and simulated OTP bypass gate.
-* [x] **Worker Portal**: Home dashboard, trade checklists, and interactive metric dials.
-* [x] **AI Verification**: Computer vision tools tracking safety drills, checklist status processing, and voice safety waveforms.
-* [x] **Skill Passport**: Apple Wallet-style digital identity card with interactive Skill DNA gauges and holographic profile indicators.
-* [x] **Employer Scanning**: Dynamic QR scanning simulation, verified diagnostic playback audit logs, and contract hiring options with confetti metrics.
-* [x] **Visual Design Sandbox**: Centralized controller to preview all screens, along with live Dark Mode and offline database toggles.
-* [x] **Landing Portal**: Premium 8-step conversion homepage mapped around user pain points and system architecture.
-* [ ] Integrate direct credentials sync to Skill India (NSDC) registries.
-* [ ] Implement micro-lending API bindings for certified passport holders.
+* [x] **Expo setup & Base Navigation** — Set up app shell routing, theme typography tokens, outline buttons, and core card components.
+* [x] **Authentication Flow** — Build regional language selections and passwordless phone verification using demo OTP bypass overrides.
+* [x] **Home & Trade Selection Dashboard** — Implement active dashboard listings to review next required safety tasks for candidate trade categories.
+* [x] **Camera & Capture Viewfinder** — Establish active overlay lines showing safety bounding box guides and recording cues.
+* [x] **Gemini AI Diagnostic parsing** — Connect prompts to return structured candidate evaluations covering strengths, observations, safety recommendations, and confidence ratings.
+* [x] **Premium Skill Passport (Wow Card)** — Style Apple Wallet holographic identity badges presenting verified Trust Score DNA parameters.
+* [x] **Employer QR Verification** — Code secure scanner matching loops, verified drill logs review, and dispatch callbacks.
+* [x] **Polish & Offline SQLite synchronization** — Add dark theme switches and local transaction database sync console feeds.
 
 ---
 
