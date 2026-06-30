@@ -1080,18 +1080,38 @@ body {
   height: 720px;
   border: 12px solid #0F172A;
   border-radius: 40px;
-  background-color: #F8FAFC;
+  background-color: var(--color-bg);
   overflow: hidden;
   box-shadow: 0 30px 60px -15px rgba(15, 23, 42, 0.25);
   display: flex;
   flex-direction: column;
   position: relative;
   transition: all 0.2s ease;
+  
+  /* Scoped light simulator theme variables */
+  --color-bg: #F8FAFC;
+  --color-card: #FFFFFF;
+  --color-border: #E2E8F0;
+  --color-text-primary: #0F172A;
+  --color-text-secondary: #64748B;
+  --color-text-light: #94A3B8;
+  --color-primary-light: rgba(30, 64, 175, 0.05);
+  color: var(--color-text-primary);
 }
 
 .phone-mockup-frame.dark-sim {
   border-color: #1E293B;
-  background-color: #0F172A;
+  background-color: var(--color-bg);
+  
+  /* Scoped dark simulator theme variables */
+  --color-bg: #090D16;
+  --color-card: #0F172A;
+  --color-border: #1E293B;
+  --color-text-primary: #F8FAFC;
+  --color-text-secondary: #94A3B8;
+  --color-text-light: #64748B;
+  --color-primary-light: rgba(30, 64, 175, 0.2);
+  color: var(--color-text-primary);
 }
 
 .phone-screen-container {

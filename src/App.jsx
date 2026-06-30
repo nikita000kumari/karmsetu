@@ -277,8 +277,10 @@ export default function App() {
   useEffect(() => {
     if (themeMode === 'dark') {
       document.documentElement.classList.add('dark');
+      setSimDarkMode(true);
     } else {
       document.documentElement.classList.remove('dark');
+      setSimDarkMode(false);
     }
     localStorage.setItem('karmsetu_theme', themeMode);
   }, [themeMode]);
@@ -1714,7 +1716,7 @@ export default function App() {
                           <p style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', marginTop: '2px' }}>AI compliance metrics for {simSelectedTrade}</p>
                         </div>
 
-                        <div className="card-sim" style={{ background: '#0F172A', color: '#FFF', padding: '16px', borderRadius: '20px', textAlign: 'center', border: 'none' }}>
+                        <div className="card-sim" style={{ background: 'var(--color-bg)', padding: '16px', borderRadius: '20px', textAlign: 'center', border: 'none' }}>
                           <span style={{ fontSize: '0.62rem', color: '#38BDF8', fontWeight: 700, letterSpacing: '0.5px' }}>OVERALL CONFIDENCE RATING</span>
                           <h2 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#38BDF8', marginTop: '4px' }}>91%</h2>
                           <span style={{ fontSize: '0.62rem', color: '#94A3B8', display: 'block', marginTop: '4px' }}>Grade L4 safety standards approved</span>
@@ -1839,7 +1841,7 @@ export default function App() {
                       <strong style={{ fontSize: '0.75rem', display: 'block', marginBottom: '8px' }}>AI Video Audit Log:</strong>
                       <div 
                         onClick={() => alert('Playing simulated video safety drill...')}
-                        style={{ height: '70px', background: '#0F172A', borderRadius: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#94A3B8', cursor: 'pointer' }}
+                        style={{ height: '70px', background: 'var(--color-bg)', borderRadius: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-secondary)', cursor: 'pointer' }}
                       >
                         <Play size={16} className="text-emerald-400" />
                         <span style={{ fontSize: '0.62rem', marginTop: '6px' }}>View Safety Drill (5-sec check)</span>
