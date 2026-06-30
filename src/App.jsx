@@ -876,7 +876,7 @@ export default function App() {
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="btn-outline" 
-                  style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '14px 32px', fontSize: '0.92rem', textDecoration: 'none', border: '1px solid #E2E8F0', borderRadius: '18px', color: '#0F172A', fontWeight: 600 }}
+                  style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '14px 32px', fontSize: '0.92rem', textDecoration: 'none', border: '1px solid var(--color-border)', borderRadius: '18px', color: 'var(--color-text-primary)', fontWeight: 600 }}
                 >
                   <GithubIcon /> GitHub
                 </a>
@@ -977,41 +977,84 @@ export default function App() {
             </section>
 
             {/* 4️⃣ WHY KARMSETU? SECTION */}
-            <section className="comparison-section" style={{ padding: '60px 20px', backgroundColor: 'var(--color-bg)' }}>
+            <section className="comparison-section" style={{ padding: '80px 20px', backgroundColor: 'var(--color-bg)' }}>
               <h2 className="landing-section-title">Why KarmSetu?</h2>
               <p className="landing-section-subtitle">How KarmSetu replaces outdated paper models with live skill evidence.</p>
               
-              <div className="comparison-table-wrapper" style={{ marginTop: '20px' }}>
-                <table className="comparison-table">
-                  <thead>
-                    <tr>
-                      <th style={{ padding: '16px', color: '#EF4444' }}>❌ Today</th>
-                      <th style={{ color: '#10B981', padding: '16px' }}>✅ With KarmSetu</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td style={{ padding: '16px' }}>Certificates</td>
-                      <td style={{ color: '#10B981', fontWeight: 600, padding: '16px' }}>Demonstrated Skills</td>
-                    </tr>
-                    <tr>
-                      <td style={{ padding: '16px' }}>Manual Screening</td>
-                      <td style={{ color: '#10B981', fontWeight: 600, padding: '16px' }}>AI Assisted</td>
-                    </tr>
-                    <tr>
-                      <td style={{ padding: '16px' }}>Paper Records</td>
-                      <td style={{ color: '#10B981', fontWeight: 600, padding: '16px' }}>Digital Passport</td>
-                    </tr>
-                    <tr>
-                      <td style={{ padding: '16px' }}>Difficult Verification</td>
-                      <td style={{ color: '#10B981', fontWeight: 600, padding: '16px' }}>QR Verification</td>
-                    </tr>
-                    <tr>
-                      <td style={{ padding: '16px' }}>Internet Required</td>
-                      <td style={{ color: '#10B981', fontWeight: 600, padding: '16px' }}>Offline First</td>
-                    </tr>
-                  </tbody>
-                </table>
+              <div style={{ maxWidth: '800px', margin: '40px auto 0 auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {/* Headers */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', padding: '0 10px' }}>
+                  <div style={{ textAlign: 'center', padding: '14px', borderRadius: '14px', backgroundColor: 'rgba(239, 68, 68, 0.04)', border: '1px solid rgba(239, 68, 68, 0.1)' }}>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#EF4444' }}>❌ Today (Traditional)</span>
+                  </div>
+                  <div style={{ textAlign: 'center', padding: '14px', borderRadius: '14px', backgroundColor: 'rgba(16, 185, 129, 0.04)', border: '1px solid rgba(16, 185, 129, 0.1)' }}>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#10B981' }}>✅ With KarmSetu</span>
+                  </div>
+                </div>
+
+                {/* Comparison Row Cards */}
+                {[
+                  { label: 'Evaluation Basis', today: 'Theoretical Certificates', karmsetu: 'Demonstrated Skills Drill' },
+                  { label: 'Screening Method', today: 'Manual CV Verifications', karmsetu: 'Instant AI-Assisted Checks' },
+                  { label: 'Credential Format', today: 'Static Paper Documents', karmsetu: 'Dynamic Digital Skill Passports' },
+                  { label: 'Field Verification', today: 'Slow Reference Inquiries', karmsetu: 'On-site Secure QR Scanning' },
+                  { label: 'Network Dependency', today: 'Active Internet Needed', karmsetu: '100% Offline-First SQLite Sync' }
+                ].map((row, idx) => (
+                  <div key={idx} style={{ position: 'relative' }}>
+                    {/* Row Label (Center badge overlay) */}
+                    <div style={{ 
+                      position: 'absolute', 
+                      top: '50%', 
+                      left: '50%', 
+                      transform: 'translate(-50%, -50%)',
+                      backgroundColor: 'var(--color-bg)',
+                      border: '1px solid var(--color-border)',
+                      borderRadius: '20px',
+                      padding: '4px 12px',
+                      fontSize: '0.68rem',
+                      fontWeight: 700,
+                      color: 'var(--color-text-secondary)',
+                      zIndex: 10,
+                      boxShadow: 'var(--shadow-sm)',
+                      whiteSpace: 'nowrap'
+                    }}>
+                      {row.label}
+                    </div>
+
+                    {/* Left & Right Grid Box */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                      {/* Today card */}
+                      <div style={{ 
+                        backgroundColor: 'var(--color-card)', 
+                        border: '1px solid var(--color-border)', 
+                        borderRadius: '16px', 
+                        padding: '20px 24px 20px 16px', 
+                        textAlign: 'center',
+                        color: 'var(--color-text-secondary)',
+                        fontSize: '0.82rem',
+                        fontWeight: 600,
+                        opacity: 0.8
+                      }}>
+                        {row.today}
+                      </div>
+
+                      {/* KarmSetu card */}
+                      <div style={{ 
+                        backgroundColor: 'var(--color-card)', 
+                        border: '1px solid var(--color-secondary)', 
+                        borderRadius: '16px', 
+                        padding: '20px 16px 20px 24px', 
+                        textAlign: 'center',
+                        color: 'var(--color-secondary)',
+                        fontSize: '0.82rem',
+                        fontWeight: 700,
+                        boxShadow: '0 4px 14px rgba(16, 185, 129, 0.03)'
+                      }}>
+                        {row.karmsetu}
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </section>
 
@@ -1181,8 +1224,8 @@ export default function App() {
             <section style={{ padding: '80px 20px', backgroundColor: 'var(--color-card)', borderTop: '1px solid var(--color-border)', overflow: 'hidden' }}>
               <div style={{ maxWidth: '600px', margin: '0 auto' }}>
                 <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-                  <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>Roadmap 2026</h2>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginTop: '4px' }}>Our expansion milestone track for formalization.</p>
+                  <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>Future Features</h2>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginTop: '4px' }}>Our planned milestone track for future expansion.</p>
                 </div>
 
                 <div style={{ position: 'relative', paddingLeft: '32px', textAlign: 'left' }}>
