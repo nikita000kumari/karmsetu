@@ -1206,7 +1206,7 @@ export default function App() {
                 <LogoSVG />
                 <span className="logo-text">Karm<span>Setu</span></span>
               </div>
-              <p>© 2026 KarmSetu India. Skill India registries mapping protocol compliant.</p>
+              <p>© 2026 KarmSetu. Built for Build for Good 2026.</p>
               <div style={{ display: 'flex', gap: '14px', marginTop: '10px' }}>
                 <a href="https://github.com/nikita000kumari/karmsetu" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'underline', fontSize: '0.78rem' }}>
                   GitHub Codebase Repository
@@ -1228,7 +1228,7 @@ export default function App() {
                 <Settings size={16} /> DEVELOPER CONSOLE
               </div>
               <p className="dev-subtitle">
-                Inspect and jump to any of the 18 client screens designed under Apple Human Interface guidelines.
+                Inspect and jump to any of the 8 client screens designed under Apple Human Interface guidelines.
               </p>
 
               <div className="screen-shortcuts-list">
