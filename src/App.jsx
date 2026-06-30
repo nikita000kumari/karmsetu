@@ -869,14 +869,13 @@ export default function App() {
                     setActiveSimScreen('01_splash');
                   }}
                 >
-                  Live Demo <ArrowRight size={16} />
+                  Live Demo
                 </button>
                 <a 
                   href="https://github.com/nikita000kumari/karmsetu" 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="btn-outline" 
-                  style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '14px 32px', fontSize: '0.92rem', textDecoration: 'none', border: '1px solid var(--color-border)', borderRadius: '18px', color: 'var(--color-text-primary)', fontWeight: 600 }}
+                  className="hero-btn-github"
                 >
                   <GithubIcon /> GitHub
                 </a>
