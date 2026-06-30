@@ -113,13 +113,13 @@ To run the client codebase and developer workspace locally:
 
 ## 🔮 Implementation Roadmap
 
-* [x] **Day 1**: Splash, regional languages selection, and phone OTP bypass modes.
-* [x] **Day 2**: Worker dashboard metrics widgets and camera viewfinder overlays.
-* [x] **Day 3**: Frame-by-frame compliance checks checklist and voice interview audio waveforms.
-* [x] **Day 4**: Apple Wallet style hologram passport cards and DNA progress rows.
-* [x] **Day 5**: QR scanning simulator and employer candidate hire actions (confetti notifications).
-* [x] **Day 6**: Profile settings dashboard with Dark Mode theme controls.
-* [x] **Day 7**: Production build optimization and responsive 8-step sales landing portal.
+* [x] **Splash & Authentication**: Minimal connection loader, regional language cards, and simulated OTP bypass gate.
+* [x] **Worker Portal**: Home dashboard, trade checklists, and interactive metric dials.
+* [x] **AI Verification**: Computer vision tools tracking safety drills, checklist status processing, and voice safety waveforms.
+* [x] **Skill Passport**: Apple Wallet-style digital identity card with interactive Skill DNA gauges and holographic profile indicators.
+* [x] **Employer Scanning**: Dynamic QR scanning simulation, verified diagnostic playback audit logs, and contract hiring options with confetti metrics.
+* [x] **Visual Design Sandbox**: Centralized controller to preview all screens, along with live Dark Mode and offline database toggles.
+* [x] **Landing Portal**: Premium 8-step conversion homepage mapped around user pain points and system architecture.
 * [ ] Integrate direct credentials sync to Skill India (NSDC) registries.
 * [ ] Implement micro-lending API bindings for certified passport holders.
 
