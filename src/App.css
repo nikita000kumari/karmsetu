@@ -931,3 +931,303 @@ body {
   100% { background-position: 0% 50%; }
 }
 
+/* Unified 18-Screen Simulator Layouts */
+.simulator-workspace-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 40px;
+  padding: 40px 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.developer-panel {
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  padding: 24px;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: var(--shadow-sm);
+  max-height: 720px;
+  overflow-y: auto;
+}
+
+.dev-title {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dev-subtitle {
+  font-size: 0.72rem;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.screen-shortcuts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.shortcut-btn {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.shortcut-btn:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.shortcut-btn.active {
+  background: var(--color-primary);
+  color: #FFFFFF;
+  border-color: var(--color-primary);
+}
+
+.phone-mockup-frame {
+  width: 360px;
+  height: 720px;
+  border: 12px solid #0F172A;
+  border-radius: 40px;
+  background-color: #F8FAFC;
+  overflow: hidden;
+  box-shadow: 0 30px 60px -15px rgba(15, 23, 42, 0.25);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.phone-mockup-frame.dark-sim {
+  border-color: #1E293B;
+  background-color: #0F172A;
+}
+
+.phone-screen-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.phone-status-bar {
+  height: 40px;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #0F172A;
+  z-index: 10;
+}
+
+.dark-sim .phone-status-bar {
+  color: #F8FAFC;
+}
+
+.phone-notch {
+  width: 110px;
+  height: 24px;
+  background-color: #0F172A;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+}
+
+.phone-screen-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px 80px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Bottom Nav Menu inside phone */
+.phone-bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 68px;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--color-border);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: center;
+  z-index: 20;
+}
+
+.dark-sim .phone-bottom-nav {
+  background-color: rgba(15, 23, 42, 0.95);
+  border-top-color: #1E293B;
+}
+
+.nav-item-btn {
+  background: transparent;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-text-light);
+  font-size: 0.6rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.nav-item-btn.active {
+  color: var(--color-primary);
+}
+
+.dark-sim .nav-item-btn.active {
+  color: #38BDF8;
+}
+
+/* Audio wave animations for Voice screen */
+.voice-waves-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  height: 50px;
+  margin: 10px 0;
+}
+
+.wave-bar {
+  width: 4px;
+  background-color: var(--color-primary);
+  border-radius: 3px;
+  animation: siriWave 1.2s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(1) { height: 10px; animation-delay: 0.1s; }
+.wave-bar:nth-child(2) { height: 25px; animation-delay: 0.3s; }
+.wave-bar:nth-child(3) { height: 40px; animation-delay: 0.5s; }
+.wave-bar:nth-child(4) { height: 20px; animation-delay: 0.2s; }
+.wave-bar:nth-child(5) { height: 30px; animation-delay: 0.4s; }
+
+@keyframes siriWave {
+  0%, 100% { transform: scaleY(0.4); }
+  50% { transform: scaleY(1.3); }
+}
+
+/* Onboarding slide transition wrapper */
+.onboarding-screen-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  text-align: center;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.onboarding-title {
+  font-family: var(--font-heading);
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-top: 40px;
+  color: var(--color-text-primary);
+}
+
+.dark-sim .onboarding-title {
+  color: #FFFFFF;
+}
+
+/* Custom rounded button settings */
+.btn-sim {
+  border-radius: 18px;
+  padding: 14px 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.btn-sim-primary {
+  background-color: var(--color-primary);
+  color: #FFFFFF;
+}
+
+.btn-sim-primary:hover {
+  background-color: #1E3A8A;
+}
+
+.btn-sim-outline {
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.dark-sim .btn-sim-outline {
+  border-color: #1E293B;
+  color: #94A3B8;
+}
+
+/* Custom cards */
+.card-sim {
+  background-color: #FFFFFF;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+  transition: all 0.15s ease;
+}
+
+.dark-sim .card-sim {
+  background-color: #1E293B;
+  border-color: #334155;
+  box-shadow: none;
+}
+
+/* Confetti layout */
+.confetti-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: pointer-events-none;
+  z-index: 99;
+  overflow: hidden;
+}
+
+

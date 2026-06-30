@@ -217,7 +217,19 @@ export default function App() {
   const [hiredWorkerId, setHiredWorkerId] = useState(null);
   const [showResume, setShowResume] = useState(false);
 
-  // QR Code Scanner simulator overlay
+  // Simulator State Machine hooks
+  const [activeSimScreen, setActiveSimScreen] = useState('01_splash');
+  const [simLanguage, setSimLanguage] = useState('English');
+  const [simPhoneInput, setSimPhoneInput] = useState('');
+  const [simOtpInput, setSimOtpInput] = useState('');
+  const [simSelectedTrade, setSimSelectedTrade] = useState('⚡ Electrician');
+  const [simRecordingSeconds, setSimRecordingSeconds] = useState(0);
+  const [simAnalysisStep, setSimAnalysisStep] = useState(0);
+  const [simInterviewResponse, setSimInterviewResponse] = useState('');
+  const [simIsHired, setSimIsHired] = useState(false);
+  const [simOffline, setSimOffline] = useState(false);
+  const [simDarkMode, setSimDarkMode] = useState(false);
+  const [simConfetti, setSimConfetti] = useState(false);
   const [qrScannedCandidateId, setQrScannedCandidateId] = useState(null);
 
   // Cloud backend variables
@@ -330,6 +342,51 @@ export default function App() {
     });
     return () => unsubscribe();
   }, [db]);
+
+  // Simulator Screen Automation triggers
+  useEffect(() => {
+    if (activeSimScreen === '01_splash') {
+      const t = setTimeout(() => {
+        setActiveSimScreen('02_onboarding_1');
+        addLog('info', 'SIMULATOR: Auto-advanced splash screen to onboarding slides.');
+      }, 2000);
+      return () => clearTimeout(t);
+    }
+  }, [activeSimScreen]);
+
+  useEffect(() => {
+    let t;
+    if (activeSimScreen === '10_camera' && simRecordingSeconds > 0) {
+      t = setTimeout(() => {
+        if (simRecordingSeconds >= 5) {
+          setActiveSimScreen('11_ai_analysis');
+          setSimRecordingSeconds(0);
+          addLog('success', 'SIMULATOR: Video record drill completed. Initiated AI analysis checks.');
+        } else {
+          setSimRecordingSeconds(s => s + 1);
+        }
+      }, 1000);
+    }
+    return () => clearTimeout(t);
+  }, [activeSimScreen, simRecordingSeconds]);
+
+  useEffect(() => {
+    let t;
+    if (activeSimScreen === '11_ai_analysis') {
+      t = setTimeout(() => {
+        if (simAnalysisStep < 4) {
+          setSimAnalysisStep(s => s + 1);
+          const tasks = ['Detecting Tools', 'Checking Safety Gear', 'Evaluating Workflow', 'Building Skill DNA Report'];
+          addLog('info', `SIMULATOR AI: Completed check for: ${tasks[simAnalysisStep]}`);
+        } else {
+          setActiveSimScreen('12_ai_report');
+          setSimAnalysisStep(0);
+          addLog('success', 'SIMULATOR AI: Vision compliance analysis report prepared.');
+        }
+      }, 1000);
+    }
+    return () => clearTimeout(t);
+  }, [activeSimScreen, simAnalysisStep]);
 
   const updateWorkerProfile = async (workerId, fields) => {
     if (db) {
@@ -1190,805 +1247,963 @@ export default function App() {
         )}
 
         {/* ======================================================== */}
-        {/* SCREEN 2: Auth Login Panel (showLogin === true)          */}
+        {/* INTERACTIVE MOBILE CLIENT APPLICATION SIMULATOR         */}
         {/* ======================================================== */}
-        {userRole === 'none' && showLogin && (
-          <div className="login-screen-wrapper">
-            <div className="login-card">
-              
-              {/* Back to landing link */}
-              <span 
-                onClick={() => setShowLogin(false)}
-                style={{ position: 'absolute', top: '20px', left: '20px', fontSize: '0.75rem', color: 'var(--color-text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 600 }}
-              >
-                ← Back to Welcome Page
-              </span>
-
-              <div style={{ textAlign: 'center', marginTop: '10px' }}>
-                <LogoSVG />
-                <h2 style={{ fontSize: '1.4rem', fontWeight: 800, marginTop: '8px', color: 'var(--color-primary)' }}>KarmSetu Login</h2>
-                <p style={{ fontSize: '0.82rem', color: 'var(--color-text-secondary)', marginTop: '2px' }}>Choose your portal and enter authentication details.</p>
+        {showLogin && (
+          <div className="simulator-workspace-container">
+            
+            {/* Developer Control Console Panel (Left) */}
+            <aside className="developer-panel">
+              <div className="dev-title">
+                <Settings size={16} /> DEVELOPER CONSOLE
               </div>
+              <p className="dev-subtitle">
+                Inspect and jump to any of the 18 client screens designed under Apple Human Interface guidelines.
+              </p>
 
-              {/* Tab Selector */}
-              <div className="user-type-selector">
-                <button 
-                  className={`user-type-btn ${loginTab === 'worker' ? 'active' : ''}`}
-                  onClick={() => { setLoginTab('worker'); setOtpSent(false); }}
-                >
-                  <User size={16} /> Worker Portal
-                </button>
-                <button 
-                  className={`user-type-btn ${loginTab === 'employer' ? 'active' : ''}`}
-                  onClick={() => setLoginTab('employer')}
-                >
-                  <Briefcase size={16} /> Employer Portal
-                </button>
-              </div>
-
-              {/* Worker Form */}
-              {loginTab === 'worker' ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                  
-                  <div>
-                    <label className="input-label">Choose Assessment Language</label>
-                    <div className="lang-grid">
-                      {['Hindi', 'English', 'Tamil', 'Bengali', 'Marathi', 'Telugu'].map(lang => (
-                        <div 
-                          key={lang}
-                          className={`lang-chip ${selectedLanguage === lang ? 'active' : ''}`}
-                          onClick={() => setSelectedLanguage(lang)}
-                        >
-                          <span style={{ fontWeight: 700 }}>{lang}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="input-label">Mobile Number</label>
-                    <div className="input-wrapper">
-                      <span style={{ fontSize: '0.85rem', color: 'var(--color-text-light)' }}>+91</span>
-                      <input 
-                        type="tel" 
-                        placeholder="Enter mobile number" 
-                        className="input-field"
-                        value={phoneInput}
-                        onChange={(e) => setPhoneInput(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                      />
-                    </div>
-                  </div>
-
-                  {otpSent && (
-                    <div style={{ animation: 'slideUp 0.15s ease' }}>
-                      <label className="input-label">Enter 4-Digit OTP Token</label>
-                      <div className="input-wrapper">
-                        <Lock size={14} className="text-blue-500" />
-                        <input 
-                          type="text" 
-                          placeholder="Enter Code (Demo OTP: 4821)" 
-                          className="input-field"
-                          value={otpInput}
-                          onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {!otpSent ? (
-                    <button className="btn-primary" style={{ width: '100%', justifyContent: 'center' }} onClick={handleSendOTP}>
-                      Get OTP verification Code
-                    </button>
-                  ) : (
-                    <button className="btn-primary" style={{ width: '100%', justifyContent: 'center' }} onClick={handleVerifyOTP}>
-                      Verify and Login
-                    </button>
-                  )}
-
-                  <span 
+              <div className="screen-shortcuts-list">
+                {[
+                  { id: '01_splash', title: '01 Splash Screen', desc: 'Minimal connection loader' },
+                  { id: '02_onboarding_1', title: '02 Onboarding 1', desc: 'Skill recognition pitch' },
+                  { id: '03_onboarding_2', title: '03 Onboarding 2', desc: 'Talent vs Certificate' },
+                  { id: '04_onboarding_3', title: '04 Onboarding 3', desc: 'Show Your Work CTA' },
+                  { id: '05_language', title: '05 Language Selection', desc: 'Regional language cards' },
+                  { id: '06_login', title: '06 Phone Login', desc: 'Credential input portal' },
+                  { id: '07_otp', title: '07 OTP Verification', desc: 'Simulated 4-digit code' },
+                  { id: '08_home', title: '08 Home Dashboard', desc: "Ravi Kumar's job overview" },
+                  { id: '09_assessment', title: '09 Choose Trade', desc: 'Trade assessment categories' },
+                  { id: '10_camera', title: '10 Video Viewfinder', desc: 'Insulated Stripper Drill' },
+                  { id: '11_ai_analysis', title: '11 AI Processing', desc: 'Frame diagnostic checklist' },
+                  { id: '12_ai_report', title: '12 AI Diagnostic Report', desc: 'Compliance score & traits' },
+                  { id: '13_voice_interview', title: '13 Voice Interview', desc: 'ChatGPT safety interview' },
+                  { id: '14_passport', title: '14 Skill Passport', desc: 'Apple Wallet card & DNA' },
+                  { id: '15_employer_scan', title: '15 Scanner Simulator', desc: 'Decodes candidate QR' },
+                  { id: '16_employer_view', title: '16 Employer Audit', desc: 'Video audit logs & Hiring' },
+                  { id: '17_profile', title: '17 Worker Profile', desc: 'Certifications shelf & history' },
+                  { id: '18_settings', title: '18 System Settings', desc: 'Dark Mode & Offline toggles' }
+                ].map(scr => (
+                  <button 
+                    key={scr.id}
+                    className={`shortcut-btn ${activeSimScreen === scr.id ? 'active' : ''}`}
                     onClick={() => {
-                      setUserRole('worker');
-                      setWorkerFlowStep('choose_trade');
-                      addLog('success', 'AUTH: Bypassed worker authentication via Quick Login.');
+                      setActiveSimScreen(scr.id);
+                      setSimConfetti(false);
+                      if (scr.id === '11_ai_analysis') setSimAnalysisStep(0);
+                      if (scr.id === '10_camera') setSimRecordingSeconds(0);
+                      addLog('info', `SIMULATOR: Forced navigation jump to screen "${scr.id.toUpperCase()}"`);
                     }}
-                    style={{ fontSize: '0.78rem', color: 'var(--color-primary)', textAlign: 'center', cursor: 'pointer', fontWeight: 600, textDecoration: 'underline' }}
                   >
-                    Quick Demo Skip Login (Worker)
-                  </span>
-
-                  {/* Invisible Recaptcha target element */}
-                  <div id="recaptcha-container"></div>
-
-                </div>
-              ) : (
-                /* Employer Login */
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                  <div>
-                    <label className="input-label">Corporate Email / Phone</label>
-                    <div className="input-wrapper">
-                      <input type="text" placeholder="Enter work email" className="input-field" defaultValue="hr@infra-builder.in" />
+                    <div style={{ textAlign: 'left' }}>
+                      <span style={{ display: 'block', fontWeight: 700 }}>{scr.title}</span>
+                      <span style={{ fontSize: '0.62rem', opacity: 0.8, fontWeight: 500 }}>{scr.desc}</span>
                     </div>
-                  </div>
-
-                  <div>
-                    <label className="input-label">Password</label>
-                    <div className="input-wrapper">
-                      <Lock size={14} className="text-blue-500" />
-                      <input type="password" placeholder="••••••••" className="input-field" defaultValue="companypass" />
-                    </div>
-                  </div>
-
-                  <button className="btn-primary" style={{ width: '100%', justifyContent: 'center' }} onClick={handleEmployerLogin}>
-                    Enter Employer Portal
+                    <ArrowRight size={12} />
                   </button>
+                ))}
+              </div>
 
-                  <span 
-                    onClick={() => {
-                      setUserRole('employer');
-                      setEmployerActiveTab('directory');
-                      addLog('success', 'AUTH: Bypassed employer authentication via Quick Login.');
-                    }}
-                    style={{ fontSize: '0.78rem', color: 'var(--color-primary)', textAlign: 'center', cursor: 'pointer', fontWeight: 600, textDecoration: 'underline' }}
-                  >
-                    Quick Demo Skip Login (Employer)
+              <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)', margin: '10px 0' }} />
+
+              <button 
+                className="btn-sim btn-sim-outline" 
+                onClick={() => {
+                  setShowLogin(false);
+                  addLog('info', 'SIMULATOR: Closed simulator workspace.');
+                }}
+              >
+                ← Back to Homepage
+              </button>
+            </aside>
+
+            {/* Smartphone Mockup Frame Container (Right) */}
+            <main 
+              className={`phone-mockup-frame ${simDarkMode ? 'dark-sim' : ''}`}
+              style={{ fontFamily: "'Inter', sans-serif" }}
+            >
+              {/* Confetti Animation Effect Overlay */}
+              {simConfetti && (
+                <div className="confetti-overlay" style={{ background: 'rgba(16, 185, 129, 0.08)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                  <Award size={48} className="text-emerald-400 animate-bounce" />
+                  <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#10B981', background: '#FFF', padding: '6px 14px', borderRadius: '12px', marginTop: '10px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                    Contract Dispatched!
                   </span>
                 </div>
               )}
 
-            </div>
-          </div>
-        )}
-
-        {/* ======================================================== */}
-        {/* VIEW: WORKER ASSESSMENT MVP WIZARD FLOW                  */}
-        {/* ======================================================== */}
-        {userRole === 'worker' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '24px', flex: 1 }}>
-            
-            {/* Step Wizard Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--color-border)', paddingBottom: '12px', marginBottom: '10px' }}>
-              <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--color-primary)' }}>Worker Skills Assessment Wizard</h3>
-              <div style={{ display: 'flex', gap: '6px', fontSize: '0.72rem', color: 'var(--color-text-secondary)', fontWeight: 600 }}>
-                <span style={{ color: workerFlowStep === 'choose_trade' ? 'var(--color-primary)' : '' }}>1. Trade</span> • 
-                <span style={{ color: workerFlowStep === 'record_video' ? 'var(--color-primary)' : '' }}>2. Camera Drill</span> • 
-                <span style={{ color: workerFlowStep === 'video_processing' ? 'var(--color-primary)' : '' }}>3. AI Score</span> • 
-                <span style={{ color: workerFlowStep === 'voice_question' ? 'var(--color-primary)' : '' }}>4. AI Voice</span> • 
-                <span style={{ color: workerFlowStep === 'passport_generated' ? 'var(--color-primary)' : '' }}>5. Skill Passport</span>
-              </div>
-            </div>
-
-            {/* WIZARD STEP 1: Choose a trade */}
-            {workerFlowStep === 'choose_trade' && (
-              <div className="dashboard-card" style={{ maxWidth: '600px', margin: '20px auto', width: '100%' }}>
-                <div style={{ textAlign: 'center' }}>
-                  <Award size={32} className="text-blue-500" style={{ margin: '0 auto 10px auto' }} />
-                  <h4 style={{ fontSize: '1.1rem', fontWeight: 800 }}>Choose Your Trade Category</h4>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginTop: '4px' }}>Select the skill you want to verify on camera.</p>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '10px' }}>
-                  {[
-                    { id: 'Electrician', label: 'Electrician (⚡)', desc: 'Wiring boards, MCBs & Switchboxes checks' },
-                    { id: 'Plumber', label: 'Plumber (🚰)', desc: 'Thread winding pipes & Pressure seal joints' },
-                    { id: 'Tailor', label: 'Tailor (🧵)', desc: 'Draft outlines & Machine stitch lines' },
-                    { id: 'Carpenter', label: 'Carpenter (🪚)', desc: 'Timber joints & chisel alignment checks' }
-                  ].map(tr => (
-                    <div 
-                      key={tr.id}
-                      onClick={() => setWorkerSelectedTrade(tr.id)}
-                      style={{ 
-                        border: '1.5px solid', 
-                        borderColor: workerSelectedTrade === tr.id ? 'var(--color-primary)' : 'var(--color-border)',
-                        backgroundColor: workerSelectedTrade === tr.id ? 'var(--color-primary-light)' : 'var(--color-card)',
-                        padding: '16px',
-                        borderRadius: '10px',
-                        cursor: 'pointer',
-                        transition: 'all 0.15s ease'
-                      }}
-                    >
-                      <strong style={{ display: 'block', fontSize: '0.85rem', color: workerSelectedTrade === tr.id ? 'var(--color-primary)' : '' }}>{tr.label}</strong>
-                      <span style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', display: 'block', marginTop: '4px' }}>{tr.desc}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <button 
-                  className="btn-primary" 
-                  style={{ width: '100%', justifyContent: 'center', marginTop: '10px' }}
-                  onClick={() => {
-                    setWorkerFlowStep('record_video');
-                    startCamera();
-                  }}
-                >
-                  Start Camera Assessment <ArrowRight size={14} />
-                </button>
-              </div>
-            )}
-
-            {/* WIZARD STEP 2: Record Video Demonstration */}
-            {workerFlowStep === 'record_video' && (
-              <div className="camera-card" style={{ maxWidth: '640px', margin: '0 auto', width: '100%' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--color-border)', paddingBottom: '10px' }}>
-                  <div>
-                    <h3 style={{ fontSize: '0.95rem', fontWeight: 700 }}>Record {workerSelectedTrade} Demo</h3>
-                    <p style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', marginTop: '2px' }}>Verify compliance criteria on camera</p>
-                  </div>
-                  <span style={{ fontSize: '0.72rem', backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary)', padding: '2px 8px', borderRadius: '4px', fontWeight: 700 }}>
-                    5-Sec Shutter Drill
-                  </span>
-                </div>
-
-                <div className="camera-stream-box" style={{ height: '300px' }}>
-                  {cameraActive ? (
-                    <video ref={videoRef} style={{ width: '100%', height: '100%', objectFit: 'cover' }} autoPlay playsInline muted></video>
-                  ) : (
-                    <div style={{ textAlign: 'center', color: 'var(--color-text-secondary)', padding: '20px' }}>
-                      <p style={{ fontSize: '0.8rem' }}>Webcam streaming simulator online.</p>
-                      <p style={{ fontSize: '0.72rem', color: 'var(--color-text-light)', marginTop: '2px' }}>Click record button to initiate.</p>
-                    </div>
-                  )}
-
-                  <div className="camera-crop-overlay">
-                    <div className="camera-scan-bar"></div>
-                    {recordingState === 'recording' && (
-                      <div style={{ color: '#EF4444', fontSize: '0.72rem', fontWeight: 700, background: 'rgba(0,0,0,0.6)', padding: '2px 8px', borderRadius: '4px', position: 'absolute', top: '10px', right: '10px' }}>
-                        RECORDING {recordingSeconds}s
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div style={{ backgroundColor: 'var(--color-bg)', padding: '12px', borderRadius: '8px', border: '1px solid var(--color-border)', fontSize: '0.75rem' }}>
-                  <strong>Diagnostic Target: {activeOverlay.title}</strong>
-                  <p style={{ color: 'var(--color-text-secondary)', marginTop: '2px', fontSize: '0.7rem' }}>{activeOverlay.desc}</p>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'center' }}>
-                  {!cameraActive && recordingState === 'idle' ? (
-                    <button className="btn-secondary" onClick={startCamera}>
-                      Activate Camera Feed
-                    </button>
-                  ) : (
-                    <button 
-                      className={`camera-record-btn ${recordingState === 'recording' ? 'recording' : ''}`}
-                      onClick={recordingState === 'idle' ? startRecording : finishRecording}
-                    ></button>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* WIZARD STEP 3: AI Video Processing screen */}
-            {workerFlowStep === 'video_processing' && (
-              <div className="camera-card" style={{ maxWidth: '500px', margin: '40px auto', width: '100%', textAlign: 'center' }}>
-                <div style={{ padding: '30px 20px', display: 'flex', flexDirection: 'column', gap: '20px', alignItems: 'center' }}>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', border: '3px solid var(--color-primary-light)', borderTopColor: 'var(--color-secondary)', animation: 'spin 1s linear infinite' }}></div>
-                  <div>
-                    <h3 style={{ fontSize: '1.05rem', fontWeight: 800 }}>AI Vision Analyzing Video</h3>
-                    <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginTop: '2px' }}>Checking frames for NSQF Level 4 compliance...</p>
-                  </div>
-
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', maxWidth: '280px', textAlign: 'left', marginTop: '10px' }}>
-                    {[
-                      { name: activeOverlay.checklist[0], stage: processingStages.tools },
-                      { name: activeOverlay.checklist[1], stage: processingStages.safety },
-                      { name: activeOverlay.checklist[2], stage: processingStages.technique },
-                      { name: activeOverlay.checklist[3], stage: processingStages.workflow }
-                    ].map((step, idx) => (
-                      <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.78rem', opacity: step.stage === 'waiting' ? 0.4 : 1 }}>
-                        <div style={{ width: '16px', height: '16px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                                      backgroundColor: step.stage === 'done' ? 'var(--color-secondary)' : 'var(--color-border)', color: '#fff', fontSize: '8px' }}>
-                          {step.stage === 'done' ? '✓' : ''}
-                        </div>
-                        <span>{step.name}</span>
-                      </div>
-                    ))}
+              {/* Status Bar */}
+              <div className="phone-notch"></div>
+              <div className="phone-status-bar">
+                <span>9:41</span>
+                <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+                  {simOffline && <span style={{ fontSize: '0.55rem', backgroundColor: '#F59E0B', color: '#000', padding: '1px 4px', borderRadius: '3px', fontWeight: 800 }}>OFFLINE</span>}
+                  <span>5G</span>
+                  <div style={{ width: '16px', height: '9px', border: '1px solid currentColor', borderRadius: '2px', padding: '1px', display: 'flex' }}>
+                    <div style={{ flex: 1, backgroundColor: 'currentColor', borderRadius: '1px' }}></div>
                   </div>
                 </div>
               </div>
-            )}
 
-            {/* WIZARD STEP 4: AI Voice Follow-up Question */}
-            {workerFlowStep === 'voice_question' && (
-              <div className="voice-card" style={{ maxWidth: '600px', margin: '10px auto', width: '100%' }}>
-                <div style={{ borderBottom: '1px solid var(--color-border)', paddingBottom: '10px', marginBottom: '10px' }}>
-                  <h3 style={{ fontSize: '0.95rem', fontWeight: 700 }}>AI Voice Follow-up Interview</h3>
-                  <p style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', marginTop: '2px' }}>Answer verbally or type. AI will evaluate safety practices.</p>
-                </div>
-
-                <div className="voice-chat-box" style={{ height: '200px' }}>
-                  {voiceMessages.map((msg, idx) => (
-                    <div key={idx} className={`chat-bubble ${msg.sender}`}>
-                      {msg.text}
-                    </div>
-                  ))}
-                </div>
-
-                <div className="voice-actions-footer" style={{ borderTop: '1px solid var(--color-border)', paddingTop: '14px', marginTop: '10px' }}>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', fontWeight: 600, display: 'block', marginBottom: '8px', textAlign: 'center' }}>
-                    {isListening ? '🎙 Listening... Speak your safety response now.' : 'Click mic to answer verbally, or type below.'}
-                  </span>
-
-                  <button className={`mic-btn-circle ${isListening ? 'listening' : ''}`} onClick={toggleMicListener} style={{ margin: '0 auto 12px auto' }}>
-                    <Mic size={20} />
-                  </button>
-
-                  <div style={{ display: 'flex', width: '100%', gap: '6px' }}>
-                    <input 
-                      type="text" 
-                      placeholder="Type your safety explanation here (fast simulator option)..." 
-                      value={voiceInputText}
-                      onChange={(e) => setVoiceInputText(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          handleVoiceMessageSubmit(voiceInputText);
-                          setVoiceInputText('');
-                        }
-                      }}
-                      style={{ flex: 1, backgroundColor: 'var(--color-bg)', border: '1px solid var(--color-border)', color: 'var(--color-text-primary)', padding: '8px 12px', borderRadius: '6px', fontSize: '0.78rem', outline: 'none' }}
-                    />
-                    <button className="btn-secondary" style={{ padding: '8px 16px' }} onClick={() => {
-                      handleVoiceMessageSubmit(voiceInputText);
-                      setVoiceInputText('');
-                    }}>
-                      Submit Answer
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* WIZARD STEP 5: Skill Passport Generated */}
-            {workerFlowStep === 'passport_generated' && (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px', maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
+              {/* Scrollable Viewport Frame */}
+              <div className="phone-screen-container">
                 
-                {/* Score & Skill DNA Summary */}
-                <div className="dashboard-card" style={{ display: 'flex', flexDirection: 'column', gap: '20px', background: 'linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(30,41,59,0.9) 100%)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--color-primary-light)' }}>AI Assessment Audit Scores</h3>
-                    <span style={{ fontSize: '0.68rem', backgroundColor: 'var(--color-secondary-light)', color: '#10B981', padding: '3px 8px', borderRadius: '4px', fontWeight: 700 }}>
-                      ✓ Verified L4
-                    </span>
+                {/* 01 SPLASH SCREEN */}
+                {activeSimScreen === '01_splash' && (
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF', cursor: 'pointer' }} onClick={() => setActiveSimScreen('02_onboarding_1')}>
+                    <LogoSVG />
+                    <h2 style={{ fontSize: '1.8rem', fontWeight: 900, color: '#1D4ED8', marginTop: '10px' }}>Karm<span>Setu</span></h2>
+                    <span style={{ fontSize: '0.72rem', color: '#64748B', marginTop: '8px', fontWeight: 600 }}>Bridging Skills and Opportunities</span>
+                    <div style={{ display: 'flex', gap: '4px', marginTop: '24px' }}>
+                      <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#1D4ED8', animation: 'bounce 1s infinite alternate' }}></div>
+                      <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#1D4ED8', animation: 'bounce 1s infinite alternate', animationDelay: '0.2s' }}></div>
+                      <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#1D4ED8', animation: 'bounce 1s infinite alternate', animationDelay: '0.4s' }}></div>
+                    </div>
                   </div>
+                )}
 
-                  <div className="trust-index-banner" style={{ background: 'linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%)', borderRadius: '12px', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                {/* 02 ONBOARDING 1 */}
+                {activeSimScreen === '02_onboarding_1' && (
+                  <div className="onboarding-screen-wrapper">
+                    <h2 className="onboarding-title">Every Skill<br />Deserves Recognition.</h2>
+                    <div className="card-sim" style={{ margin: '30px auto', padding: '24px', width: '100%', maxWidth: '240px', textAlign: 'center', borderRadius: '20px' }}>
+                      <span style={{ fontSize: '3rem', display: 'block' }}>👷</span>
+                      <strong style={{ fontSize: '0.9rem', color: '#1D4ED8', display: 'block', marginTop: '10px' }}>Insulated Tools Drill</strong>
+                      <p style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', marginTop: '4px' }}>Workers film short drills demonstrating active trade safety practices on camera.</p>
+                    </div>
                     <div>
-                      <span style={{ fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.5px', color: '#93C5FD' }}>GLOBAL TRUST RATING</span>
-                      <h2 style={{ fontSize: '2.4rem', fontWeight: 800, lineHeight: 1, marginTop: '4px', color: '#FFF' }}>
-                        {raviWorker?.trustScore || 92}%
-                      </h2>
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <span style={{ fontSize: '0.7rem', backgroundColor: 'rgba(255,255,255,0.15)', color: '#FFF', padding: '3px 8px', borderRadius: '4px', fontWeight: 700 }}>
-                        Tier: {raviWorker?.level || 'Gold'}
-                      </span>
+                      <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginBottom: '20px' }}>
+                        <span style={{ width: '16px', height: '6px', borderRadius: '3px', backgroundColor: '#1D4ED8' }}></span>
+                        <span style={{ width: '6px', height: '6px', borderRadius: '3px', backgroundColor: '#E2E8F0' }}></span>
+                        <span style={{ width: '6px', height: '6px', borderRadius: '3px', backgroundColor: '#E2E8F0' }}></span>
+                      </div>
+                      <button className="btn-sim btn-sim-primary" onClick={() => setActiveSimScreen('03_onboarding_2')}>Next Screen</button>
                     </div>
                   </div>
+                )}
 
-                  {/* Skill DNA Score bars */}
-                  <div>
-                    <h4 style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--color-primary-light)', marginBottom: '14px', letterSpacing: '0.5px' }}>⚡ SKILL DNA INDEX</h4>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {/* 03 ONBOARDING 2 */}
+                {activeSimScreen === '03_onboarding_2' && (
+                  <div className="onboarding-screen-wrapper">
+                    <h2 className="onboarding-title">Certificates<br />don't define talent.</h2>
+                    <div className="card-sim" style={{ margin: '30px auto', padding: '24px', width: '100%', maxWidth: '240px', textAlign: 'center', borderRadius: '20px' }}>
+                      <span style={{ fontSize: '3rem', display: 'block' }}>📱</span>
+                      <strong style={{ fontSize: '0.9rem', color: '#10B981', display: 'block', marginTop: '10px' }}>Instant Verification</strong>
+                      <p style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', marginTop: '4px' }}>Employers verify skill passports with a simple QR scan in the field.</p>
+                    </div>
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginBottom: '20px' }}>
+                        <span style={{ width: '6px', height: '6px', borderRadius: '3px', backgroundColor: '#E2E8F0' }}></span>
+                        <span style={{ width: '16px', height: '6px', borderRadius: '3px', backgroundColor: '#1D4ED8' }}></span>
+                        <span style={{ width: '6px', height: '6px', borderRadius: '3px', backgroundColor: '#E2E8F0' }}></span>
+                      </div>
+                      <button className="btn-sim btn-sim-primary" onClick={() => setActiveSimScreen('04_onboarding_3')}>Next Screen</button>
+                    </div>
+                  </div>
+                )}
+
+                {/* 04 ONBOARDING 3 */}
+                {activeSimScreen === '04_onboarding_3' && (
+                  <div className="onboarding-screen-wrapper">
+                    <h2 className="onboarding-title">Show your work.<br />We'll help prove it.</h2>
+                    <div className="card-sim" style={{ margin: '30px auto', padding: '24px', width: '100%', maxWidth: '240px', textAlign: 'center', borderRadius: '20px' }}>
+                      <span style={{ fontSize: '3rem', display: 'block' }}>🪪</span>
+                      <strong style={{ fontSize: '0.9rem', color: '#F59E0B', display: 'block', marginTop: '10px' }}>Verified Passport</strong>
+                      <p style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', marginTop: '4px' }}>A premium digital identity showing verified safety metrics and trade capabilities.</p>
+                    </div>
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginBottom: '20px' }}>
+                        <span style={{ width: '6px', height: '6px', borderRadius: '3px', backgroundColor: '#E2E8F0' }}></span>
+                        <span style={{ width: '6px', height: '6px', borderRadius: '3px', backgroundColor: '#E2E8F0' }}></span>
+                        <span style={{ width: '16px', height: '6px', borderRadius: '3px', backgroundColor: '#1D4ED8' }}></span>
+                      </div>
+                      <button className="btn-sim btn-sim-primary" onClick={() => setActiveSimScreen('05_language')}>Get Started</button>
+                    </div>
+                  </div>
+                )}
+
+                {/* 05 LANGUAGE SELECTION */}
+                {activeSimScreen === '05_language' && (
+                  <div className="phone-screen-scroll" style={{ paddingBottom: '30px' }}>
+                    <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                      <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--color-primary)' }}>Select Language</h3>
+                      <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginTop: '4px' }}>Choose your native language for voice assessment prompts.</p>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '20px' }}>
                       {[
-                        { name: 'Precision & Cut Accuracy', val: raviWorker?.skillsDNA?.precision || 94, color: '#3B82F6' },
-                        { name: 'Safety Standards & Practices', val: raviWorker?.skillsDNA?.safety || 88, color: '#10B981' },
-                        { name: 'Technical Problem Solving', val: raviWorker?.skillsDNA?.problemSolving || 90, color: '#8B5CF6' },
-                        { name: 'Speed & Workflow Timing', val: raviWorker?.skillsDNA?.speed || 92, color: '#EC4899' },
-                        { name: 'Communication & Dialect clarity', val: raviWorker?.skillsDNA?.communication || 85, color: '#F59E0B' }
-                      ].map(bar => (
-                        <div key={bar.name}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', marginBottom: '4px' }}>
-                            <span style={{ color: '#E2E8F0' }}>{bar.name}</span>
-                            <span style={{ fontWeight: 700, color: '#FFF' }}>{bar.val}%</span>
-                          </div>
-                          <div style={{ backgroundColor: 'rgba(255,255,255,0.06)', height: '6px', borderRadius: '3px', overflow: 'hidden' }}>
-                            <div style={{ width: `${bar.val}%`, backgroundColor: bar.color, height: '100%' }}></div>
-                          </div>
+                        { lang: 'English', native: 'English' },
+                        { lang: 'Hindi', native: 'हिन्दी' },
+                        { lang: 'Tamil', native: 'தமிழ்' },
+                        { lang: 'Bengali', native: 'বাংলা' },
+                        { lang: 'Marathi', native: 'मराठी' },
+                        { lang: 'Telugu', native: 'తెలుగు' }
+                      ].map(item => (
+                        <div 
+                          key={item.lang}
+                          className="card-sim"
+                          onClick={() => {
+                            setSimLanguage(item.lang);
+                            setActiveSimScreen('06_login');
+                            addLog('info', `SIMULATOR: Set application language to ${item.lang}`);
+                          }}
+                          style={{ 
+                            padding: '16px', 
+                            textAlign: 'center', 
+                            cursor: 'pointer',
+                            border: simLanguage === item.lang ? '2px solid var(--color-primary)' : '1px solid var(--color-border)',
+                            backgroundColor: simLanguage === item.lang ? 'var(--color-primary-light)' : ''
+                          }}
+                        >
+                          <strong style={{ display: 'block', fontSize: '0.85rem' }}>{item.lang}</strong>
+                          <span style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)' }}>{item.native}</span>
                         </div>
                       ))}
                     </div>
                   </div>
-                </div>
+                )}
 
-                {/* Skill Passport Panel */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                  
-                  <div className="premium-passport-card">
-                    {/* Hologram design strip */}
-                    <div className="hologram-strip"></div>
-                    
-                    <div className="passport-badge-header">
-                      <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#F59E0B', letterSpacing: '0.5px' }}>★ KARMSETU VERIFIED ★</span>
-                      <span style={{ fontSize: '0.62rem', background: 'rgba(255,255,255,0.08)', padding: '2px 8px', borderRadius: '4px', color: '#94A3B8' }}>
-                        ID: KS-AADH-9821
-                      </span>
+                {/* 06 LOGIN PORTAL */}
+                {activeSimScreen === '06_login' && (
+                  <div className="phone-screen-scroll">
+                    <div style={{ textAlign: 'center', marginTop: '30px' }}>
+                      <LogoSVG />
+                      <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--color-primary)', marginTop: '10px' }}>KarmSetu Login</h3>
+                      <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginTop: '4px' }}>Verify your identity to generate your Skill Passport.</p>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                      <div className="passport-avatar-glow">
-                        <img src={raviWorker?.avatar} alt="Avatar" className="passport-avatar-img" />
-                      </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginTop: '20px' }}>
                       <div>
-                        <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#FFF' }}>{raviWorker?.name || 'Ravi Kumar'}</h4>
-                        <p style={{ fontSize: '0.78rem', color: '#94A3B8', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <Briefcase size={12} /> {raviWorker?.skill || 'Electrician'} • {raviWorker?.experience || '5 Years'} Exp
-                        </p>
-                        <p style={{ fontSize: '0.72rem', color: '#64748B', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
-                          <MapPin size={11} /> {raviWorker?.location || 'New Delhi, Delhi'}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Skill badging row */}
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                      <span className="passport-badge-pill" style={{ color: '#F59E0B' }}>★ Safety Champion</span>
-                      <span className="passport-badge-pill" style={{ color: '#3B82F6' }}>⚡ MCB Insulated</span>
-                      <span className="passport-badge-pill" style={{ color: '#10B981' }}>✓ Aadhaar Verified</span>
-                    </div>
-
-                    {/* Live Video Diagnostics Replay */}
-                    <div style={{ backgroundColor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', padding: '10px 14px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <Video size={16} className="text-emerald-400" />
-                      <div>
-                        <span style={{ fontSize: '0.72rem', fontWeight: 700, display: 'block', color: '#FFF' }}>Live Video Diagnostic Replay</span>
-                        <span style={{ fontSize: '0.62rem', color: '#94A3B8' }}>5s Camera Check: Insulated Stripper Drill Verified</span>
-                      </div>
-                    </div>
-
-                    {/* QR Code and verification stamps */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '16px', marginTop: '4px' }}>
-                      <div>
-                        <span style={{ fontSize: '0.6rem', color: '#64748B', display: 'block', textTransform: 'uppercase' }}>Registry Seals</span>
-                        <span style={{ fontSize: '0.65rem', color: '#E2E8F0', display: 'block', fontWeight: 700, marginTop: '2px' }}>NSDC NSQF L4 mapping</span>
-                        <span style={{ fontSize: '0.6rem', color: '#34D399', display: 'block' }}>SQLite sync status: OK</span>
+                        <label style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: '6px' }}>Mobile Number</label>
+                        <div className="input-wrapper" style={{ display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid var(--color-border)', borderRadius: '16px', padding: '12px 16px', backgroundColor: 'var(--color-bg)' }}>
+                          <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--color-text-secondary)' }}>+91</span>
+                          <input 
+                            type="tel" 
+                            placeholder="Enter 10-digit number" 
+                            style={{ border: 'none', background: 'transparent', outline: 'none', fontSize: '0.82rem', flex: 1, color: 'var(--color-text-primary)' }}
+                            value={simPhoneInput}
+                            onChange={(e) => setSimPhoneInput(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                          />
+                        </div>
                       </div>
 
-                      {/* SVG QR Code */}
-                      <div style={{ width: '64px', height: '64px', border: '1px solid rgba(255,255,255,0.1)', padding: '4px', backgroundColor: '#fff', borderRadius: '6px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
-                        <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
-                          <rect width="100" height="100" fill="white" />
-                          <path d="M10 10h30v30H10zm5 5h20v20H15zm45-5h30v30H60zm5 5h20v20H65zM10 60h30v30H10zm5 5h20v20H15zm50 15h10v10H65zm10-10h15v10H75zm-15-5h15v10H60zm25 0h5v10H85zm-15 15h5v5h-5z" fill="black" />
-                        </svg>
+                      <div style={{ backgroundColor: 'var(--color-accent-light)', border: '1px solid var(--color-accent)', padding: '10px 14px', borderRadius: '16px', fontSize: '0.72rem', color: '#D97706', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
+                        ★ Demo Bypass: Enter code 4821 on next screen.
                       </div>
-                    </div>
 
-                    {/* Employer scanning button simulator */}
-                    <button 
-                      className="btn-accent" 
-                      onClick={handleSimulatedQRScan}
-                      style={{ width: '100%', justifyContent: 'center', padding: '12px', marginTop: '4px', backgroundColor: '#F59E0B', color: '#000' }}
-                    >
-                      <QrCode size={16} /> Simulate Employer QR Scan
-                    </button>
-                  </div>
-
-                  <div style={{ display: 'flex', gap: '10px' }}>
-                    <button className="btn-outline" style={{ flex: 1, color: '#94A3B8', borderColor: 'rgba(255,255,255,0.1)' }} onClick={() => setWorkerFlowStep('choose_trade')}>
-                      Restart MVP Flow
-                    </button>
-                    <button className="btn-primary" style={{ flex: 1 }} onClick={handleLogout}>
-                      Finished Demo
-                    </button>
-                  </div>
-
-                </div>
-
-              </div>
-            )}
-
-          </div>
-        )}
-
-        {/* ======================================================== */}
-        {/* VIEW: EMPLOYER PORTAL VIEWS                              */}
-        {/* ======================================================== */}
-        {userRole === 'employer' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '24px', flex: 1 }}>
-            
-            {/* Banner showing scanned profile via QR */}
-            {qrScannedCandidateId && (
-              <div style={{ backgroundColor: 'var(--color-primary-light)', border: '1px solid var(--color-primary)', color: 'var(--color-primary)', padding: '12px 20px', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', animation: 'slideDown 0.2s ease' }}>
-                <span style={{ fontSize: '0.82rem', fontWeight: 700 }}>
-                  ⚡ VERIFIED PASSPORT DECODED: Scanned QR code for {selectedWorker?.name} ({selectedWorker?.skill}) successfully.
-                </span>
-                <button 
-                  onClick={() => setQrScannedCandidateId(null)}
-                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-primary)' }}
-                >
-                  <X size={16} />
-                </button>
-              </div>
-            )}
-
-            {/* Directory Tab */}
-            {employerActiveTab === 'directory' && (
-              <div className="directory-grid">
-                
-                {/* Left listing catalog */}
-                <div className="candidates-list-card">
-                  <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--color-text-secondary)' }}>Candidate Search</h3>
-                  
-                  <div className="search-filter-box" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <div className="search-input-wrapper">
-                      <Search size={14} className="search-icon" />
-                      <input 
-                        type="text" 
-                        placeholder="Search by name or trade..." 
-                        value={searchTerm}
-                        onChange={(e) => {
-                          setSearchTerm(e.target.value);
-                          addLog('query', `SQL: SELECT * FROM workers WHERE name LIKE '%${e.target.value}%';`);
+                      <button 
+                        className="btn-sim btn-sim-primary" 
+                        onClick={() => {
+                          if (simPhoneInput.length < 10) {
+                            alert('Please enter a valid 10-digit phone number.');
+                            return;
+                          }
+                          setActiveSimScreen('07_otp');
                         }}
-                        style={{ border: 'none', background: 'transparent', outline: 'none', fontSize: '0.8rem', color: 'var(--color-text-primary)', flex: 1 }}
+                      >
+                        Send Verification Code
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* 07 SMS OTP VERIFICATION */}
+                {activeSimScreen === '07_otp' && (
+                  <div className="phone-screen-scroll">
+                    <div style={{ textAlign: 'center', marginTop: '30px' }}>
+                      <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--color-primary)' }}>Enter Code</h3>
+                      <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginTop: '4px' }}>
+                        Verification SMS dispatched to +91 {simPhoneInput || '98765 43210'}
+                      </p>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '20px' }}>
+                      <div className="input-wrapper" style={{ display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid var(--color-border)', borderRadius: '16px', padding: '12px 16px', backgroundColor: 'var(--color-bg)' }}>
+                        <Lock size={14} className="text-blue-500" />
+                        <input 
+                          type="text" 
+                          placeholder="Enter 4-Digit Demo OTP (4821)" 
+                          style={{ border: 'none', background: 'transparent', outline: 'none', fontSize: '0.82rem', flex: 1, textAlign: 'center', color: 'var(--color-text-primary)' }}
+                          value={simOtpInput}
+                          onChange={(e) => setSimOtpInput(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                        />
+                      </div>
+
+                      <button 
+                        className="btn-sim btn-sim-primary" 
+                        onClick={() => {
+                          if (simOtpInput === '4821') {
+                            setActiveSimScreen('08_home');
+                            addLog('success', 'SIMULATOR AUTH: Code approved. Logging in...');
+                          } else {
+                            alert('Incorrect OTP. Enter 4821 for Demo access.');
+                          }
+                        }}
+                      >
+                        Verify and Enter
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* 08 HOME DASHBOARD */}
+                {activeSimScreen === '08_home' && (
+                  <div className="phone-screen-scroll">
+                    
+                    {/* Welcome Header */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
+                      <div>
+                        <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>Hello Ravi 👋</h4>
+                        <span style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)' }}>Electrician • Delhi NCR</span>
+                      </div>
+                      <span style={{ fontSize: '0.62rem', backgroundColor: '#10B981', color: '#FFF', padding: '2px 8px', borderRadius: '12px', fontWeight: 800 }}>✓ VERIFIED</span>
+                    </div>
+
+                    {/* Trust Score Circle widget */}
+                    <div className="card-sim" style={{ background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)', color: '#FFF', padding: '20px', borderRadius: '24px', border: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <span style={{ fontSize: '0.62rem', opacity: 0.8, fontWeight: 700, letterSpacing: '0.5px' }}>GLOBAL TRUST SCORE</span>
+                        <h2 style={{ fontSize: '2.5rem', fontWeight: 900, marginTop: '2px', fontFamily: 'monospace' }}>92%</h2>
+                        <span style={{ fontSize: '0.62rem', opacity: 0.8, display: 'block', marginTop: '4px' }}>Top 5% electrician directory rank</span>
+                      </div>
+                      <div style={{ width: '56px', height: '56px', borderRadius: '50%', border: '4px solid rgba(255,255,255,0.15)', borderTopColor: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.72rem' }}>
+                        Gold
+                      </div>
+                    </div>
+
+                    {/* Next Assessment banner */}
+                    <div className="card-sim" style={{ borderLeft: '4px solid #F59E0B', padding: '12px 16px' }}>
+                      <span style={{ fontSize: '0.62rem', color: '#D97706', fontWeight: 700, display: 'block' }}>NEXT REQUIRED ASSESSMENT</span>
+                      <strong style={{ fontSize: '0.8rem', display: 'block', marginTop: '2px', color: 'var(--color-text-primary)' }}>⚡ Electrical Wire Splice Safety</strong>
+                      <span style={{ fontSize: '0.68rem', color: 'var(--color-text-secondary)', display: 'block', marginTop: '2px' }}>NSQF level 4 compliance checks required.</span>
+                    </div>
+
+                    {/* Actions Grid */}
+                    <div>
+                      <h5 style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--color-text-secondary)', textTransform: 'uppercase', marginBottom: '8px' }}>Quick Actions</h5>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                        <div className="card-sim" onClick={() => setActiveSimScreen('09_assessment')} style={{ padding: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontSize: '1.2rem' }}>📹</span>
+                          <div style={{ textAlign: 'left' }}>
+                            <span style={{ fontSize: '0.75rem', fontWeight: 700, display: 'block' }}>Verify Skill</span>
+                            <span style={{ fontSize: '0.62rem', color: 'var(--color-text-secondary)' }}>Camera checklist</span>
+                          </div>
+                        </div>
+
+                        <div className="card-sim" onClick={() => setActiveSimScreen('14_passport')} style={{ padding: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontSize: '1.2rem' }}>🪪</span>
+                          <div style={{ textAlign: 'left' }}>
+                            <span style={{ fontSize: '0.75rem', fontWeight: 700, display: 'block' }}>Passport</span>
+                            <span style={{ fontSize: '0.62rem', color: 'var(--color-text-secondary)' }}>Apple Wallet view</span>
+                          </div>
+                        </div>
+
+                        <div className="card-sim" onClick={() => setActiveSimScreen('16_employer_view')} style={{ padding: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontSize: '1.2rem' }}>💼</span>
+                          <div style={{ textAlign: 'left' }}>
+                            <span style={{ fontSize: '0.75rem', fontWeight: 700, display: 'block' }}>Jobs View</span>
+                            <span style={{ fontSize: '0.62rem', color: 'var(--color-text-secondary)' }}>Hiring requests</span>
+                          </div>
+                        </div>
+
+                        <div className="card-sim" onClick={() => setActiveSimScreen('13_voice_interview')} style={{ padding: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontSize: '1.2rem' }}>🎤</span>
+                          <div style={{ textAlign: 'left' }}>
+                            <span style={{ fontSize: '0.75rem', fontWeight: 700, display: 'block' }}>Practice</span>
+                            <span style={{ fontSize: '0.62rem', color: 'var(--color-text-secondary)' }}>Speech interview</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Activity Feed */}
+                    <div>
+                      <h5 style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--color-text-secondary)', textTransform: 'uppercase', marginBottom: '8px' }}>Recent Activity</h5>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', padding: '4px 0' }}>
+                          <span style={{ color: 'var(--color-text-primary)' }}>✓ Insulated cut check verified</span>
+                          <span style={{ color: 'var(--color-text-light)' }}>2 hours ago</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', padding: '4px 0' }}>
+                          <span style={{ color: 'var(--color-text-primary)' }}>✓ SQLite sync catalog upload successful</span>
+                          <span style={{ color: 'var(--color-text-light)' }}>Yesterday</span>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                )}
+
+                {/* 09 CHOOSE TRADE */}
+                {activeSimScreen === '09_assessment' && (
+                  <div className="phone-screen-scroll">
+                    <div style={{ marginTop: '10px' }}>
+                      <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>Verify Skill Category</h4>
+                      <p style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', marginTop: '2px' }}>Choose the trade drill you wish to film.</p>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '10px' }}>
+                      {[
+                        { id: '⚡ Electrician', desc: 'Wiring board safety switches' },
+                        { id: '🔧 Plumber', desc: 'Teflon seam windings checks' },
+                        { id: '🪚 Carpenter', desc: 'Mortise tenon square checks' },
+                        { id: '🧵 Tailor', desc: 'Fabric alignment seam safety' },
+                        { id: ' Mason', desc: 'Brick laying mortar level tests' }
+                      ].map(tr => (
+                        <div 
+                          key={tr.id}
+                          className="card-sim"
+                          onClick={() => {
+                            setSimSelectedTrade(tr.id);
+                            setActiveSimScreen('10_camera');
+                            addLog('info', `SIMULATOR Assessment: Initiated camera for ${tr.id}`);
+                          }}
+                          style={{ 
+                            padding: '16px', 
+                            cursor: 'pointer',
+                            border: simSelectedTrade === tr.id ? '2px solid var(--color-primary)' : '1px solid var(--color-border)',
+                            backgroundColor: simSelectedTrade === tr.id ? 'var(--color-primary-light)' : '',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center'
+                          }}
+                        >
+                          <div>
+                            <strong style={{ fontSize: '0.85rem', display: 'block' }}>{tr.id}</strong>
+                            <span style={{ fontSize: '0.68rem', color: 'var(--color-text-secondary)' }}>{tr.desc}</span>
+                          </div>
+                          <ArrowRight size={14} className="text-blue-500" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 10 CAMERA VIEWFINDER */}
+                {activeSimScreen === '10_camera' && (
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#000', position: 'relative' }}>
+                    
+                    {/* Viewfinder simulation box */}
+                    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+                      
+                      {/* Grid overlays */}
+                      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: '1px solid rgba(255,255,255,0.08)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gridTemplateRows: '1fr 1fr 1fr' }}>
+                        <div style={{ border: '1px solid rgba(255,255,255,0.05)' }}></div>
+                        <div style={{ border: '1px solid rgba(255,255,255,0.05)' }}></div>
+                        <div style={{ border: '1px solid rgba(255,255,255,0.05)' }}></div>
+                        <div style={{ border: '1px solid rgba(255,255,255,0.05)' }}></div>
+                        <div style={{ border: '1px solid rgba(255,255,255,0.05)' }}></div>
+                        <div style={{ border: '1px solid rgba(255,255,255,0.05)' }}></div>
+                        <div style={{ border: '1px solid rgba(255,255,255,0.05)' }}></div>
+                        <div style={{ border: '1px solid rgba(255,255,255,0.05)' }}></div>
+                        <div style={{ border: '1px solid rgba(255,255,255,0.05)' }}></div>
+                      </div>
+
+                      {/* Diagnostic target guidelines overlay */}
+                      <div style={{ position: 'absolute', top: '50px', left: '16px', right: '16px', background: 'rgba(0,0,0,0.7)', borderRadius: '12px', padding: '10px 14px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <span style={{ fontSize: '0.58rem', color: '#F59E0B', fontWeight: 800 }}>DIAGNOSTIC TARGET</span>
+                        <strong style={{ fontSize: '0.72rem', color: '#FFF', display: 'block', marginTop: '2px' }}>Film insulated wire strippers core drill</strong>
+                        <span style={{ fontSize: '0.62rem', color: '#94A3B8', display: 'block', marginTop: '1px' }}>Ensure hands & insulation wrapping visible.</span>
+                      </div>
+
+                      {/* Webcam static overlay simulation background */}
+                      <div style={{ textAlign: 'center', color: '#94A3B8', padding: '20px' }}>
+                        <span style={{ fontSize: '2.5rem', display: 'block' }}>📹</span>
+                        <span style={{ fontSize: '0.72rem', color: '#64748B', display: 'block', marginTop: '8px' }}>Webcam Simulator Active</span>
+                      </div>
+
+                      {/* Shutter feedback timer */}
+                      {simRecordingSeconds > 0 && (
+                        <div style={{ position: 'absolute', top: '16px', right: '16px', backgroundColor: '#EF4444', color: '#FFF', padding: '3px 8px', borderRadius: '4px', fontSize: '0.65rem', fontWeight: 800, animation: 'pulse 1s infinite' }}>
+                          RECORDING {simRecordingSeconds}s
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Camera footer panel controls */}
+                    <div style={{ backgroundColor: '#0F172A', padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px' }}>
+                      <span style={{ fontSize: '0.68rem', color: '#94A3B8' }}>
+                        {simRecordingSeconds > 0 ? 'Recording safety drill sequence...' : 'Position camera and press record button.'}
+                      </span>
+                      
+                      <button 
+                        onClick={() => {
+                          if (simRecordingSeconds === 0) {
+                            setSimRecordingSeconds(1);
+                            addLog('info', 'SIMULATOR CAMERA: Initiated 5-second video recording sequence...');
+                          } else {
+                            setActiveSimScreen('11_ai_analysis');
+                            setSimRecordingSeconds(0);
+                          }
+                        }}
+                        style={{ 
+                          width: '56px', 
+                          height: '56px', 
+                          borderRadius: '50%', 
+                          backgroundColor: '#FFF', 
+                          border: '4px solid #334155', 
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          outline: 'none'
+                        }}
+                      >
+                        <div style={{ width: '24px', height: '24px', borderRadius: simRecordingSeconds > 0 ? '4px' : '50%', backgroundColor: '#EF4444', transition: 'all 0.2s ease' }}></div>
+                      </button>
+                    </div>
+
+                  </div>
+                )}
+
+                {/* 11 AI FRAME COMPLIANCE ANALYSIS */}
+                {activeSimScreen === '11_ai_analysis' && (
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', textAlign: 'center' }}>
+                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', border: '3px solid var(--color-primary-light)', borderTopColor: 'var(--color-primary)', animation: 'spin 1s linear infinite', marginBottom: '20px' }}></div>
+                    
+                    <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>AI Vision Compliance Engine</h4>
+                    <p style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', marginTop: '4px' }}>Analyzing video frames for NSQF Level 4 compliance...</p>
+
+                    <div style={{ width: '100%', maxWidth: '240px', display: 'flex', flexDirection: 'column', gap: '10px', textAlign: 'left', marginTop: '24px' }}>
+                      {[
+                        { title: 'Detecting Tools and Gear', step: 1 },
+                        { title: 'Checking Safety Gloves Wrap', step: 2 },
+                        { title: 'Evaluating Cable Stripping Technique', step: 3 },
+                        { title: 'Formulating Score Diagnostic Report', step: 4 }
+                      ].map((item, idx) => (
+                        <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.72rem', opacity: simAnalysisStep >= item.step ? 1 : 0.4 }}>
+                          <div style={{ width: '16px', height: '16px', borderRadius: '50%', backgroundColor: simAnalysisStep >= item.step ? '#10B981' : '#E2E8F0', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '8px', fontWeight: 900 }}>
+                            {simAnalysisStep >= item.step ? '✓' : ''}
+                          </div>
+                          <span style={{ fontWeight: 600 }}>{item.title}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 12 AI DIAGNOSTIC REPORT */}
+                {activeSimScreen === '12_ai_report' && (
+                  <div className="phone-screen-scroll">
+                    <div style={{ marginTop: '10px' }}>
+                      <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>AI Skill Scorecard</h4>
+                      <p style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', marginTop: '2px' }}>AI compliance metrics for {simSelectedTrade}</p>
+                    </div>
+
+                    <div className="card-sim" style={{ background: '#0F172A', color: '#FFF', padding: '16px', borderRadius: '20px', textAlign: 'center', border: 'none' }}>
+                      <span style={{ fontSize: '0.62rem', color: '#38BDF8', fontWeight: 700, letterSpacing: '0.5px' }}>OVERALL CONFIDENCE RATING</span>
+                      <h2 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#38BDF8', marginTop: '4px' }}>91%</h2>
+                      <span style={{ fontSize: '0.62rem', color: '#94A3B8', display: 'block', marginTop: '4px' }}>Grade L4 safety standards approved</span>
+                    </div>
+
+                    {/* Strengths & Weaknesses */}
+                    <div className="card-sim" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <strong style={{ fontSize: '0.75rem', color: 'var(--color-text-primary)' }}>Key Strengths:</strong>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.72rem', color: 'var(--color-text-secondary)' }}>
+                        <span style={{ color: '#10B981', fontWeight: 600 }}>✓ Insulated cutter handle detected</span>
+                        <span style={{ color: '#10B981', fontWeight: 600 }}>✓ Perfect wire-core copper stripping depth</span>
+                      </div>
+
+                      <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)' }} />
+
+                      <strong style={{ fontSize: '0.75rem', color: 'var(--color-text-primary)' }}>Improvements Needed:</strong>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.72rem', color: 'var(--color-text-secondary)' }}>
+                        <span style={{ color: '#F59E0B', fontWeight: 600 }}>• Recommend rubber work gloves for high load</span>
+                        <span style={{ color: '#F59E0B', fontWeight: 600 }}>• Check mains voltage status before cut</span>
+                      </div>
+                    </div>
+
+                    <button 
+                      className="btn-sim btn-sim-primary" 
+                      onClick={() => {
+                        setActiveSimScreen('13_voice_interview');
+                        addLog('info', 'SIMULATOR AI: Loaded voice safety interview...');
+                      }}
+                    >
+                      Generate Passport
+                    </button>
+                  </div>
+                )}
+
+                {/* 13 VOICE SAFETY INTERVIEW */}
+                {activeSimScreen === '13_voice_interview' && (
+                  <div className="phone-screen-scroll" style={{ paddingBottom: '100px' }}>
+                    <div style={{ marginTop: '10px' }}>
+                      <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>Voice Interview</h4>
+                      <p style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', marginTop: '2px' }}>AI voice synthesis security verification.</p>
+                    </div>
+
+                    {/* Question Box */}
+                    <div className="card-sim" style={{ backgroundColor: 'var(--color-primary-light)', borderColor: 'rgba(29, 78, 216, 0.1)' }}>
+                      <span style={{ fontSize: '0.58rem', color: 'var(--color-primary)', fontWeight: 800 }}>AI VOICE QUESTION</span>
+                      <p style={{ fontSize: '0.75rem', fontWeight: 700, marginTop: '4px', color: 'var(--color-text-primary)' }}>
+                        "Explain the safety checks when replacing a 16A MCB box."
+                      </p>
+                    </div>
+
+                    {/* Microphone waveform animations */}
+                    <div style={{ textAlign: 'center', margin: '14px 0' }}>
+                      <div className="voice-waves-row">
+                        <div className="wave-bar"></div>
+                        <div className="wave-bar"></div>
+                        <div className="wave-bar"></div>
+                        <div className="wave-bar"></div>
+                        <div className="wave-bar"></div>
+                      </div>
+                      <span style={{ fontSize: '0.62rem', color: 'var(--color-text-light)' }}>Listening... Speak your response clearly</span>
+                    </div>
+
+                    {/* Transcription input */}
+                    <div className="card-sim" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <label style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-text-secondary)' }}>Transcribed Answer Preview:</label>
+                      <textarea 
+                        style={{ border: '1px solid var(--color-border)', borderRadius: '12px', padding: '10px', fontSize: '0.72rem', background: 'var(--color-bg)', outline: 'none', color: 'var(--color-text-primary)', resize: 'none', height: '60px' }}
+                        value={simInterviewResponse || "I switch off the main MCB breaker switches, use test leads to check voltage, and wear heavy rubber gloves."}
+                        onChange={(e) => setSimInterviewResponse(e.target.value)}
                       />
                     </div>
 
-                    <div className="filter-selects" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
-                      <select 
-                        value={filterTrade} 
-                        onChange={(e) => {
-                          setFilterTrade(e.target.value);
-                          addLog('query', `SQL: SELECT * FROM workers WHERE skill = '${e.target.value}';`);
-                        }}
-                        style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)', borderRadius: '6px', padding: '6px', fontSize: '0.75rem', outline: 'none' }}
-                      >
-                        <option value="All">All Trades</option>
-                        <option value="Electrician">Electrician</option>
-                        <option value="Plumber">Plumber</option>
-                        <option value="Tailor">Tailor</option>
-                      </select>
-
-                      <select 
-                        value={filterLocation} 
-                        onChange={(e) => {
-                          setFilterLocation(e.target.value);
-                          addLog('query', `SQL: SELECT * FROM workers WHERE location LIKE '%${e.target.value}%';`);
-                        }}
-                        style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)', borderRadius: '6px', padding: '6px', fontSize: '0.75rem', outline: 'none' }}
-                      >
-                        <option value="All">All Locations</option>
-                        <option value="Delhi">Delhi</option>
-                        <option value="Uttar Pradesh">Uttar Pradesh</option>
-                        <option value="Haryana">Haryana</option>
-                      </select>
-                    </div>
+                    <button 
+                      className="btn-sim btn-sim-primary" 
+                      onClick={() => {
+                        setActiveSimScreen('14_passport');
+                        addLog('success', 'SIMULATOR AI: Voice response transcript evaluated and approved.');
+                      }}
+                    >
+                      Submit Verbal Response
+                    </button>
                   </div>
+                )}
 
-                  <div className="candidates-scroll">
-                    {filteredList.map(w => (
-                      <div 
-                        key={w.id} 
-                        className={`candidate-item ${selectedWorkerId === w.id ? 'selected' : ''}`}
-                        onClick={() => {
-                          setSelectedWorkerId(w.id);
-                          setHiredWorkerId(null);
-                          setShowResume(false);
-                          addLog('query', `SQL: SELECT * FROM workers WHERE id = '${w.id}';`);
-                        }}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <img src={w.avatar} alt={w.name} className="candidate-avatar" />
-                          <div>
-                            <span style={{ fontSize: '0.8rem', fontWeight: 700, display: 'block' }}>{w.name}</span>
-                            <span style={{ fontSize: '0.68rem', color: 'var(--color-text-secondary)' }}>{w.skill} • {w.experience}</span>
-                          </div>
-                        </div>
-                        <span className="candidate-score-badge">{w.trustScore}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Right detail profile pane */}
-                <div className="profile-detail-card">
-                  
-                  <div className="profile-main-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--color-border)', paddingBottom: '16px' }}>
-                    <div className="profile-avatar-row" style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
-                      <img src={selectedWorker?.avatar} alt="Avatar" className="profile-avatar-lg" style={{ width: '56px', height: '56px', borderRadius: '50%', objectFit: 'cover' }} />
-                      <div>
-                        <h2 style={{ fontSize: '1.25rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          {selectedWorker?.name}
-                          <span className="govt-verified-pill">
-                            <CheckCircle size={10} style={{ color: 'var(--color-secondary)' }} /> Aadhaar Verified
-                          </span>
-                        </h2>
-                        <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginTop: '2px' }}>
-                          <MapPin size={12} style={{ display: 'inline', marginRight: '3px', verticalAlign: 'middle' }} />
-                          {selectedWorker?.location}
-                        </p>
-                      </div>
+                {/* 14 VERIFIED SKILL PASSPORT */}
+                {activeSimScreen === '14_passport' && (
+                  <div className="phone-screen-scroll" style={{ paddingBottom: '90px' }}>
+                    <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>Skill Passport</h4>
+                      <span style={{ fontSize: '0.62rem', backgroundColor: '#F59E0B', color: '#000', padding: '2px 8px', borderRadius: '8px', fontWeight: 800 }}>GOLD TIER</span>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                      <button className="btn-outline" onClick={() => setShowResume(!showResume)}>
-                        <FileText size={14} /> {showResume ? 'Hide CV Details' : 'Generate AI CV'}
-                      </button>
-
-                      {hiredWorkerId === selectedWorker?.id ? (
-                        <div style={{ backgroundColor: 'var(--color-secondary-light)', border: '1px solid var(--color-secondary)', color: '#065F46', padding: '8px 16px', borderRadius: '6px', fontWeight: 700, fontSize: '0.8rem' }}>
-                          ✓ Contract Offered Successfully
-                        </div>
-                      ) : (
-                        <button 
-                          className="btn-primary" 
-                          onClick={() => {
-                            setHiredWorkerId(selectedWorker?.id);
-                            addLog('success', `HIRING_SERVICE: Dispatched contract offer to ${selectedWorker?.name}.`);
-                            alert(`Contract offer sent to ${selectedWorker?.name}!`);
-                          }}
-                        >
-                          Hire Candidate
-                        </button>
-                      )}
-                    </div>
-                  </div>
-
-                  {showResume ? (
-                    <div className="resume-sheet">
-                      <div className="resume-header">
-                        <div>
-                          <h3 style={{ fontSize: '1rem', color: 'var(--color-primary)', fontWeight: 800 }}>KARMSETU VERIFIED CONTRACTOR SUMMARY</h3>
-                          <span style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>National Skills Registry Mapped • Aadhaar Authenticated (XXXX-XXXX-4821)</span>
-                        </div>
-                        <button className="btn-outline" style={{ padding: '4px 10px', fontSize: '0.68rem' }} onClick={() => alert('Downloading PDF profile packet...')}>
-                          <Download size={12} /> Download PDF
-                        </button>
-                      </div>
-
-                      <div className="resume-grid">
-                        <div className="resume-sec">
-                          <span className="resume-sec-title">Personal Information</span>
-                          <span><strong>Candidate:</strong> {selectedWorker?.name}</span>
-                          <span><strong>Profession:</strong> {selectedWorker?.skill}</span>
-                          <span><strong>Experience:</strong> {selectedWorker?.experience}</span>
-                          <span><strong>Location:</strong> {selectedWorker?.location}</span>
-                        </div>
-
-                        <div className="resume-sec">
-                          <span className="resume-sec-title">Skill DNA Matrix</span>
-                          {selectedWorker?.skillsDNA && Object.entries(selectedWorker.skillsDNA).map(([key, val]) => (
-                            <span key={key}>• {key.toUpperCase()}: {val}%</span>
-                          ))}
-                        </div>
-
-                        <div className="resume-sec" style={{ gridColumn: 'span 2' }}>
-                          <span className="resume-sec-title">AI Vision Assessment Audit Logs</span>
-                          <span style={{ color: 'var(--color-text-secondary)', lineHeight: 1.4 }}>
-                            Tested tools compliance, Insulated handles inspection, wire strip core width diagnostics. Output: 92% confidence rating check matches NSQF parameters.
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="profile-grid-details" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                    {/* Premium Apple Wallet Card */}
+                    <div className="premium-passport-card" style={{ cursor: 'pointer', transform: 'scale(0.98)', transformOrigin: 'top center', marginBottom: '10px' }}>
+                      <div className="hologram-strip"></div>
                       
-                      <div className="media-container" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        <span style={{ fontSize: '0.82rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <Video size={14} className="text-blue-500" /> AI Vision Skill Assessment
-                        </span>
+                      <div className="passport-badge-header">
+                        <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#F59E0B', letterSpacing: '0.5px' }}>★ KARMSETU VERIFIED ★</span>
+                        <span style={{ fontSize: '0.58rem', background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px', color: '#94A3B8' }}>KS-8821</span>
+                      </div>
 
-                        <div className="video-frame-box">
-                          <div className="video-play-overlay" style={{ textAlign: 'center', cursor: 'pointer' }} onClick={() => alert('Starting simulated vision feed playback...')}>
-                            <Play size={32} style={{ margin: '0 auto 6px auto' }} />
-                            <p style={{ fontSize: '0.72rem', color: '#94A3B8' }}>Watch Assessment Playback Feed</p>
-                          </div>
+                      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                        <div style={{ width: '48px', height: '48px', borderRadius: '50%', overflow: 'hidden', border: '2px solid #F59E0B' }}>
+                          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120" alt="Ravi" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         </div>
-
-                        <span style={{ fontSize: '0.82rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px' }}>
-                          <Mic size={14} className="text-blue-500" /> Voice Interview Transcript
-                        </span>
-                        <div className="transcript-block">
-                          <blockquote>"{selectedWorker?.voiceTranscript}"</blockquote>
+                        <div>
+                          <strong style={{ fontSize: '0.95rem', color: '#FFF', display: 'block' }}>Ravi Kumar</strong>
+                          <span style={{ fontSize: '0.7rem', color: '#94A3B8', display: 'block' }}>Electrician • 5 Years Experience</span>
                         </div>
                       </div>
 
-                      <div>
-                        <span style={{ fontSize: '0.82rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
-                          <Activity size={14} className="text-emerald-500" /> Skill DNA scorecard
-                        </span>
-
-                        <div className="dna-card-box">
-                          <div className="dna-title-row" style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--color-text-secondary)', borderBottom: '1px solid var(--color-border)', paddingBottom: '4px', marginBottom: '8px' }}>
-                            <span>Trade Traits</span>
-                            <span>Rating %</span>
-                          </div>
-                          
-                          <div className="dna-bars-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            {[
-                              { name: 'Precision & Cut Accuracy', key: 'precision', color: '#3B82F6' },
-                              { name: 'Safety Practices & Gear', key: 'safety', color: '#10B981' },
-                              { name: 'Technical Problem Solving', key: 'problemSolving', color: '#8B5CF6' },
-                              { name: 'Speed & Process timing', key: 'speed', color: '#EC4899' },
-                              { name: 'Communication & Dialect', key: 'communication', color: '#F59E0B' }
-                            ].map(trait => {
-                              const val = selectedWorker?.skillsDNA ? selectedWorker.skillsDNA[trait.key] : 80;
-                              return (
-                                <div key={trait.key} className="dna-bar-block">
-                                  <div className="dna-bar-header" style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', marginBottom: '2px' }}>
-                                    <span>{trait.name}</span>
-                                    <span>{val}%</span>
-                                  </div>
-                                  <div className="dna-bar-track" style={{ backgroundColor: 'var(--color-border)', height: '4px', borderRadius: '2px', overflow: 'hidden' }}>
-                                    <div className="dna-bar-fill" style={{ width: `${val}%`, backgroundColor: trait.color, height: '100%' }}></div>
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-
-                        <div style={{ marginTop: '16px' }}>
-                          <span style={{ fontSize: '0.82rem', fontWeight: 700, display: 'block', marginBottom: '8px' }}>Verified Credentials</span>
-                          <div className="badges-row">
-                            {selectedWorker?.verifiedSkills?.map((badge, idx) => (
-                              <span key={idx} className="badge-pill">
-                                ✓ {badge}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '10px' }}>
+                        <span className="passport-badge-pill" style={{ color: '#F59E0B', fontSize: '0.6rem', padding: '2px 6px' }}>★ Safety Champion</span>
+                        <span className="passport-badge-pill" style={{ color: '#38BDF8', fontSize: '0.6rem', padding: '2px 6px' }}>⚡ MCB Insulated</span>
                       </div>
 
+                      {/* QR verification area */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '12px', marginTop: '8px' }}>
+                        <div>
+                          <span style={{ fontSize: '0.55rem', color: '#64748B', display: 'block' }}>REGISTRY VERIFICATION</span>
+                          <span style={{ fontSize: '0.65rem', color: '#38BDF8', display: 'block', fontWeight: 700 }}>NSDC NSQF Mapping OK</span>
+                        </div>
+                        
+                        <div style={{ width: '48px', height: '48px', backgroundColor: '#FFF', padding: '3px', borderRadius: '4px' }}>
+                          <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
+                            <rect width="100" height="100" fill="white" />
+                            <path d="M10 10h30v30H10zm5 5h20v20H15zm45-5h30v30H60zm5 5h20v20H65zM10 60h30v30H10zm5 5h20v20H15zm50 15h10v10H65zm10-10h15v10H75zm-15-5h15v10H60zm25 0h5v10H85zm-15 15h5v5h-5z" fill="black" />
+                          </svg>
+                        </div>
+                      </div>
                     </div>
-                  )}
 
-                </div>
-
-              </div>
-            )}
-
-            {/* Stats Index Tab */}
-            {employerActiveTab === 'stats' && (
-              <div className="dashboard-card" style={{ gap: '20px' }}>
-                <h3 style={{ fontSize: '1.05rem', fontWeight: 800 }}>KarmSetu National Statistics Index</h3>
-                <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginTop: '-10px' }}>
-                  Live aggregate metrics tracking certified workers and deployment locations across India.
-                </p>
-
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
-                  {[
-                    { title: 'Total Contractors Mapped', count: '14,821', col: 'var(--color-primary)' },
-                    { title: 'AI Verification Confidence', count: '93.4%', col: 'var(--color-secondary)' },
-                    { title: 'Government Level L4 Certified', count: '89.2%', col: 'var(--color-accent)' },
-                    { title: 'Contract Hire Success Rate', count: '96.8%', col: '#8B5CF6' }
-                  ].map((stat, idx) => (
-                    <div key={idx} style={{ backgroundColor: 'var(--color-bg)', padding: '16px', borderRadius: '8px', border: '1px solid var(--color-border)', textAlign: 'center' }}>
-                      <span style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', display: 'block', marginBottom: '6px' }}>{stat.title}</span>
-                      <h4 style={{ fontSize: '1.8rem', fontWeight: 800, color: stat.col }}>{stat.count}</h4>
-                    </div>
-                  ))}
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '20px' }}>
-                  <div style={{ backgroundColor: 'var(--color-bg)', padding: '16px', borderRadius: '8px', border: '1px solid var(--color-border)' }}>
-                    <h4 style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: '10px' }}>Trade Distribution</h4>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {/* Skill DNA Score meter */}
+                    <div className="card-sim" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <strong style={{ fontSize: '0.78rem', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.5px' }}>⚡ Skill DNA scorecard</strong>
+                      
                       {[
-                        { name: 'Electrician', val: '45%' },
-                        { name: 'Plumber', val: '30%' },
-                        { name: 'Tailor', val: '15%' },
-                        { name: 'Carpenter', val: '10%' }
-                      ].map(trade => (
-                        <div key={trade.name} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem' }}>
-                          <span>{trade.name}</span>
-                          <span style={{ fontWeight: 700 }}>{trade.val}</span>
+                        { name: 'Precision', val: 94, col: '#3B82F6' },
+                        { name: 'Safety Standards', val: 88, col: '#10B981' },
+                        { name: 'Workflow Speed', val: 92, col: '#EC4899' },
+                        { name: 'Problem Solving', val: 90, col: '#8B5CF6' }
+                      ].map(bar => (
+                        <div key={bar.name}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', marginBottom: '2px' }}>
+                            <span style={{ color: 'var(--color-text-primary)' }}>{bar.name}</span>
+                            <span style={{ fontWeight: 700 }}>{bar.val}%</span>
+                          </div>
+                          <div style={{ backgroundColor: 'var(--color-border)', height: '5px', borderRadius: '3px', overflow: 'hidden' }}>
+                            <div style={{ width: `${bar.val}%`, backgroundColor: bar.col, height: '100%' }}></div>
+                          </div>
                         </div>
                       ))}
                     </div>
-                  </div>
 
-                  <div style={{ backgroundColor: 'var(--color-bg)', padding: '16px', borderRadius: '8px', border: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-                    <Shield size={36} className="text-emerald-500" style={{ marginBottom: '8px' }} />
-                    <h5 style={{ fontSize: '0.85rem', fontWeight: 700 }}>Blockchain Security Mapping</h5>
-                    <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginTop: '4px' }}>
-                      All qualifications and skills DNA matrices are mapped to central databases with SHA-256 cryptographic verification hashes.
-                    </p>
+                    <button 
+                      className="btn-sim btn-sim-primary" 
+                      onClick={() => {
+                        setActiveSimScreen('15_employer_scan');
+                        addLog('info', 'SIMULATOR: Loaded QR scanner mock frame.');
+                      }}
+                    >
+                      Simulate Employer QR Scan
+                    </button>
                   </div>
-                </div>
+                )}
+
+                {/* 15 SCAN SCANNER SIMULATOR */}
+                {activeSimScreen === '15_employer_scan' && (
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#0F172A', position: 'relative', overflow: 'hidden' }}>
+                    
+                    {/* QR Finder box */}
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+                      <div style={{ width: '220px', height: '220px', border: '3px solid #1D4ED8', borderRadius: '24px', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 20px rgba(29, 78, 216, 0.3)' }}>
+                        
+                        {/* Corner markers */}
+                        <div style={{ width: '40px', height: '40px', borderLeft: '4px solid #1D4ED8', borderTop: '4px solid #1D4ED8', position: 'absolute', top: '-6px', left: '-6px', borderTopLeftRadius: '10px' }}></div>
+                        <div style={{ width: '40px', height: '40px', borderRight: '4px solid #1D4ED8', borderTop: '4px solid #1D4ED8', position: 'absolute', top: '-6px', right: '-6px', borderTopRightRadius: '10px' }}></div>
+                        <div style={{ width: '40px', height: '40px', borderLeft: '4px solid #1D4ED8', borderBottom: '4px solid #1D4ED8', position: 'absolute', bottom: '-6px', left: '-6px', borderBottomLeftRadius: '10px' }}></div>
+                        <div style={{ width: '40px', height: '40px', borderRight: '4px solid #1D4ED8', borderBottom: '4px solid #1D4ED8', position: 'absolute', bottom: '-6px', right: '-6px', borderBottomRightRadius: '10px' }}></div>
+
+                        <div style={{ textAlign: 'center', color: '#94A3B8' }}>
+                          <span style={{ fontSize: '2.5rem', display: 'block' }}>📷</span>
+                          <span style={{ fontSize: '0.65rem', display: 'block', marginTop: '6px' }}>Aim camera at QR passport</span>
+                        </div>
+                      </div>
+
+                      <span style={{ fontSize: '0.72rem', color: '#94A3B8', marginTop: '30px', textAlign: 'center' }}>
+                        Scanning system maps decoded profile to central registry.
+                      </span>
+                    </div>
+
+                    <div style={{ padding: '20px', backgroundColor: '#1E293B', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <button 
+                        className="btn-sim btn-sim-primary" 
+                        onClick={() => {
+                          setActiveSimScreen('16_employer_view');
+                          addLog('success', 'QR SCANNER: Scanned Skill Passport successfully. Decoded ID: ravi-kumar');
+                        }}
+                      >
+                        Simulate Scan Success
+                      </button>
+                    </div>
+
+                  </div>
+                )}
+
+                {/* 16 EMPLOYER AUDIT VIEW */}
+                {activeSimScreen === '16_employer_view' && (
+                  <div className="phone-screen-scroll" style={{ paddingBottom: '90px' }}>
+                    <div style={{ marginTop: '10px' }}>
+                      <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>Verified Candidate</h4>
+                      <p style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', marginTop: '2px' }}>Profile retrieved via secure QR payload</p>
+                    </div>
+
+                    <div className="card-sim" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                      <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120" alt="Ravi" style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover' }} />
+                      <div>
+                        <strong style={{ fontSize: '0.9rem', display: 'block' }}>Ravi Kumar</strong>
+                        <span style={{ fontSize: '0.68rem', color: 'var(--color-text-secondary)' }}>Electrician • 5 Years Exp</span>
+                        <span style={{ fontSize: '0.68rem', color: '#10B981', display: 'block', fontWeight: 700, marginTop: '2px' }}>✓ Score rating: 91% approved</span>
+                      </div>
+                    </div>
+
+                    {/* Play Video Diagnostic section */}
+                    <div className="card-sim" style={{ padding: '12px' }}>
+                      <strong style={{ fontSize: '0.75rem', display: 'block', marginBottom: '8px' }}>AI Video Audit Logs:</strong>
+                      <div 
+                        onClick={() => alert('Playing simulated video safety drill...')}
+                        style={{ height: '110px', background: '#0F172A', borderRadius: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#94A3B8', cursor: 'pointer' }}
+                      >
+                        <Play size={20} className="text-emerald-400" />
+                        <span style={{ fontSize: '0.62rem', marginTop: '6px' }}>View Safety Drill (5-sec check)</span>
+                      </div>
+                    </div>
+
+                    {/* DNA metrics */}
+                    <div className="card-sim" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <strong style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)' }}>Traits Matrix:</strong>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem' }}>
+                        <span>Precision:</span> <strong style={{ color: '#1D4ED8' }}>94%</strong>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem' }}>
+                        <span>Safety Compliance:</span> <strong style={{ color: '#10B981' }}>88%</strong>
+                      </div>
+                    </div>
+
+                    <button 
+                      className="btn-sim btn-sim-primary" 
+                      onClick={() => {
+                        setSimConfetti(true);
+                        addLog('success', 'SIMULATOR HIRE: Dispatching contract offer invitation package to candidate Ravi Kumar.');
+                        setTimeout(() => {
+                          setSimConfetti(false);
+                        }, 4000);
+                      }}
+                    >
+                      Hire Candidate
+                    </button>
+                  </div>
+                )}
+
+                {/* 17 WORKER PROFILE VIEW */}
+                {activeSimScreen === '17_profile' && (
+                  <div className="phone-screen-scroll" style={{ paddingBottom: '90px' }}>
+                    <div style={{ textAlign: 'center', marginTop: '10px' }}>
+                      <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120" alt="Ravi" style={{ width: '72px', height: '72px', borderRadius: '50%', border: '3px solid var(--color-primary)', objectFit: 'cover', margin: '0 auto' }} />
+                      <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--color-text-primary)', marginTop: '8px' }}>Ravi Kumar</h4>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)' }}>Delhi NCR • Hindi & English</span>
+                    </div>
+
+                    {/* verified badges shelfs */}
+                    <div className="card-sim">
+                      <strong style={{ fontSize: '0.75rem', display: 'block', marginBottom: '8px' }}>Verified Credentials</strong>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                        <span style={{ fontSize: '0.65rem', backgroundColor: 'var(--color-bg)', border: '1px solid var(--color-border)', padding: '4px 10px', borderRadius: '8px', fontWeight: 600 }}>★ Safety Champion</span>
+                        <span style={{ fontSize: '0.65rem', backgroundColor: 'var(--color-bg)', border: '1px solid var(--color-border)', padding: '4px 10px', borderRadius: '8px', fontWeight: 600 }}>⚡ MCB Certified</span>
+                        <span style={{ fontSize: '0.65rem', backgroundColor: 'var(--color-bg)', border: '1px solid var(--color-border)', padding: '4px 10px', borderRadius: '8px', fontWeight: 600 }}>✓ Aadhaar Verified</span>
+                      </div>
+                    </div>
+
+                    {/* past drills list */}
+                    <div>
+                      <strong style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', display: 'block', marginBottom: '8px', textTransform: 'uppercase' }}>Recent Video Drills</strong>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <div className="card-sim" style={{ padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: '0.72rem', fontWeight: 700 }}>Insulated wire cut drill</span>
+                          <span style={{ fontSize: '0.65rem', color: '#10B981', fontWeight: 800 }}>92% Score</span>
+                        </div>
+                        <div className="card-sim" style={{ padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: '0.72rem', fontWeight: 700 }}>Breaker swap safety check</span>
+                          <span style={{ fontSize: '0.65rem', color: '#10B981', fontWeight: 800 }}>88% Score</span>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                )}
+
+                {/* 18 SYSTEM SETTINGS */}
+                {activeSimScreen === '18_settings' && (
+                  <div className="phone-screen-scroll" style={{ paddingBottom: '90px' }}>
+                    <div style={{ marginTop: '10px' }}>
+                      <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>App Settings</h4>
+                      <p style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', marginTop: '2px' }}>Configure client sandbox parameters</p>
+                    </div>
+
+                    {/* Toggle Settings */}
+                    <div className="card-sim" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                          <strong style={{ fontSize: '0.8rem', display: 'block' }}>Dark Mode Theme</strong>
+                          <span style={{ fontSize: '0.68rem', color: 'var(--color-text-secondary)' }}>Toggle visual colors style</span>
+                        </div>
+                        <input 
+                          type="checkbox" 
+                          checked={simDarkMode} 
+                          onChange={(e) => {
+                            setSimDarkMode(e.target.checked);
+                            addLog('info', `SIMULATOR Settings: Switched phone mockup dark mode state to ${e.target.checked}`);
+                          }}
+                          style={{ width: '36px', height: '20px', cursor: 'pointer' }}
+                        />
+                      </div>
+
+                      <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)' }} />
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                          <strong style={{ fontSize: '0.8rem', display: 'block' }}>Offline Mode Simulation</strong>
+                          <span style={{ fontSize: '0.68rem', color: 'var(--color-text-secondary)' }}>Queue SQLite sync triggers offline</span>
+                        </div>
+                        <input 
+                          type="checkbox" 
+                          checked={simOffline} 
+                          onChange={(e) => {
+                            setSimOffline(e.target.checked);
+                            addLog('success', `SYNC ENGINE: offline synchronization state toggled to: ${e.target.checked}`);
+                          }}
+                          style={{ width: '36px', height: '20px', cursor: 'pointer' }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="card-sim" style={{ padding: '12px' }}>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)' }}>Sandbox Compliance:</span>
+                      <div style={{ fontSize: '0.62rem', color: 'var(--color-text-light)', marginTop: '4px', lineHeight: 1.4 }}>
+                        KarmSetu client builds conform to central UIDAI Aadhaar registry policies and NSDC mapping index specifications.
+                      </div>
+                    </div>
+
+                    <button 
+                      className="btn-sim btn-sim-outline" 
+                      onClick={() => {
+                        setShowLogin(false);
+                        addLog('info', 'SIMULATOR Settings: Revoked session context. Returned to homepage.');
+                      }}
+                      style={{ color: '#EF4444', borderColor: '#EF4444' }}
+                    >
+                      Exit Simulator & Logout
+                    </button>
+                  </div>
+                )}
 
               </div>
-            )}
+
+              {/* Bottom Nav Bar (visible on Home dashboard onwards) */}
+              {![
+                '01_splash', 
+                '02_onboarding_1', 
+                '03_onboarding_2', 
+                '04_onboarding_3', 
+                '05_language', 
+                '06_login', 
+                '07_otp'
+              ].includes(activeSimScreen) && (
+                <nav className="phone-bottom-nav">
+                  <button 
+                    className={`nav-item-btn ${['08_home'].includes(activeSimScreen) ? 'active' : ''}`}
+                    onClick={() => setActiveSimScreen('08_home')}
+                  >
+                    🏠
+                    <span>Home</span>
+                  </button>
+                  <button 
+                    className={`nav-item-btn ${['09_assessment', '10_camera', '11_ai_analysis', '12_ai_report', '13_voice_interview'].includes(activeSimScreen) ? 'active' : ''}`}
+                    onClick={() => setActiveSimScreen('09_assessment')}
+                  >
+                    🎥
+                    <span>Assess</span>
+                  </button>
+                  <button 
+                    className={`nav-item-btn ${['14_passport', '15_employer_scan'].includes(activeSimScreen) ? 'active' : ''}`}
+                    onClick={() => setActiveSimScreen('14_passport')}
+                  >
+                    🪪
+                    <span>Passport</span>
+                  </button>
+                  <button 
+                    className={`nav-item-btn ${['16_employer_view'].includes(activeSimScreen) ? 'active' : ''}`}
+                    onClick={() => setActiveSimScreen('16_employer_view')}
+                  >
+                    💼
+                    <span>Jobs</span>
+                  </button>
+                  <button 
+                    className={`nav-item-btn ${['17_profile', '18_settings'].includes(activeSimScreen) ? 'active' : ''}`}
+                    onClick={() => setActiveSimScreen('17_profile')}
+                  >
+                    👤
+                    <span>Profile</span>
+                  </button>
+                </nav>
+              )}
+
+            </main>
 
           </div>
         )}
