@@ -957,7 +957,7 @@ export default function App() {
                 <h2 className="landing-section-title">From Invisible to Verified</h2>
                 <p className="landing-section-subtitle">A real transformation story in India's labor market.</p>
                 
-                <div className="card-sim" style={{ marginTop: '24px', padding: '30px', textAlign: 'left', border: '1px solid var(--color-border)', borderRadius: '20px', backgroundColor: '#FFF', boxShadow: 'var(--shadow-sm)' }}>
+                <div className="card-sim" style={{ marginTop: '24px', padding: '30px', textAlign: 'left', border: '1px solid var(--color-border)', borderRadius: '20px', boxShadow: 'var(--shadow-sm)' }}>
                   <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '16px' }}>
                     <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120" alt="Ravi" style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover' }} />
                     <div>
