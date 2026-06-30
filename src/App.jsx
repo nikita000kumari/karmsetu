@@ -847,8 +847,8 @@ export default function App() {
               </div>
 
               <h1 className="landing-title" style={{ fontSize: '3rem', lineHeight: '1.15', fontWeight: 800 }}>
-                450 Million Workers.<br />
-                <span style={{ color: 'var(--color-primary)' }}>Millions Still Can't Prove Their Skills.</span>
+                <span style={{ display: 'block', marginBottom: '14px' }}>450 Million Workers.</span>
+                <span style={{ display: 'block', color: 'var(--color-primary)' }}>Millions Still Can't Prove Their Skills.</span>
               </h1>
               
               <p className="landing-tagline" style={{ fontWeight: 600, color: 'var(--color-text-primary)', fontSize: '1.1rem', marginTop: '10px', maxWidth: '780px', margin: '10px auto' }}>
