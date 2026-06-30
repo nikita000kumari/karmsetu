@@ -1984,27 +1984,29 @@ export default function App() {
 
       </main>
 
-      {/* Floating Bottom Console Logs Feed */}
-      <div className="sync-console-drawer">
-        <div className="console-title-bar" onClick={() => setConsoleOpen(!consoleOpen)}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <div className="console-status-dot"></div>
-            <span>SQLite Sync Engine Logs Feed</span>
+      {/* Floating Bottom Console Logs Feed (Simulator Workspace Only) */}
+      {showLogin && (
+        <div className="sync-console-drawer">
+          <div className="console-title-bar" onClick={() => setConsoleOpen(!consoleOpen)}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div className="console-status-dot"></div>
+              <span>SQLite Sync Engine Logs Feed</span>
+            </div>
+            {consoleOpen ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
           </div>
-          {consoleOpen ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
-        </div>
 
-        {consoleOpen && (
-          <div className="console-feed">
-            {consoleLogs.map((log, idx) => (
-              <div key={idx} className={`console-row ${log.type}`}>
-                {log.text}
-              </div>
-            ))}
-            <div ref={consoleBottomRef}></div>
-          </div>
-        )}
-      </div>
+          {consoleOpen && (
+            <div className="console-feed">
+              {consoleLogs.map((log, idx) => (
+                <div key={idx} className={`console-row ${log.type}`}>
+                  {log.text}
+                </div>
+              ))}
+              <div ref={consoleBottomRef}></div>
+            </div>
+          )}
+        </div>
+      )}
 
     </div>
   );
