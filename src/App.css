@@ -1,6 +1,6 @@
 /* KarmSetu Unified Landing Page & Web Portal CSS */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&display=swap');
 
 :root {
   /* Light Theme Variables */
@@ -19,7 +19,7 @@
   --color-danger: #EF4444;
   --color-danger-light: rgba(239, 68, 68, 0.08);
   
-  --font-heading: 'Plus Jakarta Sans', sans-serif;
+  --font-heading: 'Playfair Display', serif;
   --font-body: 'Inter', sans-serif;
   --radius-sm: 6px;
   --radius-md: 10px;
