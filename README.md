@@ -2,69 +2,43 @@
 
 > **"A worker's future should be decided by what they can do, not by the certificates they couldn't afford to earn."**
 
-KarmSetu is an offline-first digital skill verification platform built for India's informal workforce. Instead of relying on certificates, workers demonstrate their skills through practical tasks and receive a verified digital Skill Passport that employers can trust.
+Millions of skilled carpenters, plumbers, electricians, and tailors in India possess years of practical experience but struggle to access formal job markets. Without physical paper credentials, they are locked out of higher-paying contracts, formal credit, and social security.
 
-👉 **Live Demo Portal URL**: [https://nikita000kumari.github.io/karmsetu/](https://nikita000kumari.github.io/karmsetu/)
+KarmSetu bridges this gap by helping informal workers build a trusted digital skill identity based on demonstrated work rather than paperwork. Workers film a short video of themselves performing standard trade drills, which our verification engine parses for tool compliance and safety habits to generate a verified, swipeable **Skill Passport** that employers can scan on-site.
 
----
-
-## ⚡ The Problem
-
-* **450M+** Informal Workers in India
-* **80%+** Lack formal documentation or certificates
-* **Thousands** Miss out on higher-paying employment and formal credit daily
-
-Millions of skilled carpenters, plumbers, electricians, and tailors possess years of practical experience but struggle to access formal job markets. Without physical paper credentials, they are locked out of higher-paying contracts, formal credit, and social security.
+👉 **Live Interactive Portal**: [https://nikita000kumari.github.io/karmsetu/](https://nikita000kumari.github.io/karmsetu/)
 
 ---
 
-## ⚖️ Why Current Hiring Fails
+## 🎨 Interactive Client App Simulation
 
-| Traditional Hiring | KarmSetu |
-| :--- | :--- |
-| **Resume** | Practical Skill Demo |
-| **Certificates** | AI Skill Verification |
-| **Manual Interviews** | Voice Assessment |
-| **Paper Documents** | Digital Skill Passport |
-| **Internet Required** | Offline-first |
+To give judges and mentors a direct preview of the mobile client experience, we have built an **Interactive Smartphone Simulator** directly inside our live portal.
 
----
+Rather than clicking through a static sequence of forms, you can select any of the **18 client screens** in the **Developer Control Panel** to jump directly to any state of the application.
 
-## 💡 Our Solution
-
-KarmSetu bridges this gap by creating a digital Skill Passport using on-device tests, voice checks, and offline syncing.
-
-1. **Practical Demonstration**: Workers film a short video performing a standard trade task.
-2. **AI Analysis & Feedback**: The platform detects workflow patterns, tool grips, and safety practices.
-3. **Voice Interview**: A quick local-language safety follow-up checks vocational concepts.
-4. **Digital Skill Passport**: Generated instantly, containing verifiable skill ratings and badges.
-5. **Secure Scanning**: Employers scan the passport QR code to confirm credentials on-site.
-
----
-
-## ⚙️ How KarmSetu Works
-
-```
-Worker
-  ↓
-Video Recording
-  ↓
-Local Storage (SQLite)
-  ↓
-Sync Engine
-  ↓
-Firebase
-  ↓
-Gemini Analysis
-  ↓
-Skill Passport
-  ↓
-Employer Verification
-```
+### Mapped Mobile Screens (1 to 18)
+1. **01 Splash Screen**: Centered logo connection loader (2s auto-timer transition).
+2. **02 Onboarding 1**: Skill recognition pitch with trade task illustrations.
+3. **03 Onboarding 2**: Practical verification over physical certificates illustration.
+4. **04 Onboarding 3**: "Show your work. We'll help prove it" onboarding call-to-action.
+5. **05 Language Selection**: Support for regional dialects (Hindi, English, Tamil, Bengali, Marathi, Telugu).
+6. **06 Phone Login**: Minimalist credential input with country code prefix `+91`.
+7. **07 OTP Verification**: Demo bypass code container (accepts code `4821` to log in).
+8. **08 Home Dashboard**: Ravi Kumar's electrician feed showing Trust Score (92%), trade tier, and next required drills.
+9. **09 Choose Trade**: Assessment list mapping trade rules (Electrician, Plumber, Carpenter, Tailor, Mason).
+10. **10 Camera Viewfinder**: Simulated recording stream with rule targets, safety crops, and 5s drill countdown.
+11. **11 AI Analysis**: Visual analysis frame checker running diagnostics checklist logs.
+12. **12 AI Diagnostic Report**: Grade score, highlighted trade strengths, and recommended improvements.
+13. **13 Voice Interview**: ChatGPT-style speech responder with voice waveforms and simulated voice-to-text typing.
+14. **14 Skill Passport**: Apple Wallet-style digital passport showing verified tags, score, and central registry QR.
+15. **15 Scanner Simulator**: Camera overlay viewfinder designed to scan worker QR codes.
+16. **16 Employer View**: Scanned worker profile diagnostic summary with audit logs playback and "Hire" actions (confetti feedback).
+17. **17 Worker Profile**: Avatar, verified credentials shelf, language selections, and past drills history.
+18. **18 System Settings**: Settings panel supporting Dark Mode and offline database toggles.
 
 ---
 
-## 📈 How the Trust Score is Generated
+## ⚙️ How the Trust Score is Calculated
 
 Employers need a clear reason to trust a worker's score. KarmSetu calculates the rating transparently:
 
@@ -75,82 +49,82 @@ Employers need a clear reason to trust a worker's score. KarmSetu calculates the
 
 ---
 
-## 🚀 Core Features
+## 🛠️ Engineering Architecture
 
-*   **📹 Skill Assessment**: Workers record a 5-second video demonstration. AI analyzes the recorded task to identify tools, workflow, and basic safety practices.
-*   **🎤 Voice Interview**: Voice-based assessment in the worker's preferred language. Gemini provides structured feedback and identifies visible workflow patterns.
-*   **📄 Skill Passport**: Instantly generated digital passport containing trust scores, verified skill badges, and past project links.
-*   **📷 QR Verification**: Employers scan a worker's QR code on any device without installing an app to pull real-time verification logs.
-*   **📶 Offline Support**: Assessments work fully offline using a local SQLite sync engine, syncing to Firebase automatically when internet connectivity returns.
-*   **🌍 Regional Languages**: Complete onboarding in Hindi, Bengali, Tamil, Telugu, and Marathi to eliminate literacy barriers.
+The platform runs on a robust offline-first synchronization architecture connecting local app states to remote servers.
 
----
-
-## 🛠️ Tech Stack
-
-*   **AI**: Gemini, Speech Recognition, Computer Vision
-*   **Backend**: Firebase
-*   **Mobile**: React Native
-*   **Storage**: SQLite
-
----
-
-## 📁 Repository Folder Structure
+### System Diagram
 
 ```text
-karmsetu/
-├── dist/                # Production distribution builds
-├── src/
-│   ├── assets/          # Project screenshot assets
-│   ├── App.css          # Premium responsive styling sheet
-│   ├── App.jsx          # Primary workspace portal & interactive landing
-│   ├── main.jsx         # React application entry point
-│   └── index.css        # Core layout resets and variables
-├── index.html           # Main HTML container layout
-├── package.json         # Build dependencies and commands registry
-└── README.md            # Premium repository documentation
++----------------------- CLIENT APP (Phone) -----------------------+
+|                                                                  |
+|   [1. Camera Drill]  -->  [2. Voice Check]  -->  [3. Passport]   |
+|           |                       |                   ^          |
+|           v                       v                   |          |
+|   +---------------+       +---------------+           |          |
+|   | SQLite Log    |       | Speech-to-Text|           |          |
+|   | Buffer Queue  |       | Engine        |           |          |
+|   +---------------+       +---------------+           |          |
+|           |                       |                   |          |
++-----------|-----------------------|-------------------|----------+
+            | (Auto Sync)           | (JSON API)        |
+            v                       v                   |
++---------------------- CLOUD SERVICES ----------------------------+
+|           |                       |                   |          |
+|           v                       v                   |          |
+|   +---------------+       +---------------+           |          |
+|   | Firestore DB  |       | Gemini API    |           |          |
+|   | Registry      |       | Trade Grades  | ----------+          |
+|   +---------------+       +---------------+                      |
++------------------------------------------------------------------+
 ```
 
----
-
-## ⚙️ Installation & Setup
-
-To run the codebase workspace locally:
-
-1.  **Clone the Repository**:
-    ```bash
-    git clone https://github.com/nikita000kumari/karmsetu.git
-    cd karmsetu
-    ```
-
-2.  **Install Node Dependencies**:
-    ```bash
-    npm install
-    ```
-
-3.  **Start Local Dev Server**:
-    ```bash
-    npm run dev
-    ```
-
-4.  **Run Production Compilation Build**:
-    ```bash
-    npm run build
-    ```
+### Sync Pipeline: SQLite ➔ Firestore
+When workers record an assessment offline, data is queued inside a local SQLite transaction log. The sync engine registers custom events (`SQL: INSERT INTO assessments...`) and pushes them to Firestore as soon as internet connectivity is detected.
 
 ---
 
-## 🔮 Roadmap
+## 💻 Local Installation & Run Guide
 
-*   [x] Mobile number verification (Demo Mode)
-*   [x] Camera skill assessment video analysis simulation
-*   [x] Skill Passport QR verification mapping
-*   [ ] Direct integration with NSDC Skill India portal credentials
-*   [ ] Micro-lending bank portal mapping for certified passport holders
-*   [ ] Insurance policy underwriting based on verified Safety badges
+To run the client codebase and developer workspace locally:
+
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/nikita000kumari/karmsetu.git
+   cd karmsetu
+   ```
+
+2. **Install Node Dependencies**:
+   ```bash
+   npm install
+   ```
+
+3. **Start Local Dev Server**:
+   ```bash
+   npm run dev
+   ```
+
+4. **Compile Production Bundle**:
+   ```bash
+   npm run build
+   ```
+
+---
+
+## 🔮 Implementation Roadmap
+
+* [x] **Day 1**: Splash, regional languages selection, and phone OTP bypass modes.
+* [x] **Day 2**: Worker dashboard metrics widgets and camera viewfinder overlays.
+* [x] **Day 3**: Frame-by-frame compliance checks checklist and voice interview audio waveforms.
+* [x] **Day 4**: Apple Wallet style hologram passport cards and DNA progress rows.
+* [x] **Day 5**: QR scanning simulator and employer candidate hire actions (confetti notifications).
+* [x] **Day 6**: Profile settings dashboard with Dark Mode theme controls.
+* [x] **Day 7**: Production build optimization and responsive 8-step sales landing portal.
+* [ ] Integrate direct credentials sync to Skill India (NSDC) registries.
+* [ ] Implement micro-lending API bindings for certified passport holders.
 
 ---
 
 ## 🤝 Team & Contributors
 
-*   **Nikita Kumari** (Lead Developer & Co-Founder) — specialized in React interfaces, SQLite syncing, and Gemini model pipelines.
+* **Nikita Kumari** (Lead Developer & Creator) — specialized in React client interfaces, SQLite sync pipelines, and LLM orchestration.
