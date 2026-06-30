@@ -855,33 +855,30 @@ export default function App() {
         {userRole === 'none' && !showLogin && (
           <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
             
-            {/* HERO SECTION */}
-            <section className="landing-hero">
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', backgroundColor: 'var(--color-primary-light)', padding: '6px 16px', borderRadius: '30px', border: '1px solid var(--color-border)' }}>
+            {/* 1️⃣ HERO SECTION */}
+            <section className="landing-hero" style={{ padding: '80px 20px 50px 20px' }}>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', backgroundColor: 'var(--color-primary-light)', padding: '6px 16px', borderRadius: '30px', border: '1px solid var(--color-border)', marginBottom: '14px' }}>
                 <Smartphone size={14} className="text-blue-600" />
-                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-primary)' }}>Worker records skill drill</span>
-                <span style={{ color: 'var(--color-text-light)' }}>•</span>
-                <QrCode size={14} className="text-amber-600" />
-                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-accent)' }}>Employer scans Skill Passport</span>
+                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-primary)' }}>Skill demonstration over certificates</span>
               </div>
 
-              <h1 className="landing-title" style={{ fontSize: '2.8rem', lineHeight: '1.2' }}>
-                India has 450M skilled workers.<br />
-                <span style={{ color: 'var(--color-primary)' }}>Millions still can't prove what they know.</span>
+              <h1 className="landing-title" style={{ fontSize: '3rem', lineHeight: '1.15', fontWeight: 800 }}>
+                450 Million Workers.<br />
+                <span style={{ color: 'var(--color-primary)' }}>Millions Still Can't Prove Their Skills.</span>
               </h1>
               
-              <p className="landing-tagline" style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                KarmSetu helps workers prove skills through work—not paperwork.
+              <p className="landing-tagline" style={{ fontWeight: 600, color: 'var(--color-text-primary)', fontSize: '1.1rem', marginTop: '10px', maxWidth: '780px' }}>
+                KarmSetu helps skilled workers build trusted digital identities through practical demonstrations instead of certificates.
               </p>
 
               {/* MISSION STATEMENT SLOGAN */}
-              <div style={{ margin: '10px auto 20px auto', maxWidth: '680px', fontStyle: 'italic', borderLeft: '3px solid var(--color-accent)', paddingLeft: '16px', fontSize: '0.9rem', color: 'var(--color-text-secondary)', textAlign: 'left', lineHeight: 1.5 }}>
+              <div style={{ margin: '20px auto', maxWidth: '680px', fontStyle: 'italic', borderLeft: '3px solid var(--color-accent)', paddingLeft: '16px', fontSize: '0.9rem', color: 'var(--color-text-secondary)', textAlign: 'left', lineHeight: 1.5 }}>
                 "A worker's future should be decided by what they can do, not by the certificates they couldn't afford to earn."
               </div>
 
               <div className="hero-cta-row">
                 <button className="btn-primary" style={{ padding: '12px 28px', fontSize: '0.92rem' }} onClick={() => setShowLogin(true)}>
-                  View Prototype <ArrowRight size={16} />
+                  Live Demo <ArrowRight size={16} />
                 </button>
                 <a 
                   href="https://github.com/nikita000kumari/karmsetu" 
@@ -895,167 +892,126 @@ export default function App() {
               </div>
             </section>
 
-            {/* Meet Ravi Section */}
-            <section className="meet-ravi-section">
-              <div className="meet-ravi-card">
-                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'var(--color-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0 }}>
-                  👨‍🔧
-                </div>
-                <div>
-                  <h4 style={{ fontSize: '0.95rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    Meet Ravi <span style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--color-text-secondary)' }}>• Electrician</span>
-                  </h4>
-                  <div className="ravi-badge-grid">
-                    <span className="ravi-badge">10 Years Experience</span>
-                    <span className="ravi-badge" style={{ color: 'var(--color-danger)' }}>No Formal Certificate</span>
-                    <span className="ravi-badge" style={{ color: 'var(--color-secondary)' }}>KarmSetu Verified</span>
-                  </div>
-                  <p style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', lineHeight: 1.4, marginTop: '4px' }}>
-                    "I had years of experience wiring panels, but larger builders rejected me without papers. With KarmSetu, I filmed my wiring test, answered one safety voice check, got my Skill Passport, and was hired instantly on-site."
-                  </p>
-                </div>
-              </div>
-            </section>
-
-            {/* Problem Section */}
-            <section className="problem-stats-section">
+            {/* 2️⃣ PROBLEM SECTION */}
+            <section className="problem-stats-section" style={{ padding: '40px 20px' }}>
               <h2 className="landing-section-title">The Problem</h2>
               <p className="landing-section-subtitle">Why traditional credential systems leave millions behind.</p>
               
-              <div className="problem-flow-box">
-                <div>
-                  <div className="problem-stat-huge">450M+</div>
-                  <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase' }}>Informal Workers</span>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginTop: '30px' }}>
+                <div style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)', borderRadius: '12px', padding: '24px', textAlign: 'center', boxShadow: 'var(--shadow-sm)' }}>
+                  <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}>👷</div>
+                  <strong style={{ fontSize: '0.95rem', display: 'block', color: 'var(--color-text-primary)', marginBottom: '8px' }}>Skilled workers remain invisible</strong>
+                  <span style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', lineHeight: '1.45' }}>
+                    Most tradesmen have years of hands-on experience but no formal school papers or ITI credentials.
+                  </span>
                 </div>
                 
-                <div className="problem-flow-arrow">→</div>
-
-                <div>
-                  <div className="problem-stat-huge">80%+</div>
-                  <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase' }}>Lack Documentation</span>
+                <div style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)', borderRadius: '12px', padding: '24px', textAlign: 'center', boxShadow: 'var(--shadow-sm)' }}>
+                  <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}>📄</div>
+                  <strong style={{ fontSize: '0.95rem', display: 'block', color: 'var(--color-text-primary)', marginBottom: '8px' }}>Employers rely on paperwork</strong>
+                  <span style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', lineHeight: '1.45' }}>
+                    Recruitment processes rely entirely on certifications, ignoring practical capabilities.
+                  </span>
                 </div>
                 
-                <div className="problem-flow-arrow">→</div>
-                
-                <div className="problem-flow-step">
-                  <span style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--color-danger)' }}>Thousands Blocked Daily</span>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>Miss out on employment opportunities daily because they can't prove their skills.</span>
+                <div style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)', borderRadius: '12px', padding: '24px', textAlign: 'center', boxShadow: 'var(--shadow-sm)' }}>
+                  <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}>💰</div>
+                  <strong style={{ fontSize: '0.95rem', display: 'block', color: 'var(--color-text-primary)', marginBottom: '8px' }}>Better opportunities are lost</strong>
+                  <span style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', lineHeight: '1.45' }}>
+                    Without verification, workers miss out on higher wages, formal contracts, and credit options daily.
+                  </span>
                 </div>
               </div>
             </section>
 
-            {/* Why Existing Solutions Fail Table */}
-            <section className="comparison-section">
-              <h2 className="landing-section-title">Why Current Hiring Fails</h2>
+            {/* 3️⃣ SOLUTION SECTION */}
+            <section className="solution-flow-section" style={{ padding: '60px 20px' }}>
+              <h2 className="landing-section-title">The Solution</h2>
+              <p className="landing-section-subtitle">A seamless pipeline verifying skills and connecting workers directly to jobs.</p>
+              
+              <div className="solution-visual-flow" style={{ marginTop: '30px' }}>
+                <div className="solution-flow-step-card">
+                  <Video size={18} className="text-blue-600" />
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>Worker records task</span>
+                </div>
+                <div className="solution-flow-arrow">→</div>
+                
+                <div className="solution-flow-step-card">
+                  <Activity size={18} className="text-emerald-600" />
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>AI verifies</span>
+                </div>
+                <div className="solution-flow-arrow">→</div>
+
+                <div className="solution-flow-step-card">
+                  <Award size={18} className="text-amber-600" />
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>Skill Passport</span>
+                </div>
+                <div className="solution-flow-arrow">→</div>
+
+                <div className="solution-flow-step-card">
+                  <QrCode size={18} className="text-blue-600" />
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>Employer scans</span>
+                </div>
+                <div className="solution-flow-arrow">→</div>
+
+                <div className="solution-flow-step-card" style={{ border: '1px solid var(--color-secondary)' }}>
+                  <Briefcase size={18} className="text-emerald-600" />
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>Gets hired</span>
+                </div>
+              </div>
+            </section>
+
+            {/* 4️⃣ WHY KARMSETU? SECTION */}
+            <section className="comparison-section" style={{ padding: '40px 20px' }}>
+              <h2 className="landing-section-title">Why KarmSetu?</h2>
               <p className="landing-section-subtitle">How KarmSetu replaces outdated paper models with live skill evidence.</p>
               
-              <div className="comparison-table-wrapper">
+              <div className="comparison-table-wrapper" style={{ marginTop: '20px' }}>
                 <table className="comparison-table">
                   <thead>
                     <tr>
-                      <th>Parameters</th>
-                      <th>Traditional Hiring</th>
-                      <th style={{ color: 'var(--color-secondary)' }}>KarmSetu</th>
+                      <th style={{ padding: '16px' }}>Traditional Hiring</th>
+                      <th style={{ color: 'var(--color-secondary)', padding: '16px' }}>KarmSetu</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td><strong>Resume</strong></td>
-                      <td>Written Text (Self-declared)</td>
-                      <td style={{ color: 'var(--color-secondary)', fontWeight: 600 }}>Practical Skill Demo</td>
+                      <td style={{ padding: '16px' }}>Certificates</td>
+                      <td style={{ color: 'var(--color-secondary)', fontWeight: 600, padding: '16px' }}>Demonstrated Skills</td>
                     </tr>
                     <tr>
-                      <td><strong>Certificates</strong></td>
-                      <td>Paper certificates (Easy to forge)</td>
-                      <td style={{ color: 'var(--color-secondary)', fontWeight: 600 }}>AI Skill Verification</td>
+                      <td style={{ padding: '16px' }}>Manual Screening</td>
+                      <td style={{ color: 'var(--color-secondary)', fontWeight: 600, padding: '16px' }}>AI Assisted</td>
                     </tr>
                     <tr>
-                      <td><strong>Manual Interviews</strong></td>
-                      <td>Slow & Subjective</td>
-                      <td style={{ color: 'var(--color-secondary)', fontWeight: 600 }}>Voice Assessment</td>
+                      <td style={{ padding: '16px' }}>Paper Records</td>
+                      <td style={{ color: 'var(--color-secondary)', fontWeight: 600, padding: '16px' }}>Digital Passport</td>
                     </tr>
                     <tr>
-                      <td><strong>Paper Documents</strong></td>
-                      <td>Physical verification sheets</td>
-                      <td style={{ color: 'var(--color-secondary)', fontWeight: 600 }}>Digital Skill Passport</td>
+                      <td style={{ padding: '16px' }}>Difficult Verification</td>
+                      <td style={{ color: 'var(--color-secondary)', fontWeight: 600, padding: '16px' }}>QR Verification</td>
                     </tr>
                     <tr>
-                      <td><strong>Internet Required</strong></td>
-                      <td>Always Online Required</td>
-                      <td style={{ color: 'var(--color-secondary)', fontWeight: 600 }}>Offline-first</td>
+                      <td style={{ padding: '16px' }}>Internet Required</td>
+                      <td style={{ color: 'var(--color-secondary)', fontWeight: 600, padding: '16px' }}>Offline First</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
             </section>
 
-            {/* Solution Visual Flow */}
-            <section className="solution-flow-section">
-              <h2 className="landing-section-title">The Solution</h2>
-              <p className="landing-section-subtitle">A seamless pipeline connecting worker skill verification directly to jobs.</p>
-              
-              <div className="solution-visual-flow">
-                <div className="solution-flow-step-card">
-                  <User size={18} className="text-blue-600" />
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>Worker Onboarding</span>
-                </div>
-                <div className="solution-flow-arrow">→</div>
-                
-                <div className="solution-flow-step-card">
-                  <Video size={18} className="text-blue-600" />
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>Video Recording</span>
-                </div>
-                <div className="solution-flow-arrow">→</div>
-
-                <div className="solution-flow-step-card">
-                  <Database size={18} className="text-blue-600" />
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>Local Storage (SQLite)</span>
-                </div>
-                <div className="solution-flow-arrow">→</div>
-
-                <div className="solution-flow-step-card">
-                  <Activity size={18} className="text-emerald-600" />
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>Sync Engine</span>
-                </div>
-                <div className="solution-flow-arrow">→</div>
-
-                <div className="solution-flow-step-card">
-                  <Server size={18} className="text-emerald-600" />
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>Firebase</span>
-                </div>
-                <div className="solution-flow-arrow">→</div>
-
-                <div className="solution-flow-step-card">
-                  <Award size={18} className="text-blue-600" />
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>Gemini Analysis</span>
-                </div>
-                <div className="solution-flow-arrow">→</div>
-
-                <div className="solution-flow-step-card">
-                  <QrCode size={18} className="text-amber-600" />
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>Skill Passport</span>
-                </div>
-                <div className="solution-flow-arrow">→</div>
-
-                <div className="solution-flow-step-card" style={{ border: '1px solid var(--color-secondary)' }}>
-                  <Briefcase size={18} className="text-emerald-600" />
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>Employer Scan</span>
-                </div>
-              </div>
-            </section>
-
-            {/* Features Showcase Grid */}
-            <section className="features-section">
+            {/* 5️⃣ FEATURES SECTION */}
+            <section className="features-section" style={{ padding: '60px 20px' }}>
               <h2 className="landing-section-title">Core Features</h2>
               <p className="landing-section-subtitle">Engineered specifically for low-connectivity blue-collar labor markets.</p>
               
-              <div className="features-card-grid">
+              <div className="features-card-grid" style={{ marginTop: '20px' }}>
                 
                 <div className="feature-card">
                   <Video size={20} className="text-blue-600" />
                   <h4 style={{ fontSize: '0.88rem', fontWeight: 700 }}>📹 Skill Assessment</h4>
                   <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', lineHeight: 1.45 }}>
-                    Record a 5-second video demonstration. AI analyzes the recorded task to identify tools, workflow, and basic safety practices.
+                    Record a 5-second video demonstration. AI analyzes the task to identify tools, workflow, and basic safety practices.
                   </p>
                 </div>
 
@@ -1063,7 +1019,7 @@ export default function App() {
                   <Mic size={20} className="text-emerald-600" />
                   <h4 style={{ fontSize: '0.88rem', fontWeight: 700 }}>🎤 Voice Interview</h4>
                   <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', lineHeight: 1.45 }}>
-                    Voice-based assessment in the worker's preferred language. Gemini provides structured feedback and identifies visible workflow patterns.
+                    Voice-based safety assessment in the worker's preferred language. Gemini provides structured feedback and workflow analysis.
                   </p>
                 </div>
 
@@ -1087,7 +1043,7 @@ export default function App() {
                   <HardDrive size={20} className="text-emerald-600" />
                   <h4 style={{ fontSize: '0.88rem', fontWeight: 700 }}>📶 Offline Support</h4>
                   <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', lineHeight: 1.45 }}>
-                    Assessments work fully offline using a local SQLite sync database. Syncs back to Firebase automatically when internet returns.
+                    Assessments work fully offline using a local SQLite sync database. Syncs back to Firebase when internet returns.
                   </p>
                 </div>
 
@@ -1102,240 +1058,117 @@ export default function App() {
               </div>
             </section>
 
-            {/* How Trust Score is Generated Section */}
-            <section style={{ padding: '40px 20px 60px 20px', maxWidth: '900px', margin: '0 auto' }}>
-              <h2 className="landing-section-title">How Trust Score is Generated</h2>
-              <p className="landing-section-subtitle">A transparent, multi-dimensional evaluation mechanism that employers can rely on.</p>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', textAlign: 'center', marginTop: '20px' }}>
-                {[
-                  { pct: "40%", label: "Practical Demonstration", desc: "AI video analysis of tool grips, techniques, and safety gear." },
-                  { pct: "30%", label: "Voice Assessment", desc: "Structured follow-up check of safety concepts in preferred languages." },
-                  { pct: "20%", label: "Experience Logs", desc: "Self-declared history, past job cycles, and references ledger." },
-                  { pct: "10%", label: "Community Verification", desc: "Contractor ratings and project completion signatures." }
-                ].map(item => (
-                  <div key={item.label} style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)', padding: '20px', borderRadius: '10px', boxShadow: 'var(--shadow-sm)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    <span style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--color-primary)', display: 'block' }}>{item.pct}</span>
-                    <strong style={{ fontSize: '0.8rem', display: 'block', color: 'var(--color-text-primary)' }}>{item.label}</strong>
-                    <p style={{ fontSize: '0.68rem', color: 'var(--color-text-secondary)', lineHeight: 1.45 }}>{item.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* System Architecture */}
-            <section className="architecture-section">
-              <h2 className="landing-section-title">System Architecture</h2>
-              <p className="landing-section-subtitle">How our frontend diagnostics interface communicates with AI models and secure databases.</p>
-
-              <div className="arch-visual-card">
-                <div className="arch-stack">
-                  
-                  <div className="arch-layer">
-                    <div className="arch-layer-title">
-                      <Smartphone size={14} /> Client Interface
+            {/* 6️⃣ SKILL PASSPORT PREVIEW SECTION */}
+            <section style={{ padding: '60px 20px', backgroundColor: 'var(--color-primary-light)', borderTop: '1px solid var(--color-border)', borderBottom: '1px solid var(--color-border)' }}>
+              <div style={{ maxWidth: '900px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '40px', alignItems: 'center' }}>
+                <div>
+                  <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>Skill Passport Preview</h2>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginTop: '8px', lineHeight: 1.5 }}>
+                    Employers get instant, verified access to a worker's practical capabilities, trust score history, and safety qualifications. The passport is secure, dynamic, and updated in real-time.
+                  </p>
+                  <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.78rem' }}>
+                      <span style={{ color: 'var(--color-secondary)', fontWeight: 700 }}>✓</span>
+                      <span>Verified trust score of 92%</span>
                     </div>
-                    <div className="arch-layer-components">
-                      <div className="arch-component">React Native Mobile App</div>
-                      <div className="arch-component">Web Speech Speech-to-Text API</div>
-                      <div className="arch-component">Local Camera View Finder</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.78rem' }}>
+                      <span style={{ color: 'var(--color-secondary)', fontWeight: 700 }}>✓</span>
+                      <span>Gold verification tier</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.78rem' }}>
+                      <span style={{ color: 'var(--color-secondary)', fontWeight: 700 }}>✓</span>
+                      <span>Practical assessment audit link</span>
                     </div>
                   </div>
+                </div>
 
-                  <div className="arch-layer">
-                    <div className="arch-layer-title">
-                      <Activity size={14} /> AI Engine Layer
+                {/* Passport Card Component */}
+                <div className="premium-passport-card" style={{ maxWidth: '400px', width: '100%', cursor: 'default' }}>
+                  <div className="hologram-strip"></div>
+                  <div className="passport-badge-header">
+                    <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#F59E0B', letterSpacing: '0.5px' }}>★ KARMSETU VERIFIED ★</span>
+                    <span style={{ fontSize: '0.58rem', background: 'rgba(255,255,255,0.08)', padding: '2px 6px', borderRadius: '4px', color: '#94A3B8' }}>
+                      ID: KS-AADH-9821
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                    <div className="passport-avatar-glow" style={{ width: '56px', height: '56px' }}>
+                      <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150" alt="Avatar" className="passport-avatar-img" />
                     </div>
-                    <div className="arch-layer-components">
-                      <div className="arch-component" style={{ borderColor: 'var(--color-accent)' }}>Gemini API Grader</div>
-                      <div className="arch-component">Speech Recognition</div>
-                      <div className="arch-component">Computer Vision</div>
+                    <div>
+                      <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#FFF' }}>Ravi Kumar</h4>
+                      <p style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
+                        Electrician • 5 Years Exp
+                      </p>
+                      <p style={{ fontSize: '0.65rem', color: '#64748B', marginTop: '2px' }}>
+                        New Delhi, Delhi
+                      </p>
                     </div>
                   </div>
 
-                  <div className="arch-layer">
-                    <div className="arch-layer-title">
-                      <Database size={14} /> Storage & Sync
-                    </div>
-                    <div className="arch-layer-components">
-                      <div className="arch-component">Firebase Storage</div>
-                      <div className="arch-component">SQLite Offline Sync</div>
-                      <div className="arch-component" style={{ borderColor: 'var(--color-secondary)' }}>Mobile Identity Verification (Future Scope)</div>
-                    </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                    <span className="passport-badge-pill" style={{ color: '#F59E0B', fontSize: '0.6rem', padding: '3px 8px' }}>★ Safety Champion</span>
+                    <span className="passport-badge-pill" style={{ color: '#3B82F6', fontSize: '0.6rem', padding: '3px 8px' }}>⚡ MCB Insulated</span>
+                    <span className="passport-badge-pill" style={{ color: '#10B981', fontSize: '0.6rem', padding: '3px 8px' }}>✓ UID Verified</span>
                   </div>
 
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '12px', marginTop: '4px' }}>
+                    <div>
+                      <span style={{ fontSize: '0.58rem', color: '#64748B', display: 'block', textTransform: 'uppercase' }}>Trust Score Rating</span>
+                      <span style={{ fontSize: '1.25rem', color: '#34D399', display: 'block', fontWeight: 800, marginTop: '2px' }}>92% (Gold)</span>
+                    </div>
+
+                    <div style={{ width: '48px', height: '48px', border: '1px solid rgba(255,255,255,0.1)', padding: '2px', backgroundColor: '#fff', borderRadius: '4px' }}>
+                      <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
+                        <rect width="100" height="100" fill="white" />
+                        <path d="M10 10h30v30H10zm5 5h20v20H15zm45-5h30v30H60zm5 5h20v20H65zM10 60h30v30H10zm5 5h20v20H15zm50 15h10v10H65zm10-10h15v10H75zm-15-5h15v10H60zm25 0h5v10H85zm-15 15h5v5h-5z" fill="black" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
               </div>
             </section>
 
-            {/* UI Preview phone mockup slider */}
-            <section className="ui-preview-section">
-              <h2 className="landing-section-title">Product UI Preview</h2>
-              <p className="landing-section-subtitle">Toggle through the core mobile screens of the worker app.</p>
+            {/* 7️⃣ IMPACT SECTION */}
+            <section style={{ padding: '60px 20px', maxWidth: '900px', margin: '0 auto', textAlign: 'center' }}>
+              <h2 className="landing-section-title">The Impact</h2>
+              <p className="landing-section-subtitle">Real-world metrics scaling opportunities for millions of workers.</p>
               
-              <div className="ui-preview-hub">
-                
-                {/* Left panel selectors */}
-                <div className="preview-nav-panel">
-                  <button 
-                    className={`preview-nav-btn ${uiPreviewSlide === 'home' ? 'active' : ''}`}
-                    onClick={() => setUiPreviewSlide('home')}
-                  >
-                    <strong style={{ fontSize: '0.85rem', display: 'block' }}>1. Home Onboarding</strong>
-                    <span style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)' }}>Select trade categories and login</span>
-                  </button>
-
-                  <button 
-                    className={`preview-nav-btn ${uiPreviewSlide === 'assessment' ? 'active' : ''}`}
-                    onClick={() => setUiPreviewSlide('assessment')}
-                  >
-                    <strong style={{ fontSize: '0.85rem', display: 'block' }}>2. Camera Assessment</strong>
-                    <span style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)' }}>Video safety recording checklist</span>
-                  </button>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginTop: '30px' }}>
+                <div style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)', borderRadius: '12px', padding: '24px', boxShadow: 'var(--shadow-sm)' }}>
+                  <span style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--color-primary)', display: 'block' }}>450M+</span>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-text-primary)', display: 'block', margin: '6px 0' }}>Workers</span>
+                  <p style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', lineHeight: 1.4 }}>Reaching India's large labor segment directly.</p>
                 </div>
 
-                {/* Center Phone Frame */}
-                <div className="phone-mockup-frame">
-                  <div className="phone-notch"></div>
-                  
-                  {/* Phone screen contents */}
-                  <div className="phone-screen-content">
-                    {uiPreviewSlide === 'home' && (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.78rem' }}>
-                        <span style={{ fontWeight: 800, fontSize: '0.9rem', color: 'var(--color-primary)' }}>Choose Trade Category</span>
-                        <div style={{ border: '1px solid var(--color-border)', borderRadius: '6px', padding: '8px', backgroundColor: 'var(--color-card)' }}>
-                          <strong>⚡ Electrician</strong>
-                          <p style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>wiring boards and switchbox checks</p>
-                        </div>
-                        <div style={{ border: '1.5px solid var(--color-primary)', borderRadius: '6px', padding: '8px', backgroundColor: 'var(--color-primary-light)' }}>
-                          <strong>🚰 Plumber</strong>
-                          <p style={{ fontSize: '0.65rem', color: 'var(--color-primary)' }}>Thread winding pipes and leak gauges</p>
-                        </div>
-                        <input type="tel" placeholder="Enter Mobile Number" style={{ width: '100%', padding: '6px', fontSize: '0.7rem', borderRadius: '4px', border: '1px solid var(--color-border)' }} defaultValue="9876543210" disabled />
-                        <button style={{ backgroundColor: 'var(--color-primary)', color: '#fff', border: 'none', padding: '8px', borderRadius: '4px', fontWeight: 700, fontSize: '0.7rem' }}>Get verification OTP</button>
-                      </div>
-                    )}
-
-                    {uiPreviewSlide === 'assessment' && (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.75rem', height: '100%' }}>
-                        <span style={{ fontWeight: 800, color: 'var(--color-primary)' }}>Record Skill Assessment</span>
-                        <div style={{ flex: 1, backgroundColor: '#000', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                          <span style={{ color: '#EF4444', fontSize: '0.65rem', position: 'absolute', top: '8px', right: '8px', fontWeight: 700 }}>• RECORDING</span>
-                          <span style={{ color: '#fff', fontSize: '0.7rem' }}>Video viewfinder feed</span>
-                        </div>
-                        <div style={{ backgroundColor: 'var(--color-card)', padding: '6px', borderRadius: '6px', fontSize: '0.62rem', border: '1px solid var(--color-border)' }}>
-                          <strong>Verify checks:</strong> Insulated handles, gloves, stable wire strip core size.
-                        </div>
-                      </div>
-                    )}
-
-                    {uiPreviewSlide === 'passport' && (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.75rem' }}>
-                        <span style={{ fontWeight: 800, color: 'var(--color-secondary)' }}>Skill Passport</span>
-                        <div style={{ border: '1px solid var(--color-border)', padding: '10px', borderRadius: '8px', backgroundColor: 'var(--color-card)' }}>
-                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '6px' }}>
-                            <div style={{ width: '30px', height: '30px', borderRadius: '50%', backgroundColor: '#E2E8F0' }}></div>
-                            <div>
-                              <strong style={{ fontSize: '0.75rem', display: 'block' }}>Ravi Kumar</strong>
-                              <span style={{ fontSize: '0.62rem', color: 'var(--color-text-secondary)' }}>Electrician • dwarka, delhi</span>
-                            </div>
-                          </div>
-                          <div style={{ backgroundColor: 'var(--color-secondary-light)', color: '#065F46', fontSize: '0.62rem', padding: '4px', borderRadius: '4px', textAlign: 'center', fontWeight: 700, marginBottom: '6px' }}>
-                            ✓ NSQF LEVEL 4 CERTIFIED
-                          </div>
-                          <span style={{ fontSize: '0.62rem', color: 'var(--color-text-secondary)' }}>QR Code Verification</span>
-                          <div style={{ display: 'flex', justifyContent: 'center', margin: '4px 0' }}>
-                            <svg viewBox="0 0 100 100" style={{ width: '40px', height: '40px' }}>
-                              <rect width="100" height="100" fill="white" />
-                              <path d="M10 10h30v30H10zm5 5h20v20H15zm45-5h30v30H60zm5 5h20v20H65zM10 60h30v30H10zm5 5h20v20H15zm50 15h10v10H65zm10-10h15v10H75zm-15-5h15v10H60zm25 0h5v10H85zm-15 15h5v5h-5z" fill="black" />
-                            </svg>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {uiPreviewSlide === 'profile' && (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.75rem' }}>
-                        <span style={{ fontWeight: 800, color: 'var(--color-primary)' }}>SQLite Sync Settings</span>
-                        <div style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)', borderRadius: '6px', padding: '8px' }}>
-                          <span style={{ display: 'block', fontSize: '0.62rem', textTransform: 'uppercase', color: 'var(--color-text-secondary)' }}>Offline Sync Queue</span>
-                          <strong>2 Assessments pending sync</strong>
-                        </div>
-                        <div style={{ display: 'flex', gap: '6px', marginTop: '4px' }}>
-                          <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--color-secondary)', alignSelf: 'center' }}></div>
-                          <span style={{ fontSize: '0.65rem' }}>SQLite database sync enabled</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
+                <div style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)', borderRadius: '12px', padding: '24px', boxShadow: 'var(--shadow-sm)' }}>
+                  <span style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--color-primary)', display: 'block' }}>100%</span>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-text-primary)', display: 'block', margin: '6px 0' }}>Offline First</span>
+                  <p style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', lineHeight: 1.4 }}>Works perfectly in areas with zero internet connectivity.</p>
                 </div>
 
-                {/* Right panel selectors */}
-                <div className="preview-nav-panel">
-                  <button 
-                    className={`preview-nav-btn ${uiPreviewSlide === 'passport' ? 'active' : ''}`}
-                    onClick={() => setUiPreviewSlide('passport')}
-                  >
-                    <strong style={{ fontSize: '0.85rem', display: 'block' }}>3. Verified Passport</strong>
-                    <span style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)' }}>QR Passport and Skill DNA matrix</span>
-                  </button>
-
-                  <button 
-                    className={`preview-nav-btn ${uiPreviewSlide === 'profile' ? 'active' : ''}`}
-                    onClick={() => setUiPreviewSlide('profile')}
-                  >
-                    <strong style={{ fontSize: '0.85rem', display: 'block' }}>4. Profile Settings</strong>
-                    <span style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)' }}>SQLite offline status dashboard</span>
-                  </button>
+                <div style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)', borderRadius: '12px', padding: '24px', boxShadow: 'var(--shadow-sm)' }}>
+                  <span style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--color-primary)', display: 'block' }}>5+</span>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-text-primary)', display: 'block', margin: '6px 0' }}>Languages</span>
+                  <p style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', lineHeight: 1.4 }}>Onboarding and safety tests in preferred regional dialects.</p>
                 </div>
 
+                <div style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)', borderRadius: '12px', padding: '24px', boxShadow: 'var(--shadow-sm)' }}>
+                  <span style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--color-primary)', display: 'block' }}>Instant</span>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-text-primary)', display: 'block', margin: '6px 0' }}>Access</span>
+                  <p style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', lineHeight: 1.4 }}>Connecting verified workers straight to developers and builders.</p>
+                </div>
               </div>
             </section>
 
-            {/* Roadmap Section */}
-            <section className="roadmap-section">
-              <h2 className="landing-section-title">Development Roadmap</h2>
-              <p className="landing-section-subtitle">Our milestone tracker from initial design to national integrations.</p>
-              
-              <div className="roadmap-list">
-                {[
-                  { text: "Registration & OTP Verification Flow", done: true },
-                  { text: "Camera Skill Assessment Video checks", done: true },
-                  { text: "Digital Skill Passport and QR Generation", done: true },
-                  { text: "Interactive Employer Directory & Verification Console", done: false },
-                  { text: "Government Integration (DigiLocker mapping)", done: false },
-                  { text: "NSDC Skill India Certification matching", done: false }
-                ].map((item, idx) => (
-                  <div key={idx} className="roadmap-item">
-                    <div className="roadmap-icon-box" style={{ 
-                      backgroundColor: item.done ? 'var(--color-secondary-light)' : 'var(--color-primary-light)', 
-                      color: item.done ? 'var(--color-secondary)' : 'var(--color-text-light)' 
-                    }}>
-                      {item.done ? '✓' : '⬜'}
-                    </div>
-                    <span style={{ fontSize: '0.85rem', fontWeight: 600, opacity: item.done ? 1 : 0.6 }}>{item.text}</span>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* Meet the Team Section */}
-            <section className="team-section">
-              <h2 className="landing-section-title">Meet the Team</h2>
-              <p className="landing-section-subtitle">The creators and engineers behind the KarmSetu Trust Protocol.</p>
-              
-              <div className="team-grid">
-                <div className="team-member-card">
-                  <div className="team-avatar">NK</div>
-                  <div className="team-info">
-                    <h4 className="team-name">Nikita Kumari</h4>
-                    <span className="team-role">Lead Developer & Co-Founder</span>
-                    <p className="team-bio">
-                      Full-stack developer specialized in React applications, Firebase infrastructure, and generative AI models integrations. Dedicated to building trust solutions for India's informal sectors.
-                    </p>
-                  </div>
-                </div>
+            {/* 8️⃣ FUTURE VISION SECTION */}
+            <section style={{ padding: '60px 20px', backgroundColor: 'var(--color-card)', borderTop: '1px solid var(--color-border)' }}>
+              <div style={{ maxWidth: '720px', margin: '0 auto', textAlign: 'center' }}>
+                <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>Future Vision</h2>
+                <p style={{ fontSize: '0.88rem', color: 'var(--color-text-secondary)', marginTop: '12px', lineHeight: 1.6 }}>
+                  We envision a future where skills are recognized immediately, regardless of background or formal schooling. By shifting the verification paradigm from physical paperwork to practical work, KarmSetu builds a secure digital registry connecting millions of skilled Indian workers directly to sustainable, high-paying jobs.
+                </p>
               </div>
             </section>
 
