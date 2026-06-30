@@ -1177,23 +1177,56 @@ export default function App() {
               </div>
             </section>
 
-            {/* 8️⃣ FUTURE VISION SECTION (Roadmap 2026 Grid) */}
-            <section style={{ padding: '60px 20px', backgroundColor: 'var(--color-card)', borderTop: '1px solid var(--color-border)' }}>
-              <div style={{ maxWidth: '480px', margin: '0 auto', textAlign: 'center' }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-text-primary)', marginBottom: '20px' }}>Roadmap 2026</h2>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', textAlign: 'left', margin: '0 auto', maxWidth: '240px' }}>
+            {/* 8️⃣ FUTURE VISION SECTION (Sleek Visual Timeline Roadmap) */}
+            <section style={{ padding: '80px 20px', backgroundColor: 'var(--color-card)', borderTop: '1px solid var(--color-border)', overflow: 'hidden' }}>
+              <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+                <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+                  <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>Roadmap 2026</h2>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginTop: '4px' }}>Our expansion milestone track for formalization.</p>
+                </div>
+
+                <div style={{ position: 'relative', paddingLeft: '32px', textAlign: 'left' }}>
+                  {/* Vertical Connection Line */}
+                  <div style={{ position: 'absolute', top: '10px', bottom: '10px', left: '11px', width: '2px', background: 'linear-gradient(to bottom, #1D4ED8 30%, #10B981 60%, #E2E8F0 90%)' }}></div>
+
                   {[
-                    { done: true, title: 'Skill Passport' },
-                    { done: true, title: 'AI Assessment' },
-                    { done: false, title: 'NSDC Integration' },
-                    { done: false, title: 'Banking Access' },
-                    { done: false, title: 'Insurance' }
+                    { status: 'released', phase: 'Phase 1', title: 'Interactive Skill Passport', desc: 'Deploying Apple Wallet compatible, offline-first digital trust identities mapping demonstrated work.' },
+                    { status: 'released', phase: 'Phase 2', title: 'AI-Assisted Assessment Engine', desc: 'Generative computer vision and multi-dialect verbal response analysis checks for compliance safety.' },
+                    { status: 'planned', phase: 'Phase 3', title: 'NSDC Skill Registry Integration', desc: 'Syncing verified assessments directly into national registries and government databases.' },
+                    { status: 'planned', phase: 'Phase 4', title: 'Financial Formalization & Banking', desc: 'Offering credit score matching pipelines and micro-loans targeting formal work acquisition.' },
+                    { status: 'planned', phase: 'Phase 5', title: 'Worker Micro-Insurance Gates', desc: 'Opening direct access to low-cost safety insurance policies mapped on verified safety compliance rates.' }
                   ].map((item, idx) => (
-                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.88rem' }}>
-                      <span style={{ fontSize: '1.1rem', color: item.done ? 'var(--color-secondary)' : 'var(--color-text-light)' }}>
-                        {item.done ? '✓' : '⬜'}
-                      </span>
-                      <span style={{ fontWeight: 600, color: item.done ? 'var(--color-text-primary)' : 'var(--color-text-secondary)' }}>{item.title}</span>
+                    <div key={idx} style={{ position: 'relative', marginBottom: '32px' }}>
+                      {/* Timeline Node dot marker */}
+                      <div style={{ 
+                        position: 'absolute', 
+                        left: '-26px', 
+                        top: '4px', 
+                        width: '10px', 
+                        height: '10px', 
+                        borderRadius: '50%', 
+                        backgroundColor: item.status === 'released' ? '#1D4ED8' : '#FFF', 
+                        border: item.status === 'released' ? '2px solid #FFF' : '2px solid #94A3B8',
+                        boxShadow: item.status === 'released' ? '0 0 8px #1D4ED8' : 'none',
+                        zIndex: 2 
+                      }}></div>
+
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', padding: '2px 8px', borderRadius: '12px', letterSpacing: '0.5px', backgroundColor: item.status === 'released' ? 'var(--color-primary-light)' : 'var(--color-bg)', color: item.status === 'released' ? 'var(--color-primary)' : 'var(--color-text-secondary)' }}>
+                            {item.phase}
+                          </span>
+                          <span style={{ fontSize: '0.62rem', fontWeight: 700, color: item.status === 'released' ? '#10B981' : 'var(--color-text-light)' }}>
+                            {item.status === 'released' ? '● Active MVP' : '○ Planned'}
+                          </span>
+                        </div>
+                        <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--color-text-primary)', marginTop: '6px' }}>
+                          {item.title}
+                        </h4>
+                        <p style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', marginTop: '4px', lineHeight: 1.45 }}>
+                          {item.desc}
+                        </p>
+                      </div>
                     </div>
                   ))}
                 </div>
