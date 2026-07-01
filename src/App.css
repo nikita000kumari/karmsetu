@@ -1,6 +1,6 @@
 /* KarmSetu Unified Landing Page & Web Portal CSS */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
   /* Light Theme Variables */
@@ -19,7 +19,7 @@
   --color-danger: #EF4444;
   --color-danger-light: rgba(239, 68, 68, 0.08);
   
-  --font-heading: 'Poppins', sans-serif;
+  --font-heading: 'Inter', sans-serif;
   --font-body: 'Inter', sans-serif;
   --radius-sm: 6px;
   --radius-md: 10px;
@@ -30,14 +30,17 @@
 }
 
 .dark {
-  --color-bg: #090D16;
-  --color-card: #0F172A;
-  --color-border: #1E293B;
-  --color-text-primary: #F8FAFC;
+  --color-bg: #06080C;            /* Pure Black Charcoal */
+  --color-card: #0B0E14;          /* Cyberpunk Slate */
+  --color-border: rgba(255, 255, 255, 0.05); /* Ultra-thin borders */
+  --color-text-primary: #F1F3F5;
   --color-text-secondary: #94A3B8;
   --color-text-light: #64748B;
-  --color-primary-light: rgba(30, 64, 175, 0.2);
-  --color-secondary-light: rgba(16, 185, 129, 0.15);
+  
+  --color-primary: #10B981;       /* Neon Tech Emerald (Cool UI vibe) */
+  --color-primary-light: rgba(16, 185, 129, 0.06);
+  --color-secondary: #38BDF8;     /* Electric Cyan */
+  --color-secondary-light: rgba(56, 189, 248, 0.08);
   --color-danger-light: rgba(239, 68, 68, 0.2);
 }
 
@@ -53,6 +56,27 @@ body {
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.2s ease, color 0.2s ease;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20%;
+  width: 600px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.03) 0%, transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  letter-spacing: -0.025em;
+  font-weight: 700;
 }
 
 .app-container {
