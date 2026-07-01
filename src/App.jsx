@@ -230,6 +230,7 @@ export default function App() {
   const [simOffline, setSimOffline] = useState(false);
   const [simDarkMode, setSimDarkMode] = useState(false);
   const [simConfetti, setSimConfetti] = useState(false);
+  const [simAssessmentFail, setSimAssessmentFail] = useState(false);
   const [qrScannedCandidateId, setQrScannedCandidateId] = useState(null);
 
   // Cloud backend variables
@@ -1339,6 +1340,25 @@ export default function App() {
                 ))}
               </div>
 
+              {/* Simulator Assessment Fail Switch */}
+              <div className="card-sim" style={{ padding: '12px', margin: '0 0 10px 0', fontSize: '0.72rem', backgroundColor: 'var(--color-bg)', border: '1px solid var(--color-border)', borderRadius: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ textAlign: 'left' }}>
+                    <strong style={{ fontSize: '0.74rem', display: 'block', color: 'var(--color-text-primary)' }}>Simulate Safety Fail</strong>
+                    <span style={{ fontSize: '0.6rem', color: 'var(--color-text-secondary)' }}>Toggle safety check violation</span>
+                  </div>
+                  <input 
+                    type="checkbox" 
+                    checked={simAssessmentFail} 
+                    onChange={(e) => {
+                      setSimAssessmentFail(e.target.checked);
+                      addLog('warning', `SIMULATOR AI: Changed model verification preset to: ${e.target.checked ? 'CRITICAL_SAFETY_FAIL (54%)' : 'COMPLIANCE_PASS (91%)'}`);
+                    }}
+                    style={{ width: '28px', height: '16px', cursor: 'pointer' }}
+                  />
+                </div>
+              </div>
+
               <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)', margin: '10px 0' }} />
 
               <button 
@@ -1716,26 +1736,55 @@ export default function App() {
                           <p style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', marginTop: '2px' }}>AI compliance metrics for {simSelectedTrade}</p>
                         </div>
 
-                        <div className="card-sim" style={{ background: 'var(--color-bg)', padding: '16px', borderRadius: '20px', textAlign: 'center', border: 'none' }}>
-                          <span style={{ fontSize: '0.62rem', color: '#38BDF8', fontWeight: 700, letterSpacing: '0.5px' }}>OVERALL CONFIDENCE RATING</span>
-                          <h2 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#38BDF8', marginTop: '4px' }}>91%</h2>
-                          <span style={{ fontSize: '0.62rem', color: '#94A3B8', display: 'block', marginTop: '4px' }}>Grade L4 safety standards approved</span>
-                        </div>
+                        {simAssessmentFail ? (
+                          <div className="card-sim" style={{ background: 'var(--color-bg)', padding: '16px', borderRadius: '20px', textAlign: 'center', border: '1.5px solid var(--color-danger)' }}>
+                            <span style={{ fontSize: '0.62rem', color: 'var(--color-danger)', fontWeight: 700, letterSpacing: '0.5px' }}>CRITICAL SAFETY INFRACTIONS</span>
+                            <h2 style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--color-danger)', marginTop: '4px' }}>54%</h2>
+                            <span style={{ fontSize: '0.62rem', color: 'var(--color-text-secondary)', display: 'block', marginTop: '4px' }}>Grade L1 Safety violations detected</span>
+                          </div>
+                        ) : (
+                          <div className="card-sim" style={{ background: 'var(--color-bg)', padding: '16px', borderRadius: '20px', textAlign: 'center', border: 'none' }}>
+                            <span style={{ fontSize: '0.62rem', color: '#38BDF8', fontWeight: 700, letterSpacing: '0.5px' }}>OVERALL CONFIDENCE RATING</span>
+                            <h2 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#38BDF8', marginTop: '4px' }}>91%</h2>
+                            <span style={{ fontSize: '0.62rem', color: '#94A3B8', display: 'block', marginTop: '4px' }}>Grade L4 safety standards approved</span>
+                          </div>
+                        )}
 
                         {/* Strengths & Weaknesses */}
                         <div className="card-sim" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                          <strong style={{ fontSize: '0.75rem', color: 'var(--color-text-primary)' }}>Key Strengths:</strong>
+                          <strong style={{ fontSize: '0.75rem', color: 'var(--color-text-primary)' }}>
+                            {simAssessmentFail ? 'Detected Violations:' : 'Key Strengths:'}
+                          </strong>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.72rem', color: 'var(--color-text-secondary)' }}>
-                            <span style={{ color: '#10B981', fontWeight: 600 }}>✓ Insulated cutter handle detected</span>
-                            <span style={{ color: '#10B981', fontWeight: 600 }}>✓ Perfect wire-core copper stripping depth</span>
+                            {simAssessmentFail ? (
+                              <>
+                                <span style={{ color: 'var(--color-danger)', fontWeight: 600 }}>❌ CRITICAL: Safety gloves missing on worker hands</span>
+                                <span style={{ color: 'var(--color-danger)', fontWeight: 600 }}>❌ VIOLATION: Tool handle lacks isolation rubber rating</span>
+                              </>
+                            ) : (
+                              <>
+                                <span style={{ color: '#10B981', fontWeight: 600 }}>✓ Insulated cutter handle detected</span>
+                                <span style={{ color: '#10B981', fontWeight: 600 }}>✓ Perfect wire-core copper stripping depth</span>
+                              </>
+                            )}
                           </div>
 
                           <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)' }} />
 
-                          <strong style={{ fontSize: '0.75rem', color: 'var(--color-text-primary)' }}>Improvements Needed:</strong>
+                          <strong style={{ fontSize: '0.75rem', color: 'var(--color-text-primary)' }}>
+                            {simAssessmentFail ? 'Compliant Metrics:' : 'Improvements Needed:'}
+                          </strong>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.72rem', color: 'var(--color-text-secondary)' }}>
-                            <span style={{ color: '#F59E0B', fontWeight: 600 }}>• Recommend rubber work gloves for high load</span>
-                            <span style={{ color: '#F59E0B', fontWeight: 600 }}>• Check mains voltage status before cut</span>
+                            {simAssessmentFail ? (
+                              <>
+                                <span style={{ color: '#10B981', fontWeight: 600 }}>✓ Hand distance clearance stable (40cm target OK)</span>
+                              </>
+                            ) : (
+                              <>
+                                <span style={{ color: '#F59E0B', fontWeight: 600 }}>• Recommend rubber work gloves for high load</span>
+                                <span style={{ color: '#F59E0B', fontWeight: 600 }}>• Check mains voltage status before cut</span>
+                              </>
+                            )}
                           </div>
                         </div>
 
@@ -1827,12 +1876,14 @@ export default function App() {
                       <span style={{ fontSize: '0.65rem', marginTop: '6px' }}>Decoded ID payload: KS-8821</span>
                     </div>
 
-                    <div className="card-sim" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                     <div className="card-sim" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                       <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120" alt="Ravi" style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover' }} />
                       <div>
                         <strong style={{ fontSize: '0.9rem', display: 'block' }}>Ravi Kumar</strong>
                         <span style={{ fontSize: '0.68rem', color: 'var(--color-text-secondary)' }}>Electrician • 5 Years Exp</span>
-                        <span style={{ fontSize: '0.68rem', color: '#10B981', display: 'block', fontWeight: 700, marginTop: '2px' }}>✓ Score rating: 91% approved</span>
+                        <span style={{ fontSize: '0.68rem', color: simAssessmentFail ? 'var(--color-danger)' : '#10B981', display: 'block', fontWeight: 700, marginTop: '2px' }}>
+                          {simAssessmentFail ? '✗ Score rating: 54% violations flagged' : '✓ Score rating: 91% approved'}
+                        </span>
                       </div>
                     </div>
 
@@ -1840,16 +1891,23 @@ export default function App() {
                     <div className="card-sim" style={{ padding: '12px' }}>
                       <strong style={{ fontSize: '0.75rem', display: 'block', marginBottom: '8px' }}>AI Video Audit Log:</strong>
                       <div 
-                        onClick={() => alert('Playing simulated video safety drill...')}
-                        style={{ height: '70px', background: 'var(--color-bg)', borderRadius: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-secondary)', cursor: 'pointer' }}
+                        onClick={() => alert(simAssessmentFail ? 'Playing video log: Missing safety gloves warning!' : 'Playing simulated video safety drill...')}
+                        style={{ height: '70px', background: 'var(--color-bg)', borderRadius: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-secondary)', cursor: 'pointer', border: simAssessmentFail ? '1px dashed var(--color-danger)' : 'none' }}
                       >
-                        <Play size={16} className="text-emerald-400" />
-                        <span style={{ fontSize: '0.62rem', marginTop: '6px' }}>View Safety Drill (5-sec check)</span>
+                        <Play size={16} className={simAssessmentFail ? 'text-red-500' : 'text-emerald-400'} />
+                        <span style={{ fontSize: '0.62rem', marginTop: '6px' }}>
+                          {simAssessmentFail ? 'View Infraction Video (No Gloves)' : 'View Safety Drill (5-sec check)'}
+                        </span>
                       </div>
                     </div>
 
                     <button 
                       className="btn-sim btn-sim-primary" 
+                      disabled={simAssessmentFail}
+                      style={{
+                        backgroundColor: simAssessmentFail ? 'var(--color-text-light)' : 'var(--color-primary)',
+                        cursor: simAssessmentFail ? 'not-allowed' : 'pointer'
+                      }}
                       onClick={() => {
                         setSimConfetti(true);
                         addLog('success', 'SIMULATOR HIRE: Dispatching contract offer invitation package to candidate Ravi Kumar.');
@@ -1858,7 +1916,7 @@ export default function App() {
                         }, 4000);
                       }}
                     >
-                      Hire Candidate
+                      {simAssessmentFail ? 'Review Critical Violations' : 'Hire Candidate'}
                     </button>
                   </div>
                 )}
