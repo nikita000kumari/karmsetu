@@ -232,6 +232,39 @@ export default function App() {
   const [simConfetti, setSimConfetti] = useState(false);
   const [simAssessmentFail, setSimAssessmentFail] = useState(false);
   const [qrScannedCandidateId, setQrScannedCandidateId] = useState(null);
+  
+  const [simPendingSyncCount, setSimPendingSyncCount] = useState(0);
+  const [tiltStyle, setTiltStyle] = useState({
+    transform: 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)',
+    glare: 'radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0) 0%, transparent 60%)'
+  });
+
+  const handleMouseMove = (e) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateY = ((x - centerX) / centerX) * 15;
+    const rotateX = -((y - centerY) / centerY) * 15;
+    
+    const glareX = (x / rect.width) * 100;
+    const glareY = (y / rect.height) * 100;
+
+    setTiltStyle({
+      transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`,
+      glare: `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255, 255, 255, 0.22) 0%, transparent 50%)`
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setTiltStyle({
+      transform: 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)',
+      glare: 'radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0) 0%, transparent 60%)'
+    });
+  };
 
   // Cloud backend variables
   const [showConfig, setShowConfig] = useState(false);
@@ -368,13 +401,36 @@ export default function App() {
     let t;
     if (activeSimScreen === '05_ai_result' && simAnalysisStep < 4) {
       t = setTimeout(() => {
-        setSimAnalysisStep(s => s + 1);
+        const nextStep = simAnalysisStep + 1;
+        setSimAnalysisStep(nextStep);
         const tasks = ['Detecting Tools', 'Checking Safety Gear', 'Evaluating Workflow', 'Building Skill DNA Report'];
         addLog('info', `SIMULATOR AI: Completed check for: ${tasks[simAnalysisStep]}`);
+        
+        if (nextStep === 4) {
+          if (simOffline) {
+            setSimPendingSyncCount(c => c + 1);
+            addLog('warning', 'SQL: Connection offline. SQLite assessment transaction queued in buffer.');
+          } else {
+            addLog('success', 'SYNC: Network online. Assessment synchronized instantly with Firestore.');
+          }
+        }
       }, 1000);
     }
     return () => clearTimeout(t);
-  }, [activeSimScreen, simAnalysisStep]);
+  }, [activeSimScreen, simAnalysisStep, simOffline]);
+
+  // Sync restoration trigger
+  useEffect(() => {
+    if (!simOffline && simPendingSyncCount > 0) {
+      addLog('info', `SYNC ENGINE: Connection restored. Flushing ${simPendingSyncCount} buffered SQLite transactions to cloud...`);
+      const timer = setTimeout(() => {
+        addLog('success', `SQL: Transferred buffered entries from local SQLite sync logs queue.`);
+        addLog('success', `FIRESTORE: Successfully updated remote assessments collection.`);
+        setSimPendingSyncCount(0);
+      }, 1200);
+      return () => clearTimeout(timer);
+    }
+  }, [simOffline, simPendingSyncCount]);
 
   const updateWorkerProfile = async (workerId, fields) => {
     if (db) {
@@ -1359,6 +1415,36 @@ export default function App() {
                 </div>
               </div>
 
+              {/* SQLite Queue Visual Buffer Status Box */}
+              <div className="card-sim" style={{ padding: '12px', margin: '0 0 10px 0', fontSize: '0.72rem', backgroundColor: 'var(--color-bg)', border: '1px solid var(--color-border)', borderRadius: '12px', textAlign: 'left' }}>
+                <strong style={{ fontSize: '0.74rem', display: 'block', color: 'var(--color-text-primary)', marginBottom: '4px' }}>
+                  SQLite Sync Buffer Queue
+                </strong>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px' }}>
+                  <span style={{ fontSize: '0.62rem', color: 'var(--color-text-secondary)' }}>Status:</span>
+                  <span style={{ 
+                    fontSize: '0.62rem', 
+                    fontWeight: 800, 
+                    color: simOffline ? '#F59E0B' : '#10B981', 
+                    backgroundColor: simOffline ? 'rgba(245, 158, 11, 0.08)' : 'rgba(16, 185, 129, 0.08)',
+                    padding: '2px 8px', 
+                    borderRadius: '10px'
+                  }}>
+                    {simOffline ? 'OFFLINE (QUEUEING)' : 'ONLINE (SYNCED)'}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px' }}>
+                  <span style={{ fontSize: '0.62rem', color: 'var(--color-text-secondary)' }}>Pending Transactions:</span>
+                  <span style={{ 
+                    fontSize: '0.74rem', 
+                    fontWeight: 800, 
+                    color: simPendingSyncCount > 0 ? '#F59E0B' : 'var(--color-text-light)' 
+                  }}>
+                    {simPendingSyncCount}
+                  </span>
+                </div>
+              </div>
+
               <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)', margin: '10px 0' }} />
 
               <button 
@@ -1810,7 +1896,30 @@ export default function App() {
                       <span style={{ fontSize: '0.62rem', backgroundColor: '#F59E0B', color: '#000', padding: '2px 8px', borderRadius: '8px', fontWeight: 800 }}>GOLD TIER</span>
                     </div>
 
-                    <div className="premium-passport-card" style={{ cursor: 'pointer', transform: 'scale(0.98)', transformOrigin: 'top center', marginBottom: '10px' }}>
+                    <div 
+                      className="premium-passport-card" 
+                      onMouseMove={handleMouseMove}
+                      onMouseLeave={handleMouseLeave}
+                      style={{ 
+                        cursor: 'pointer', 
+                        transform: tiltStyle.transform,
+                        transformOrigin: 'center center', 
+                        transition: 'transform 0.1s ease, box-shadow 0.15s ease',
+                        marginBottom: '10px' 
+                      }}
+                    >
+                      <div style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        background: tiltStyle.glare,
+                        pointerEvents: 'none',
+                        zIndex: 3,
+                        transition: 'background 0.05s ease'
+                      }}></div>
+
                       <div className="hologram-strip"></div>
                       
                       <div className="passport-badge-header">
