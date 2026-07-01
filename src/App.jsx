@@ -1975,6 +1975,32 @@ export default function App() {
                           style={{ width: '30px', height: '18px', cursor: 'pointer' }}
                         />
                       </div>
+
+                      <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)', margin: 0 }} />
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', textAlign: 'left' }}>
+                        <strong style={{ fontSize: '0.78rem', display: 'block' }}>Gemini API Key (Optional)</strong>
+                        <span style={{ fontSize: '0.62rem', color: 'var(--color-text-secondary)' }}>Used for active voice drill evaluation</span>
+                        <input 
+                          type="password" 
+                          placeholder="Enter API Key (AIzaSy...)" 
+                          value={geminiKey} 
+                          onChange={(e) => {
+                            setGeminiKey(e.target.value);
+                            localStorage.setItem('karmsetu_gemini_key', e.target.value);
+                          }}
+                          style={{ 
+                            fontSize: '0.7rem', 
+                            padding: '6px 10px', 
+                            borderRadius: '8px', 
+                            border: '1px solid var(--color-border)', 
+                            backgroundColor: 'var(--color-bg)', 
+                            color: 'var(--color-text-primary)', 
+                            width: '100%', 
+                            boxSizing: 'border-box' 
+                          }}
+                        />
+                      </div>
                     </div>
 
                     <button 
